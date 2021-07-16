@@ -10,6 +10,13 @@ Requires [Node.js](https://nodejs.dev) to be installed.
 npm start
 ```
 
+## Run with Docker
+
+```bash
+docker build -t server .
+docker run -d -p 3000:3000 server
+```
+
 ## Lint
 
 This project makes use of [ESLint](https://eslint.org).
