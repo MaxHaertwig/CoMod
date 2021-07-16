@@ -7,3 +7,10 @@ It is organized into different sections:
 - [Client](./client): the client application
 - [Server](./server): the server backend
 - [Thesis](./thesis): the written part
+- [Yjs Pack](./yjs-pack): bundles Yjs using webpack
+
+Don't forget to initialize the git submodules:
+
+```bash
+git submodule update --init
+```
