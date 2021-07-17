@@ -1,3 +1,4 @@
+import 'package:client/pb/collaboration.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -40,26 +41,29 @@ class _MainScreenState extends State<MainScreen> {
         title: const Text('Client'),
       ),
       body: Center(
-          child: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(
-              controller: textEditingController,
-            ),
-            SizedBox(height: 20),
-            OutlinedButton(
-              onPressed: () {
-                if (!textEditingController.text.isEmpty) {
-                  channel.sink.add(textEditingController.text);
-                }
-              },
-              child: const Text("Send"),
-            ),
-          ],
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              TextField(
+                controller: textEditingController,
+              ),
+              SizedBox(height: 20),
+              OutlinedButton(
+                onPressed: () {
+                  if (!textEditingController.text.isEmpty) {
+                    CollaborationMessage message = CollaborationMessage();
+                    message.message = textEditingController.text; 
+                    channel.sink.add(message.writeToBuffer());
+                  }
+                },
+                child: const Text("Send"),
+              ),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }

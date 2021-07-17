@@ -1,11 +1,15 @@
 import * as Koa from 'koa';
 import * as websockify from 'koa-websocket';
+import {CollaborationMessage} from './pb/collaboration_pb';
 
-const app = websockify(new Koa());
+const wsOptions = {};
+const app = websockify(new Koa(), wsOptions);
 
 app.ws.use(ctx => {
-  ctx.websocket.on('message', msg => {
-    console.log(`Received message: ${msg}`);
+  ctx.websocket.binaryType = 'arraybuffer';
+  ctx.websocket.on('message', (buffer: Buffer) => {
+    const message = CollaborationMessage.deserializeBinary(buffer);
+    console.log(`Received message: ${message.getMessage()}`);
   });
 });
 
