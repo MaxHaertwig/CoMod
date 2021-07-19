@@ -10,8 +10,16 @@ It is organized into different sections:
 - [Protocol](./protocol): the communication protocol between client and server
 - [Yjs Pack](./yjs-pack): bundles Yjs using webpack
 
-Don't forget to initialize the git submodules:
+## Setup
+
+Initialize the git submodules (if you haven't done so during cloning):
 
 ```bash
 git submodule update --init
+```
+
+Run the setup script:
+
+```bash
+./setup.sh
 ```
