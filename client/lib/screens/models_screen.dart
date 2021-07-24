@@ -1,4 +1,5 @@
 import 'package:client/model/document.dart';
+import 'package:client/model/model.dart';
 import 'package:client/screens/new_model_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,12 @@ class _DocumentsScreenState extends State<ModelsScreen> {
           ? Container()
           : ListView(
               children: _documents!
-                  .map((document) => ListTile(title: Text(document.name)))
+                  .map((document) => ListTile(
+                        title: Text(document.name),
+                        onTap: () {
+                          _openDocument(document);
+                        },
+                      ))
                   .toList(),
             ),
       floatingActionButton: FloatingActionButton(
@@ -49,5 +55,10 @@ class _DocumentsScreenState extends State<ModelsScreen> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void _openDocument(Document document) async {
+    var model = await Model.fromFile(document.path);
+    print(model);
   }
 }
