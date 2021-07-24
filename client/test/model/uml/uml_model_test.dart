@@ -21,11 +21,11 @@ void main() {
 
     final personName = person.attributes.firstWhere((a) => a.name == 'Name');
     expect(personName.visibility, UMLVisibility.public);
-    expect(personName.dataType, UMLDataType(Left(UMLPrimitiveType.string)));
+    expect(personName.dataType, UMLDataType.string());
 
     final personAge = person.attributes.firstWhere((a) => a.name == 'Age');
     expect(personAge.visibility, UMLVisibility.private);
-    expect(personAge.dataType, UMLDataType(Left(UMLPrimitiveType.integer)));
+    expect(personAge.dataType, UMLDataType.integer());
 
     final student = model.classes.firstWhere((c) => c.name == 'Student');
     expect(student.attributes.map((a) => a.name).toList(), ['Major']);
@@ -33,14 +33,13 @@ void main() {
     final studentMajor =
         student.attributes.firstWhere((a) => a.name == 'Major');
     expect(studentMajor.visibility, UMLVisibility.public);
-    expect(studentMajor.dataType, UMLDataType(Left(UMLPrimitiveType.string)));
+    expect(studentMajor.dataType, UMLDataType.string());
 
     final studentStudy =
         student.operations.firstWhere((o) => o.name == 'study');
     expect(studentStudy.visibility, UMLVisibility.protected);
-    expect(
-        studentStudy.returnType, UMLDataType(Left(UMLPrimitiveType.voidType)));
     expect(studentStudy.arguments.map((a) => a.name).toList(),
+    expect(studentStudy.returnType, UMLDataType.voidType());
         ['subject', 'hours']);
     expect(studentStudy.arguments[0].type,
         UMLDataType(Left(UMLPrimitiveType.string)));

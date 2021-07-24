@@ -18,6 +18,13 @@ class UMLDataType {
 
   UMLDataType(this.type);
 
+  UMLDataType.voidType() : this(Left(UMLPrimitiveType.voidType));
+  UMLDataType.boolean() : this(Left(UMLPrimitiveType.boolean));
+  UMLDataType.integer() : this(Left(UMLPrimitiveType.integer));
+  UMLDataType.real() : this(Left(UMLPrimitiveType.real));
+  UMLDataType.string() : this(Left(UMLPrimitiveType.string));
+  UMLDataType.object(String id) : this(Right(id));
+
   static UMLDataType fromString(String string) {
     var primitiveType = UMLPrimitiveTypeExt.fromString(string);
     return UMLDataType(

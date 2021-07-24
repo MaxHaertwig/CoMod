@@ -11,7 +11,7 @@ class UMLOperation {
 
   UMLOperation(this.name, [UMLVisibility? visibility, UMLDataType? returnType])
       : visibility = visibility ?? UMLVisibility.public,
-        returnType = returnType ?? UMLDataType(Left(UMLPrimitiveType.voidType));
+        returnType = returnType ?? UMLDataType.voidType();
 
   static UMLOperation fromXml(XmlElement element) {
     assert(element.name.toString() == 'operation');
