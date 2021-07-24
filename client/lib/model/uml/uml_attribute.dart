@@ -15,13 +15,9 @@ class UMLAttribute {
   static UMLAttribute fromXml(XmlElement element) {
     assert(element.name.toString() == 'attribute');
 
-    var visibilityString = element.getAttribute('visibility');
-    var visibility = visibilityString != null
-        ? UMLVisibilityExt.fromString(visibilityString)
-        : null;
-    var dataTypeString = element.getAttribute('type');
-    var dataType =
-        dataTypeString != null ? UMLDataType.fromString(dataTypeString) : null;
+    var visibility =
+        UMLVisibilityExt.fromString(element.getAttribute('visibility')!);
+    var dataType = UMLDataType.fromString(element.getAttribute('type')!);
     return UMLAttribute(element.innerText.trim(), visibility, dataType);
   }
 }

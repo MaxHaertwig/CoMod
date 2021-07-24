@@ -15,13 +15,11 @@ class UMLClass {
   static UMLClass fromXml(XmlElement element) {
     assert(element.name.toString() == 'class');
 
-    final name = element.getElement('name')?.innerText.trim() ?? '';
-    final xString = element.getAttribute('x');
-    final x = xString != null ? int.parse(xString) : 0;
-    final yString = element.getAttribute('y');
-    final y = yString != null ? int.parse(yString) : 0;
+    final name = element.getElement('name')!.innerText.trim();
+    final x = int.parse(element.getAttribute('x')!);
+    final y = int.parse(element.getAttribute('y')!);
 
-    var umlClass = UMLClass(name, element.getAttribute('id'), x, y);
+    var umlClass = UMLClass(name, element.getAttribute('id')!, x, y);
     umlClass.attributes = element
         .findElements('attribute')
         .map((child) => UMLAttribute.fromXml(child))

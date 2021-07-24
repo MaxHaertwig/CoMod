@@ -13,8 +13,8 @@ class UMLModel {
 
   UMLModel.fromXml(XmlElement element)
       : assert(element.name.toString() == 'model'),
-        version = element.getAttribute('version') ?? '1.0',
-        uuid = element.getAttribute('uuid') ?? Uuid().v4(),
+        version = element.getAttribute('version')!,
+        uuid = element.getAttribute('uuid')!,
         classes = element
             .findElements('class')
             .map((child) => UMLClass.fromXml(child))

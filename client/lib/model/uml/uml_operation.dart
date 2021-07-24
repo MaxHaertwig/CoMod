@@ -16,15 +16,11 @@ class UMLOperation {
   static UMLOperation fromXml(XmlElement element) {
     assert(element.name.toString() == 'operation');
 
-    final name = element.getElement('name')?.innerText ?? '';
-    final visibilityString = element.getAttribute('visibility');
-    final visibility = visibilityString != null
-        ? UMLVisibilityExt.fromString(visibilityString)
-        : null;
-    final returnTypeString = element.getAttribute('returnType');
-    final returnType = returnTypeString != null
-        ? UMLDataType.fromString(returnTypeString)
-        : null;
+    final name = element.getElement('name')!.innerText.trim();
+    final visibility =
+        UMLVisibilityExt.fromString(element.getAttribute('visibility')!);
+    final returnType =
+        UMLDataType.fromString(element.getAttribute('returnType')!);
     final operation = UMLOperation(name, visibility, returnType);
     operation.arguments = element
         .findElements('arg')
@@ -44,9 +40,7 @@ class UMLOperationArgument {
   static UMLOperationArgument fromXml(XmlElement element) {
     assert(element.name.toString() == 'arg');
 
-    final dataTypeString = element.getAttribute('type');
-    final dataType =
-        dataTypeString != null ? UMLDataType.fromString(dataTypeString) : null;
+    final dataType = UMLDataType.fromString(element.getAttribute('type')!);
     return UMLOperationArgument(element.innerText.trim(), dataType);
   }
 }
