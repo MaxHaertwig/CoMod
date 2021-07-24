@@ -7,4 +7,17 @@ extension UMLVisibilityExt on UMLVisibility {
     return UMLVisibility.values
         .firstWhere((value) => describeEnum(value) == string);
   }
+
+  String get stringRepresentation {
+    switch (this) {
+      case UMLVisibility.public:
+        return '+';
+      case UMLVisibility.package:
+        return '~';
+      case UMLVisibility.protected:
+        return '#';
+      case UMLVisibility.private:
+        return '-';
+    }
+  }
 }

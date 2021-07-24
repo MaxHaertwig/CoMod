@@ -1,6 +1,5 @@
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_visibility.dart';
-import 'package:either_dart/either.dart';
 import 'package:xml/xml.dart';
 
 class UMLAttribute {
@@ -10,7 +9,7 @@ class UMLAttribute {
 
   UMLAttribute(this.name, [UMLVisibility? visibility, UMLDataType? dataType])
       : visibility = visibility ?? UMLVisibility.public,
-        dataType = dataType ?? UMLDataType(Left(UMLPrimitiveType.string));
+        dataType = dataType ?? UMLDataType.string();
 
   static UMLAttribute fromXml(XmlElement element) {
     assert(element.name.toString() == 'attribute');
@@ -20,4 +19,7 @@ class UMLAttribute {
     var dataType = UMLDataType.fromString(element.getAttribute('type')!);
     return UMLAttribute(element.innerText.trim(), visibility, dataType);
   }
+
+  String get stringRepresentation =>
+      '${visibility.stringRepresentation} $name: ${dataType.stringRepresentation}';
 }

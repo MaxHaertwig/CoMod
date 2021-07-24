@@ -31,6 +31,12 @@ class UMLDataType {
         primitiveType != null ? Left(primitiveType) : Right(string));
   }
 
+  String get stringRepresentation => type.isLeft
+      ? (type.left == UMLPrimitiveType.voidType
+          ? 'void'
+          : describeEnum(type.left))
+      : type.right;
+
   @override
   String toString() =>
       type.isLeft ? type.left.toString() : type.right.toString();

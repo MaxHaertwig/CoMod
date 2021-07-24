@@ -31,6 +31,9 @@ class UMLOperation {
         .toList();
     return UMLOperation(name, visibility, returnType, parameters);
   }
+
+  String get stringRepresentation =>
+      '${visibility.stringRepresentation} $name(${parameters.map((arg) => arg.stringRepresentation).join(', ')}): ${returnType.stringRepresentation}';
 }
 
 class UMLOperationParameter {
@@ -46,4 +49,6 @@ class UMLOperationParameter {
     final dataType = UMLDataType.fromString(element.getAttribute('type')!);
     return UMLOperationParameter(element.innerText.trim(), dataType);
   }
+
+  String get stringRepresentation => '$name: ${type.stringRepresentation}';
 }
