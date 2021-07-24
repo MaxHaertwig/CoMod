@@ -16,12 +16,12 @@
     </attribute>
     <operation visibility="protected" returnType="void">
       <name>study</name>
-      <arg type="string">
+      <param type="string">
         subject
-      </arg>
-      <arg type="integer">
+      </param>
+      <param type="integer">
         hours
-      </arg>
+      </param>
     </operation>
   </class>
   <class id="027e019a-11dc-4fbb-bce8-03b3dc73de9d" x="100" y="100">

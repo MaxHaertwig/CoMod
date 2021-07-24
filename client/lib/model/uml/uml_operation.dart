@@ -7,11 +7,15 @@ class UMLOperation {
   String name;
   UMLVisibility visibility;
   UMLDataType returnType;
-  List<UMLOperationArgument> arguments = [];
+  List<UMLOperationParameter> parameters = [];
 
-  UMLOperation(this.name, [UMLVisibility? visibility, UMLDataType? returnType])
+  UMLOperation(this.name,
+      [UMLVisibility? visibility,
+      UMLDataType? returnType,
+      List<UMLOperationParameter>? parameters])
       : visibility = visibility ?? UMLVisibility.public,
-        returnType = returnType ?? UMLDataType.voidType();
+        returnType = returnType ?? UMLDataType.voidType(),
+        parameters = parameters ?? [];
 
   static UMLOperation fromXml(XmlElement element) {
     assert(element.name.toString() == 'operation');
@@ -21,26 +25,25 @@ class UMLOperation {
         UMLVisibilityExt.fromString(element.getAttribute('visibility')!);
     final returnType =
         UMLDataType.fromString(element.getAttribute('returnType')!);
-    final operation = UMLOperation(name, visibility, returnType);
-    operation.arguments = element
-        .findElements('arg')
-        .map((el) => UMLOperationArgument.fromXml(el))
+    final parameters = element
+        .findElements('param')
+        .map((el) => UMLOperationParameter.fromXml(el))
         .toList();
-    return operation;
+    return UMLOperation(name, visibility, returnType, parameters);
   }
 }
 
-class UMLOperationArgument {
+class UMLOperationParameter {
   String name;
   UMLDataType type;
 
-  UMLOperationArgument(this.name, UMLDataType? type)
+  UMLOperationParameter(this.name, UMLDataType? type)
       : type = type ?? UMLDataType(Left(UMLPrimitiveType.string));
 
-  static UMLOperationArgument fromXml(XmlElement element) {
-    assert(element.name.toString() == 'arg');
+  static UMLOperationParameter fromXml(XmlElement element) {
+    assert(element.name.toString() == 'param');
 
     final dataType = UMLDataType.fromString(element.getAttribute('type')!);
-    return UMLOperationArgument(element.innerText.trim(), dataType);
+    return UMLOperationParameter(element.innerText.trim(), dataType);
   }
 }
