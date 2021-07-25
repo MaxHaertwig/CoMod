@@ -1,6 +1,7 @@
 import 'package:client/components/no_data_view.dart';
 import 'package:client/model/document.dart';
 import 'package:client/model/model.dart';
+import 'package:client/screens/main_screen.dart';
 import 'package:client/screens/new_model_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,7 @@ class _DocumentsScreenState extends State<ModelsScreen> {
                       .map((document) => ListTile(
                             title: Text(document.name),
                             onTap: () {
-                              _openDocument(document);
+                              _openDocument(document, context);
                             },
                           ))
                       .toList(),
@@ -53,8 +54,23 @@ class _DocumentsScreenState extends State<ModelsScreen> {
     );
   }
 
-  void _openDocument(Document document) async {
-    var model = await Model.fromFile(document.path);
-    print(model);
+  void _newDocument() async {
+    final document = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => NewModelScreen(
+                _documents!.map((document) => document.name).toSet())));
+    if (document != null) {
+      setState(() {
+        _documents?.add(document);
+        _documents?.sort((a, b) => a.name.compareTo(b.name));
+      });
+    }
+  }
+
+  void _openDocument(Document document, BuildContext context) async {
+    var model = await Model.fromDocument(document);
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => MainScreen(model)));
   }
 }

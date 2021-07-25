@@ -45,6 +45,7 @@ class _NewModelScreenState extends State<NewModelScreen> {
                 controller: _nameController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (value) {
+                  // TODO: limit allowed characters
                   final name = value?.trim();
                   if (name?.isEmpty == false) {
                     return widget.existingNames.contains(name)
