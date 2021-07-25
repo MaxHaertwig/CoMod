@@ -7,29 +7,26 @@ class UMLOperation {
   String name;
   UMLVisibility visibility;
   UMLDataType returnType;
-  List<UMLOperationParameter> parameters = [];
+  List<UMLOperationParameter> parameters;
 
   UMLOperation(this.name,
-      [UMLVisibility? visibility,
+      {this.visibility = UMLVisibility.public,
       UMLDataType? returnType,
-      List<UMLOperationParameter>? parameters])
-      : visibility = visibility ?? UMLVisibility.public,
-        returnType = returnType ?? UMLDataType.voidType(),
+      List<UMLOperationParameter>? parameters})
+      : returnType = returnType ?? UMLDataType.voidType(),
         parameters = parameters ?? [];
 
   static UMLOperation fromXml(XmlElement element) {
     assert(element.name.toString() == 'operation');
 
-    final name = element.getElement('name')!.innerText.trim();
-    final visibility =
-        UMLVisibilityExt.fromString(element.getAttribute('visibility')!);
-    final returnType =
-        UMLDataType.fromString(element.getAttribute('returnType')!);
-    final parameters = element
-        .findElements('param')
-        .map((el) => UMLOperationParameter.fromXml(el))
-        .toList();
-    return UMLOperation(name, visibility, returnType, parameters);
+    return UMLOperation(element.getElement('name')!.innerText.trim(),
+        visibility:
+            UMLVisibilityExt.fromString(element.getAttribute('visibility')!),
+        returnType: UMLDataType.fromString(element.getAttribute('returnType')!),
+        parameters: element
+            .findElements('param')
+            .map((el) => UMLOperationParameter.fromXml(el))
+            .toList());
   }
 
   String get stringRepresentation =>
@@ -40,14 +37,14 @@ class UMLOperationParameter {
   String name;
   UMLDataType type;
 
-  UMLOperationParameter(this.name, UMLDataType? type)
+  UMLOperationParameter(this.name, {UMLDataType? type})
       : type = type ?? UMLDataType(Left(UMLPrimitiveType.string));
 
   static UMLOperationParameter fromXml(XmlElement element) {
     assert(element.name.toString() == 'param');
 
-    final dataType = UMLDataType.fromString(element.getAttribute('type')!);
-    return UMLOperationParameter(element.innerText.trim(), dataType);
+    return UMLOperationParameter(element.innerText.trim(),
+        type: UMLDataType.fromString(element.getAttribute('type')!));
   }
 
   String get stringRepresentation => '$name: ${type.stringRepresentation}';

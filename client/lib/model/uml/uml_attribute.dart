@@ -7,17 +7,17 @@ class UMLAttribute {
   UMLVisibility visibility;
   UMLDataType dataType;
 
-  UMLAttribute(this.name, [UMLVisibility? visibility, UMLDataType? dataType])
-      : visibility = visibility ?? UMLVisibility.public,
-        dataType = dataType ?? UMLDataType.string();
+  UMLAttribute(this.name,
+      {this.visibility = UMLVisibility.public, UMLDataType? dataType})
+      : dataType = dataType ?? UMLDataType.string();
 
   static UMLAttribute fromXml(XmlElement element) {
     assert(element.name.toString() == 'attribute');
 
-    var visibility =
-        UMLVisibilityExt.fromString(element.getAttribute('visibility')!);
-    var dataType = UMLDataType.fromString(element.getAttribute('type')!);
-    return UMLAttribute(element.innerText.trim(), visibility, dataType);
+    return UMLAttribute(element.innerText.trim(),
+        visibility:
+            UMLVisibilityExt.fromString(element.getAttribute('visibility')!),
+        dataType: UMLDataType.fromString(element.getAttribute('type')!));
   }
 
   String get stringRepresentation =>

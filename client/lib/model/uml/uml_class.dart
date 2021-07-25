@@ -6,11 +6,18 @@ import 'package:xml/xml.dart';
 class UMLClass {
   String name, id;
   int x, y;
-  List<UMLAttribute> attributes = [];
-  List<UMLOperation> operations = [];
+  List<UMLAttribute> attributes;
+  List<UMLOperation> operations;
 
-  UMLClass(this.name, String? id, [int this.x = 0, int this.y = 0])
-      : id = id ?? Uuid().v4();
+  UMLClass(this.name,
+      {String? id,
+      int this.x = 0,
+      int this.y = 0,
+      List<UMLAttribute>? attributes,
+      List<UMLOperation>? operations})
+      : id = id ?? Uuid().v4(),
+        attributes = attributes ?? [],
+        operations = operations ?? [];
 
   static UMLClass fromXml(XmlElement element) {
     assert(element.name.toString() == 'class');
@@ -19,7 +26,7 @@ class UMLClass {
     final x = int.parse(element.getAttribute('x')!);
     final y = int.parse(element.getAttribute('y')!);
 
-    var umlClass = UMLClass(name, element.getAttribute('id')!, x, y);
+    var umlClass = UMLClass(name, id: element.getAttribute('id')!, x: x, y: y);
     umlClass.attributes = element
         .findElements('attribute')
         .map((child) => UMLAttribute.fromXml(child))

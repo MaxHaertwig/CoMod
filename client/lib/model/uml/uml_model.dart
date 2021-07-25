@@ -9,7 +9,8 @@ class UMLModel {
   String uuid;
   List<UMLClass> classes = [];
 
-  UMLModel(String? uuid, [this.version = '1.0']) : uuid = uuid ?? Uuid().v4();
+  UMLModel({String? uuid, this.version = currentVersion})
+      : uuid = uuid ?? Uuid().v4();
 
   UMLModel.fromXml(XmlElement element)
       : assert(element.name.toString() == 'model'),
