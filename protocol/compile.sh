@@ -1,5 +1,8 @@
 #!/bin/bash
 
+mkdir -p ../client/lib/pb
+mkdir -p ../server/src/pb
+
 protoc \
   --plugin="protoc-gen-ts=./node_modules/.bin/protoc-gen-ts" \
   --dart_out="../client/lib/pb" \
