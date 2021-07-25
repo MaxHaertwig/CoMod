@@ -37,11 +37,11 @@ class _NewModelScreenState extends State<NewModelScreen> {
             children: [
               const Text(
                 'Name',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               TextFormField(
                 autofocus: true,
-                decoration: InputDecoration(hintText: 'Enter name'),
+                decoration: const InputDecoration(hintText: 'Enter name'),
                 controller: _nameController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (value) {
