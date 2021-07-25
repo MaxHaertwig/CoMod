@@ -42,6 +42,8 @@ cd ..
 echo "Setting up yjs-pack..."
 cd yjs-pack
 npm install 1> /dev/null
-cd ..
+cd yjs
+npm install 1> /dev/null
+cd ...
 
 echo "Done"
