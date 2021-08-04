@@ -1,40 +1,60 @@
+import 'dart:collection';
+
 import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 class UMLClass {
-  String name, id;
-  int x, y;
-  List<UMLAttribute> attributes;
-  List<UMLOperation> operations;
+  final String id;
+  String _name;
+  int _x, _y;
+  List<UMLAttribute> _attributes;
+  List<UMLOperation> _operations;
 
-  UMLClass(this.name,
+  UMLClass(
       {String? id,
-      int this.x = 0,
-      int this.y = 0,
+      name = '',
+      x = 0,
+      y = 0,
       List<UMLAttribute>? attributes,
       List<UMLOperation>? operations})
       : id = id ?? Uuid().v4(),
-        attributes = attributes ?? [],
-        operations = operations ?? [];
+        _name = name,
+        _x = x,
+        _y = y,
+        _attributes = attributes ?? [],
+        _operations = operations ?? [];
 
   static UMLClass fromXml(XmlElement element) {
     assert(element.name.toString() == 'class');
-
-    final name = element.getElement('name')!.innerText.trim();
-    final x = int.parse(element.getAttribute('x')!);
-    final y = int.parse(element.getAttribute('y')!);
-
-    var umlClass = UMLClass(name, id: element.getAttribute('id')!, x: x, y: y);
-    umlClass.attributes = element
-        .findElements('attribute')
-        .map((child) => UMLAttribute.fromXml(child))
-        .toList();
-    umlClass.operations = element
-        .findElements('operation')
-        .map((child) => UMLOperation.fromXml(child))
-        .toList();
-    return umlClass;
+    return UMLClass(
+      name: element.getElement('name')!.innerText.trim(),
+      id: element.getAttribute('id')!,
+      x: int.parse(element.getAttribute('x')!),
+      y: int.parse(element.getAttribute('y')!),
+      attributes: element
+          .findElements('attribute')
+          .map((child) => UMLAttribute.fromXml(child))
+          .toList(),
+      operations: element
+          .findElements('operation')
+          .map((child) => UMLOperation.fromXml(child))
+          .toList(),
+    );
   }
+
+  bool get isEmpty =>
+      _name.isEmpty && _attributes.isEmpty && _operations.isEmpty;
+
+  String get name => _name;
+  void set name(String newName) => _name = newName;
+
+  UnmodifiableListView<UMLAttribute> get attributes =>
+      UnmodifiableListView(_attributes);
+  addAttribute(UMLAttribute attribute) => _attributes.add(attribute);
+  removeAttribute(UMLAttribute attribute) => _attributes.remove(attribute);
+
+  UnmodifiableListView<UMLOperation> get operations =>
+      UnmodifiableListView(_operations);
 }

@@ -56,10 +56,11 @@ class _DocumentsScreenState extends State<ModelsScreen> {
 
   void _newDocument() async {
     final document = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => NewModelScreen(
-                _documents!.map((document) => document.name).toSet())));
+      context,
+      MaterialPageRoute(
+          builder: (context) => NewModelScreen(
+              _documents!.map((document) => document.name).toSet())),
+    );
     if (document != null) {
       setState(() {
         _documents?.add(document);
@@ -69,8 +70,10 @@ class _DocumentsScreenState extends State<ModelsScreen> {
   }
 
   void _openDocument(Document document, BuildContext context) async {
-    var model = await Model.fromDocument(document);
+    final model = await Model.fromDocument(document);
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => MainScreen(model)));
+      context,
+      MaterialPageRoute(builder: (context) => MainScreen(model)),
+    );
   }
 }

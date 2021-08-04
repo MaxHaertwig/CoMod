@@ -13,10 +13,10 @@ void main() {
     final root = XmlDocument.parse(xmlString).rootElement;
     final model = UMLModel.fromXml(root);
     expect(model.version, '1.0');
-    expect(model.classes.map((c) => c.name).toSet(),
+    expect(model.classes.values.map((c) => c.name).toSet(),
         {'Person', 'Student', 'Book'});
 
-    final person = model.classes.firstWhere((c) => c.name == 'Person');
+    final person = model.classes.values.firstWhere((c) => c.name == 'Person');
     expect(person.attributes.map((a) => a.name).toList(), ['Name', 'Age']);
 
     final personName = person.attributes.firstWhere((a) => a.name == 'Name');
@@ -27,7 +27,7 @@ void main() {
     expect(personAge.visibility, UMLVisibility.private);
     expect(personAge.dataType, UMLDataType.integer());
 
-    final student = model.classes.firstWhere((c) => c.name == 'Student');
+    final student = model.classes.values.firstWhere((c) => c.name == 'Student');
     expect(student.attributes.map((a) => a.name).toList(), ['Major']);
 
     final studentMajor =
@@ -36,7 +36,7 @@ void main() {
     expect(studentMajor.dataType, UMLDataType.string());
 
     final studentStudy =
-        student.operations.firstWhere((o) => o.name == 'study');
+        student.operations.firstWhere((op) => op.name == 'study');
     expect(studentStudy.visibility, UMLVisibility.protected);
     expect(studentStudy.returnType, UMLDataType.voidType());
     expect(studentStudy.parameters.map((p) => p.name).toList(),

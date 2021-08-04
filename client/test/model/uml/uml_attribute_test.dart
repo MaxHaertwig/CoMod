@@ -5,8 +5,11 @@ import 'package:test/test.dart';
 
 void main() {
   test('UMLAttribute stringRepresentation', () {
-    final attribute = UMLAttribute('name',
-        visibility: UMLVisibility.private, dataType: UMLDataType.string());
+    final attribute = UMLAttribute(
+      name: 'name',
+      visibility: UMLVisibility.private,
+      dataType: UMLDataType.string(),
+    );
     expect(attribute.stringRepresentation, '- name: string');
   });
 }
