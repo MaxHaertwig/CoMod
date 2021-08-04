@@ -12,7 +12,27 @@ class EditClassScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Edit class')),
+        appBar: AppBar(
+          title: const Text('Edit class'),
+          actions: [
+            PopupMenuButton(
+              icon: const Icon(Icons.delete),
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: 0,
+                  child: Row(
+                    children: const [
+                      Icon(Icons.delete, color: Colors.red),
+                      SizedBox(width: 8),
+                      Text('Delete class', style: TextStyle(color: Colors.red))
+                    ],
+                  ),
+                ),
+              ],
+              onSelected: (_) => _deleteClass(context),
+            ),
+          ],
+        ),
         body: Selector<Model, UMLClass>(
           selector: (_, model) =>
               model.umlModel.classes[_umlClass.id] ?? _umlClass,
@@ -26,7 +46,7 @@ class EditClassScreen extends StatelessWidget {
                   initialValue: umlClass.name,
                   autofocus: _isNewClass,
                   onChanged: (value) =>
-                      _editClass(context, () => _umlClass.name = value),
+                      _editClass(context, (cls) => cls.name = value),
                 ),
               ],
             ),
@@ -34,9 +54,9 @@ class EditClassScreen extends StatelessWidget {
         ),
       );
 
-  void _editClass(BuildContext context, Function() f) {
+  void _editClass(BuildContext context, Function(UMLClass cls) f) {
     final wasEmpty = _umlClass.isEmpty;
-    f();
+    f(_umlClass);
     final model = Provider.of<Model>(context, listen: false);
     if (_umlClass.isEmpty != wasEmpty) {
       if (wasEmpty) {
@@ -46,5 +66,14 @@ class EditClassScreen extends StatelessWidget {
       }
     }
     model.notify();
+  }
+
+  void _deleteClass(BuildContext context) {
+    if (!_umlClass.isEmpty) {
+      final model = Provider.of<Model>(context, listen: false);
+      model.umlModel.removeClass(_umlClass);
+      model.notify();
+    }
+    Navigator.pop(context);
   }
 }
