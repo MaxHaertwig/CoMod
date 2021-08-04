@@ -25,16 +25,16 @@ class OutlineClass extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 const Divider(color: Colors.grey),
-                // TODO: monospace
-                ...umlClass.attributes
-                    .map((attribute) => Text(attribute.stringRepresentation))
+                ...umlClass.attributes.values
+                    .map((attribute) =>
+                        Text(attribute.stringRepresentation)) // TODO: monospace
                     .toList(),
                 if (!umlClass.operations.isEmpty)
                   const Divider(color: Colors.grey),
-                // TODO: monospace
                 if (!umlClass.operations.isEmpty)
                   ...umlClass.operations
-                      .map((operation) => Text(operation.stringRepresentation))
+                      .map((operation) => Text(
+                          operation.stringRepresentation)) // TODO: monospace
                       .toList(),
               ],
             ),

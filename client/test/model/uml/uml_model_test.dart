@@ -17,21 +17,24 @@ void main() {
         {'Person', 'Student', 'Book'});
 
     final person = model.classes.values.firstWhere((c) => c.name == 'Person');
-    expect(person.attributes.map((a) => a.name).toList(), ['Name', 'Age']);
+    expect(
+        person.attributes.values.map((a) => a.name).toList(), ['Name', 'Age']);
 
-    final personName = person.attributes.firstWhere((a) => a.name == 'Name');
+    final personName =
+        person.attributes.values.firstWhere((a) => a.name == 'Name');
     expect(personName.visibility, UMLVisibility.public);
     expect(personName.dataType, UMLDataType.string());
 
-    final personAge = person.attributes.firstWhere((a) => a.name == 'Age');
+    final personAge =
+        person.attributes.values.firstWhere((a) => a.name == 'Age');
     expect(personAge.visibility, UMLVisibility.private);
     expect(personAge.dataType, UMLDataType.integer());
 
     final student = model.classes.values.firstWhere((c) => c.name == 'Student');
-    expect(student.attributes.map((a) => a.name).toList(), ['Major']);
+    expect(student.attributes.values.map((a) => a.name).toList(), ['Major']);
 
     final studentMajor =
-        student.attributes.firstWhere((a) => a.name == 'Major');
+        student.attributes.values.firstWhere((a) => a.name == 'Major');
     expect(studentMajor.visibility, UMLVisibility.public);
     expect(studentMajor.dataType, UMLDataType.string());
 

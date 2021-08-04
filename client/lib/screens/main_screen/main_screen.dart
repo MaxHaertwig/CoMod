@@ -1,8 +1,8 @@
-import 'package:client/components/no_data_view.dart';
-import 'package:client/components/outline_class.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
-import 'package:client/screens/edit_class_screen.dart';
+import 'package:client/screens/edit_class/edit_class_screen.dart';
+import 'package:client/screens/main_screen/widgets/outline_class.dart';
+import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

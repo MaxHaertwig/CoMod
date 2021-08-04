@@ -1,8 +1,8 @@
-import 'package:client/components/no_data_view.dart';
 import 'package:client/model/document.dart';
 import 'package:client/model/model.dart';
-import 'package:client/screens/main_screen.dart';
+import 'package:client/screens/main_screen/main_screen.dart';
 import 'package:client/screens/new_model_screen.dart';
+import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
 
 class ModelsScreen extends StatefulWidget {

@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:client/extensions.dart';
 import 'package:either_dart/either.dart';
 import 'package:flutter/foundation.dart';
@@ -5,12 +7,10 @@ import 'package:flutter/foundation.dart';
 enum UMLPrimitiveType { voidType, boolean, integer, real, string }
 
 extension UMLPrimitiveTypeExt on UMLPrimitiveType {
-  static UMLPrimitiveType? fromString(String string) {
-    return string == 'void'
-        ? UMLPrimitiveType.voidType
-        : UMLPrimitiveType.values
-            .firstWhereOrNull((value) => describeEnum(value) == string);
-  }
+  static UMLPrimitiveType? fromString(String string) => string == 'void'
+      ? UMLPrimitiveType.voidType
+      : UMLPrimitiveType.values
+          .firstWhereOrNull((value) => describeEnum(value) == string);
 }
 
 class UMLDataType {
@@ -25,8 +25,16 @@ class UMLDataType {
   UMLDataType.string() : this(Left(UMLPrimitiveType.string));
   UMLDataType.object(String id) : this(Right(id));
 
+  static UnmodifiableListView<UMLDataType> primitiveDataTypes(
+          bool includingVoid) =>
+      UnmodifiableListView(includingVoid
+          ? UMLPrimitiveType.values.map((pt) => UMLDataType(Left(pt)))
+          : UMLPrimitiveType.values
+              .where((pt) => pt != UMLPrimitiveType.voidType)
+              .map((pt) => UMLDataType(Left(pt))));
+
   static UMLDataType fromString(String string) {
-    var primitiveType = UMLPrimitiveTypeExt.fromString(string);
+    final primitiveType = UMLPrimitiveTypeExt.fromString(string);
     return UMLDataType(
         primitiveType != null ? Left(primitiveType) : Right(string));
   }

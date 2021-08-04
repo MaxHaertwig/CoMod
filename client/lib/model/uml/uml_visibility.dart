@@ -18,4 +18,7 @@ extension UMLVisibilityExt on UMLVisibility {
         return '-';
     }
   }
+
+  String get longStringRepresentation =>
+      stringRepresentation + ' ' + describeEnum(this);
 }

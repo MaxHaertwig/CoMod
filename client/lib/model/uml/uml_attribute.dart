@@ -1,18 +1,21 @@
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_visibility.dart';
-import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLAttribute extends ChangeNotifier {
+class UMLAttribute {
+  final String id;
   String _name;
   UMLVisibility _visibility;
   UMLDataType _dataType;
 
   UMLAttribute(
-      {String name = '',
+      {String? id,
+      String name = '',
       UMLVisibility visibility = UMLVisibility.public,
       UMLDataType? dataType})
-      : _name = name,
+      : id = id ?? Uuid().v4(),
+        _name = name,
         _visibility = visibility,
         _dataType = dataType ?? UMLDataType.string();
 
@@ -27,23 +30,24 @@ class UMLAttribute extends ChangeNotifier {
   }
 
   String get name => _name;
-  set name(String name) {
-    _name = name;
-    notifyListeners();
-  }
+  set name(String name) => _name = name;
 
   UMLVisibility get visibility => _visibility;
-  set visibility(UMLVisibility visibility) {
-    _visibility = visibility;
-    notifyListeners();
-  }
+  set visibility(UMLVisibility visibility) => _visibility = visibility;
 
   UMLDataType get dataType => _dataType;
-  set dataType(UMLDataType dataType) {
-    _dataType = dataType;
-    notifyListeners();
-  }
+  set dataType(UMLDataType dataType) => _dataType = dataType;
 
   get stringRepresentation =>
-      '${_visibility.stringRepresentation} $_name: ${_dataType.stringRepresentation}';
+      '${_visibility.stringRepresentation} ${_name.isEmpty ? '<name>' : _name}: ${_dataType.stringRepresentation}';
+
+  @override
+  String toString() => stringRepresentation;
+
+  @override
+  bool operator ==(other) =>
+      other is UMLAttribute &&
+      _name == other._name &&
+      _visibility == other._visibility &&
+      _dataType == other._dataType;
 }

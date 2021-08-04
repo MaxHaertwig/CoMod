@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_operation.dart';
+import 'package:collection/collection.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
@@ -9,7 +10,7 @@ class UMLClass {
   final String id;
   String _name;
   int _x, _y;
-  List<UMLAttribute> _attributes;
+  LinkedHashMap<String, UMLAttribute> _attributes;
   List<UMLOperation> _operations;
 
   UMLClass(
@@ -23,7 +24,8 @@ class UMLClass {
         _name = name,
         _x = x,
         _y = y,
-        _attributes = attributes ?? [],
+        _attributes =
+            LinkedHashMap.fromIterable(attributes ?? [], key: (a) => a.id),
         _operations = operations ?? [];
 
   static UMLClass fromXml(XmlElement element) {
@@ -50,11 +52,21 @@ class UMLClass {
   String get name => _name;
   void set name(String newName) => _name = newName;
 
-  UnmodifiableListView<UMLAttribute> get attributes =>
-      UnmodifiableListView(_attributes);
-  addAttribute(UMLAttribute attribute) => _attributes.add(attribute);
-  removeAttribute(UMLAttribute attribute) => _attributes.remove(attribute);
+  UnmodifiableMapView<String, UMLAttribute> get attributes =>
+      UnmodifiableMapView(_attributes);
+  addAttribute(UMLAttribute attribute) => _attributes[attribute.id] = attribute;
+  removeAttribute(UMLAttribute attribute) => _attributes.remove(attribute.id);
 
   UnmodifiableListView<UMLOperation> get operations =>
       UnmodifiableListView(_operations);
+
+  @override
+  String toString() {
+    final name = _name.isEmpty ? '<name>' : _name;
+    final attributes =
+        _attributes.values.map((a) => a.stringRepresentation).join(', ');
+    final operations =
+        _operations.map((op) => op.stringRepresentation).join(', ');
+    return '$name[$attributes | $operations]';
+  }
 }
