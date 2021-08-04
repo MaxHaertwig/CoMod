@@ -3,6 +3,7 @@ import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/screens/edit_class/widgets/edit_attribute_row.dart';
 import 'package:client/screens/edit_class/widgets/named_text_field.dart';
+import 'package:client/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,16 +22,7 @@ class EditClassScreen extends StatelessWidget {
               icon: const Icon(Icons.delete),
               tooltip: 'Delete class',
               itemBuilder: (_) => [
-                PopupMenuItem(
-                  value: 0,
-                  child: Row(
-                    children: const [
-                      Icon(Icons.delete, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Delete class', style: TextStyle(color: Colors.red))
-                    ],
-                  ),
-                ),
+                MenuItem(Icons.delete, 'Delete class', 0, isDestructive: true),
               ],
               onSelected: (_) => _deleteClass(context),
             ),
