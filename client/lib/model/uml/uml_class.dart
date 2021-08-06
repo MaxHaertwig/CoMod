@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:client/extensions.dart';
 import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:collection/collection.dart';
@@ -54,8 +55,12 @@ class UMLClass {
 
   UnmodifiableMapView<String, UMLAttribute> get attributes =>
       UnmodifiableMapView(_attributes);
-  addAttribute(UMLAttribute attribute) => _attributes[attribute.id] = attribute;
-  removeAttribute(UMLAttribute attribute) => _attributes.remove(attribute.id);
+  void addAttribute(UMLAttribute attribute) =>
+      _attributes[attribute.id] = attribute;
+  void removeAttribute(UMLAttribute attribute) =>
+      _attributes.remove(attribute.id);
+  void moveAttribute(UMLAttribute attribute, MoveType moveType) =>
+      _attributes.move(attribute.id, moveType);
 
   UnmodifiableListView<UMLOperation> get operations =>
       UnmodifiableListView(_operations);

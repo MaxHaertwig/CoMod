@@ -56,8 +56,11 @@ class EditClassScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   ..._umlClass.attributes.values
-                      .map(
-                          (attribute) => EditAttributeRow(_umlClass, attribute))
+                      .map((attribute) => EditAttributeRow(
+                            _umlClass,
+                            attribute,
+                            key: Key(attribute.id),
+                          ))
                       .toList(),
                   TextButton(
                     child: const Text('Add attribute',

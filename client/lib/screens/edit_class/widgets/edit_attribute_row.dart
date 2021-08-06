@@ -1,16 +1,21 @@
+import 'package:client/extensions.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_class.dart';
+import 'package:client/screens/edit_class/widgets/attribute_action_button.dart';
 import 'package:client/screens/edit_class/widgets/data_type_button.dart';
 import 'package:client/screens/edit_class/widgets/visibility_button.dart';
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class EditAttributeRow extends StatefulWidget {
+  final Key? key;
   final UMLClass _umlClass;
   final UMLAttribute _attribute;
 
-  EditAttributeRow(this._umlClass, this._attribute);
+  EditAttributeRow(this._umlClass, this._attribute, {this.key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() =>
@@ -75,10 +80,8 @@ class _EditAttributeRowState extends State<EditAttributeRow> {
                 ),
               ),
               const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.delete, color: Colors.grey),
-                onPressed: () => _deleteAttribute(context),
-              ),
+              AttributeActionButton(
+                  (action) => _attributeAction(context, action)),
             ],
           ),
         ),
@@ -90,8 +93,12 @@ class _EditAttributeRowState extends State<EditAttributeRow> {
     Provider.of<Model>(context, listen: false).notify();
   }
 
-  void _deleteAttribute(BuildContext context) {
-    widget._umlClass.removeAttribute(widget._attribute);
+  void _attributeAction(BuildContext context, Either<MoveType, int> action) {
+    if (action.isLeft) {
+      widget._umlClass.moveAttribute(widget._attribute, action.left);
+    } else {
+      widget._umlClass.removeAttribute(widget._attribute);
+    }
     Provider.of<Model>(context, listen: false).notify();
   }
 }
