@@ -62,11 +62,13 @@ void main() {
           name: 'Person',
           attributes: [
             UMLAttribute(
+              id: 'PA1',
               name: 'name',
               visibility: UMLVisibility.public,
               dataType: UMLDataType.string(),
             ),
             UMLAttribute(
+              id: 'PA2',
               name: 'age',
               visibility: UMLVisibility.private,
               dataType: UMLDataType.integer(),
@@ -79,6 +81,7 @@ void main() {
           y: 100,
           attributes: [
             UMLAttribute(
+              id: 'SA1',
               name: 'major',
               visibility: UMLVisibility.public,
               dataType: UMLDataType.string(),
@@ -86,14 +89,17 @@ void main() {
           ],
           operations: [
             UMLOperation(
+              id: 'SO1',
               name: 'study',
               visibility: UMLVisibility.protected,
               parameters: [
                 UMLOperationParameter(
+                  id: 'SOP1',
                   name: 'subject',
                   type: UMLDataType.string(),
                 ),
                 UMLOperationParameter(
+                  id: 'SOP2',
                   name: 'hours',
                   type: UMLDataType.integer(),
                 )
@@ -107,16 +113,16 @@ void main() {
     <model version="1.0" uuid="M">
       <class id="P" x="0" y="0">
         <name>Person</name>
-        <attribute visibility="public" type="string">name</attribute>
-        <attribute visibility="private" type="integer">age</attribute>
+        <attribute id="PA1" visibility="public" type="string">name</attribute>
+        <attribute id="PA2" visibility="private" type="integer">age</attribute>
       </class>
       <class id="S" x="0" y="100">
         <name>Student</name>
-        <attribute visibility="public" type="string">major</attribute>
-        <operation visibility="protected" returnType="void">
+        <attribute id="SA1" visibility="public" type="string">major</attribute>
+        <operation id="SO1" visibility="protected" returnType="void">
           <name>study</name>
-          <param type="string">subject</param>
-          <param type="integer">hours</param>
+          <param id="SOP1" type="string">subject</param>
+          <param id="SOP2" type="integer">hours</param>
         </operation>
       </class>
     </model>

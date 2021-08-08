@@ -3,20 +3,24 @@ import 'dart:collection';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:either_dart/either.dart';
+import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 class UMLOperation {
+  final String id;
   String _name;
   UMLVisibility _visibility;
   UMLDataType _returnType;
   List<UMLOperationParameter> _parameters;
 
   UMLOperation(
-      {name = '',
+      {String? id,
+      name = '',
       visibility = UMLVisibility.public,
       UMLDataType? returnType,
       List<UMLOperationParameter>? parameters})
-      : _name = name,
+      : id = id ?? Uuid().v4(),
+        _name = name,
         _visibility = visibility,
         _returnType = returnType ?? UMLDataType.voidType(),
         _parameters = parameters ?? [];
@@ -57,16 +61,21 @@ class UMLOperation {
     final returnType = 'returnType="${_returnType.xmlRepresentation}"';
     final name = '<$_nameTag>' + _name + '</$_nameTag>';
     final params = _parameters.map((param) => param.xmlRepresentation).join();
-    return '<$_xmlTag $visibility $returnType>' + name + params + '</$_xmlTag>';
+    return '<$_xmlTag id="$id" $visibility $returnType>' +
+        name +
+        params +
+        '</$_xmlTag>';
   }
 }
 
 class UMLOperationParameter {
+  final String id;
   String _name;
   UMLDataType _type;
 
-  UMLOperationParameter({name = '', UMLDataType? type})
-      : _name = name,
+  UMLOperationParameter({String? id, name = '', UMLDataType? type})
+      : id = id ?? Uuid().v4(),
+        _name = name,
         _type = type ?? UMLDataType(Left(UMLPrimitiveType.string));
 
   static UMLOperationParameter fromXml(XmlElement element) {
@@ -85,5 +94,7 @@ class UMLOperationParameter {
 
   static const _xmlTag = 'param';
   String get xmlRepresentation =>
-      '<$_xmlTag type="${_type.xmlRepresentation}">' + _name + '</$_xmlTag>';
+      '<$_xmlTag id="$id" type="${_type.xmlRepresentation}">' +
+      _name +
+      '</$_xmlTag>';
 }

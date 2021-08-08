@@ -1,6 +1,5 @@
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_visibility.dart';
-import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
@@ -46,7 +45,7 @@ class UMLAttribute {
   String get xmlRepresentation {
     final visibility = 'visibility="${_visibility.xmlRepresentation}"';
     final type = 'type="${_dataType.xmlRepresentation}"';
-    return '<$_xmlTag $visibility $type>' + _name + '</$_xmlTag>';
+    return '<$_xmlTag id="$id" $visibility $type>' + _name + '</$_xmlTag>';
   }
 
   @override
