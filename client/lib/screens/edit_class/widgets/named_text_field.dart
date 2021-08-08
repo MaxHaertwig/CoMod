@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+typedef OnChangedFunction = void Function(String);
+
 class NamedTextField extends StatefulWidget {
   final String name, initialValue;
   final bool autofocus;
-  final Function(String)? onChanged;
+  final OnChangedFunction? onChanged;
 
   NamedTextField(this.name,
       {this.initialValue = '', this.autofocus = false, this.onChanged});

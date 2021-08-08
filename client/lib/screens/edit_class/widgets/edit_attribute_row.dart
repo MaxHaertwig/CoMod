@@ -9,6 +9,8 @@ import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+typedef EditAttributeFunction = void Function(UMLAttribute);
+
 class EditAttributeRow extends StatefulWidget {
   final UMLClass _umlClass;
   final UMLAttribute _attribute;
@@ -86,8 +88,7 @@ class _EditAttributeRowState extends State<EditAttributeRow> {
         ),
       );
 
-  void _editAttribute(
-      BuildContext context, Function(UMLAttribute attribute) f) {
+  void _editAttribute(BuildContext context, EditAttributeFunction f) {
     f(widget._attribute);
     Provider.of<Model>(context, listen: false).didChange();
   }

@@ -56,9 +56,8 @@ class _EditModelScreenState extends State<EditModelScreen> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: _validateName,
                   onChanged: (value) {
-                    setState(() {
-                      _isValid = _formKey.currentState?.validate() == true;
-                    });
+                    setState(() =>
+                        _isValid = _formKey.currentState?.validate() == true);
                   },
                 ),
               ],

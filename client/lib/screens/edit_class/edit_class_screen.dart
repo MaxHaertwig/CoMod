@@ -7,6 +7,8 @@ import 'package:client/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+typedef EditClassFunction = void Function(UMLClass);
+
 class EditClassScreen extends StatelessWidget {
   final UMLClass _umlClass;
   final bool _isNewClass;
@@ -63,8 +65,10 @@ class EditClassScreen extends StatelessWidget {
                           ))
                       .toList(),
                   TextButton(
-                    child: const Text('Add attribute',
-                        textAlign: TextAlign.center),
+                    child: const Text(
+                      'Add attribute',
+                      textAlign: TextAlign.center,
+                    ),
                     onPressed: () => _editClass(
                       context,
                       (cls) => cls.addAttribute(UMLAttribute()),
@@ -76,8 +80,10 @@ class EditClassScreen extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextButton(
-                    child: const Text('Add operation',
-                        textAlign: TextAlign.center),
+                    child: const Text(
+                      'Add operation',
+                      textAlign: TextAlign.center,
+                    ),
                     onPressed: () {},
                   ),
                 ],
@@ -87,7 +93,7 @@ class EditClassScreen extends StatelessWidget {
         ),
       );
 
-  void _editClass(BuildContext context, Function(UMLClass cls) f) {
+  void _editClass(BuildContext context, EditClassFunction f) {
     final wasEmpty = _umlClass.isEmpty;
     f(_umlClass);
     final model = Provider.of<Model>(context, listen: false);

@@ -1,10 +1,12 @@
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:flutter/material.dart';
 
+typedef OnChangedFunction = void Function(UMLDataType);
+
 class DataTypeButton extends StatelessWidget {
   final UMLDataType dataType;
   final bool isReturnType;
-  final Function(UMLDataType)? onChanged;
+  final OnChangedFunction? onChanged;
 
   DataTypeButton(this.dataType, {this.isReturnType = false, this.onChanged});
 
@@ -28,7 +30,6 @@ class DataTypeButton extends StatelessWidget {
                   child: Text(v.stringRepresentation),
                 ))
             .toList(),
-        onSelected:
-            onChanged != null ? (UMLDataType dt) => onChanged!(dt) : null,
+        onSelected: onChanged,
       );
 }

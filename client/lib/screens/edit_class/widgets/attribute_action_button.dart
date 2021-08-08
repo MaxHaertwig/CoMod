@@ -23,6 +23,6 @@ class AttributeActionButton extends StatelessWidget {
           PopupMenuDivider(),
           MenuItem(Icons.delete, 'Delete', Right(0), isDestructive: true),
         ],
-        onSelected: (AttributeAction action) => onAction(action),
+        onSelected: onAction,
       );
 }

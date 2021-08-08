@@ -17,44 +17,39 @@ class _DocumentsScreenState extends State<ModelsScreen> {
   @override
   void initState() {
     super.initState();
-    Document.allDocuments().then((documents) {
-      setState(() {
-        _documents = documents;
-      });
-    });
+    Document.allDocuments()
+        .then((documents) => setState(() => _documents = documents));
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Models')),
-      body: _documents == null
-          ? Container()
-          : _documents!.isEmpty
-              ? NoDataView(
-                  'No Models',
-                  'It looks pretty empty here. Create a model to get started.',
-                  'Create Model',
-                  () => _newDocument(context))
-              : ListView(
-                  children: _documents!
-                      .map((document) => ModelRow(
-                            document.name,
-                            onTap: () => _openDocument(document, context),
-                            onAction: (action) =>
-                                _modelAction(context, document, action),
-                          ))
-                      .toList(),
-                ),
-      floatingActionButton: _documents?.isEmpty == true
-          ? null
-          : FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () =>
-                  _documents == null ? null : _newDocument(context),
-            ),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Models')),
+        body: _documents == null
+            ? Container()
+            : _documents!.isEmpty
+                ? NoDataView(
+                    'No Models',
+                    'It looks pretty empty here. Create a model to get started.',
+                    'Create Model',
+                    () => _newDocument(context))
+                : ListView(
+                    children: _documents!
+                        .map((document) => ModelRow(
+                              document.name,
+                              onTap: () => _openDocument(context, document),
+                              onAction: (action) =>
+                                  _modelAction(context, document, action),
+                            ))
+                        .toList(),
+                  ),
+        floatingActionButton: _documents?.isEmpty == true
+            ? null
+            : FloatingActionButton(
+                child: const Icon(Icons.add),
+                onPressed: () =>
+                    _documents == null ? null : _newDocument(context),
+              ),
+      );
 
   void _newDocument(BuildContext context) async {
     final document = await _editDocument(context, null);
@@ -66,7 +61,7 @@ class _DocumentsScreenState extends State<ModelsScreen> {
     }
   }
 
-  void _openDocument(Document document, BuildContext context) async {
+  void _openDocument(BuildContext context, Document document) async {
     final model = await Model.fromDocument(document);
     await Navigator.push(
       context,

@@ -32,7 +32,7 @@ class ModelRow extends StatelessWidget {
               isDestructive: true,
             ),
           ],
-          onSelected: (ModelRowAction action) => onAction(action),
+          onSelected: onAction,
         ),
         onTap: onTap,
       );

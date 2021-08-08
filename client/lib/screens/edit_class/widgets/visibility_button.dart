@@ -1,9 +1,11 @@
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:flutter/material.dart';
 
+typedef OnChangedFunction = void Function(UMLVisibility);
+
 class VisibilityButton extends StatelessWidget {
   final UMLVisibility visibility;
-  final Function(UMLVisibility)? onChanged;
+  final OnChangedFunction? onChanged;
 
   VisibilityButton(this.visibility, {this.onChanged});
 
@@ -27,7 +29,6 @@ class VisibilityButton extends StatelessWidget {
                   child: Text(v.longStringRepresentation),
                 ))
             .toList(),
-        onSelected:
-            onChanged != null ? (UMLVisibility v) => onChanged!(v) : null,
+        onSelected: onChanged,
       );
 }

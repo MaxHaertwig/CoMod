@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+typedef OnButtonPressedFunction = void Function();
+
 class NoDataView extends StatelessWidget {
   final String title;
   final String message;
   final String buttonText;
-  final Function() onButtonPressed;
+  final OnButtonPressedFunction onButtonPressed;
 
   NoDataView(this.title, this.message, this.buttonText, this.onButtonPressed);
 

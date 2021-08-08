@@ -7,11 +7,9 @@ void main() {
 
 class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Client',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: ModelsScreen(),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+        title: 'Client',
+        theme: ThemeData(primarySwatch: Colors.blue),
+        home: ModelsScreen(),
+      );
 }

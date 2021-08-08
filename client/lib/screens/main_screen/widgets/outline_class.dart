@@ -21,8 +21,10 @@ class OutlineClass extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
-                  child: Text(umlClass.name,
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(
+                    umlClass.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
                 const Divider(color: Colors.grey),
                 if (umlClass.attributes.isEmpty)
