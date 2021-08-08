@@ -6,16 +6,25 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 
 class Model extends ChangeNotifier {
+  final String path;
   String name;
-  UMLModel umlModel;
+  final UMLModel umlModel;
 
-  Model(this.name, this.umlModel);
+  Model(this.path, this.name, [UMLModel? umlModel])
+      : umlModel = umlModel ?? UMLModel();
 
   static Future<Model> fromDocument(Document document) async {
     final xml = await File(document.path).readAsString();
     final root = XmlDocument.parse(xml).rootElement;
-    return Model(document.name, UMLModel.fromXml(root));
+    return Model(document.path, document.name, UMLModel.fromXml(root));
   }
 
-  notify() => notifyListeners();
+  Future save() async {
+    await File(path).writeAsString(umlModel.xmlRepresentation);
+  }
+
+  void didChange() {
+    notifyListeners();
+    save();
+  }
 }

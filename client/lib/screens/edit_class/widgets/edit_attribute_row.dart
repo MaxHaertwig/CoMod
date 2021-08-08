@@ -90,7 +90,7 @@ class _EditAttributeRowState extends State<EditAttributeRow> {
   void _editAttribute(
       BuildContext context, Function(UMLAttribute attribute) f) {
     f(widget._attribute);
-    Provider.of<Model>(context, listen: false).notify();
+    Provider.of<Model>(context, listen: false).didChange();
   }
 
   void _attributeAction(BuildContext context, Either<MoveType, int> action) {
@@ -99,6 +99,6 @@ class _EditAttributeRowState extends State<EditAttributeRow> {
     } else {
       widget._umlClass.removeAttribute(widget._attribute);
     }
-    Provider.of<Model>(context, listen: false).notify();
+    Provider.of<Model>(context, listen: false).didChange();
   }
 }

@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:client/model/uml/uml_model.dart';
+import 'package:client/model/model.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
 
 class Document {
   final String path;
@@ -22,9 +21,8 @@ class Document {
 
   static Future<Document> newDocument(String name) async {
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/$name.xml');
-    await file.writeAsString(
-        '<?xml version="1.0" encoding="UTF-8"?><model version="${UMLModel.currentVersion}" uuid="${Uuid().v4()}"></model>');
-    return Document(file.path);
+    final path = '${directory.path}/$name.xml';
+    await Model(path, name).save();
+    return Document(path);
   }
 }

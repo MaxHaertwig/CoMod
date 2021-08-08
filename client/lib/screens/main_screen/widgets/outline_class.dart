@@ -25,6 +25,11 @@ class OutlineClass extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 const Divider(color: Colors.grey),
+                if (umlClass.attributes.isEmpty)
+                  const Text(
+                    'No attributes',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ...umlClass.attributes.values
                     .map((attribute) =>
                         Text(attribute.stringRepresentation)) // TODO: monospace
