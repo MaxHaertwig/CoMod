@@ -21,4 +21,6 @@ extension UMLVisibilityExt on UMLVisibility {
 
   String get longStringRepresentation =>
       stringRepresentation + ' ' + describeEnum(this);
+
+  String get xmlRepresentation => describeEnum(this);
 }

@@ -1,5 +1,6 @@
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_visibility.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
@@ -38,8 +39,15 @@ class UMLAttribute {
   UMLDataType get dataType => _dataType;
   set dataType(UMLDataType dataType) => _dataType = dataType;
 
-  get stringRepresentation =>
+  String get stringRepresentation =>
       '${_visibility.stringRepresentation} ${_name.isEmpty ? '<name>' : _name}: ${_dataType.stringRepresentation}';
+
+  static const _xmlTag = 'attribute';
+  String get xmlRepresentation {
+    final visibility = 'visibility="${_visibility.xmlRepresentation}"';
+    final type = 'type="${_dataType.xmlRepresentation}"';
+    return '<$_xmlTag $visibility $type>' + _name + '</$_xmlTag>';
+  }
 
   @override
   String toString() => stringRepresentation;

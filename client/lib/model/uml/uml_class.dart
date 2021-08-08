@@ -65,6 +65,20 @@ class UMLClass {
   UnmodifiableListView<UMLOperation> get operations =>
       UnmodifiableListView(_operations);
 
+  static const _xmlTag = 'class';
+  static const _nameTag = 'name';
+  String get xmlRepresentation {
+    final name = '<$_nameTag>' + _name + '</$_nameTag>';
+    final attributes =
+        _attributes.values.map((attr) => attr.xmlRepresentation).join();
+    final operations = _operations.map((op) => op.xmlRepresentation).join();
+    return '<$_xmlTag id="$id" x="$_x" y="$_y">' +
+        name +
+        attributes +
+        operations +
+        '</$_xmlTag>';
+  }
+
   @override
   String toString() {
     final name = _name.isEmpty ? '<name>' : _name;

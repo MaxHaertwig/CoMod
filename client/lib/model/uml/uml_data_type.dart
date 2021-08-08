@@ -45,6 +45,9 @@ class UMLDataType {
           : describeEnum(type.left))
       : type.right;
 
+  // TODO: support custom types
+  String get xmlRepresentation => stringRepresentation;
+
   @override
   String toString() =>
       type.isLeft ? type.left.toString() : type.right.toString();

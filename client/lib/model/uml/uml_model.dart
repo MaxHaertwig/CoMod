@@ -33,4 +33,14 @@ class UMLModel {
       UnmodifiableMapView(_classes);
   void addClass(UMLClass umlClass) => _classes[umlClass.id] = umlClass;
   void removeClass(UMLClass umlClass) => _classes.remove(umlClass.id);
+
+  static const _xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>';
+  static const _xmlTag = 'model';
+  String get xmlRepresentation {
+    final classes = _classes.values.map((cls) => cls.xmlRepresentation).join();
+    return _xmlDeclaration +
+        '<$_xmlTag version="$currentVersion" uuid="$uuid">' +
+        classes +
+        '</$_xmlTag>';
+  }
 }

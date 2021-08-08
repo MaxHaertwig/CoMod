@@ -44,8 +44,21 @@ class UMLOperation {
   UnmodifiableListView<UMLOperationParameter> get parameters =>
       UnmodifiableListView(_parameters);
 
-  String get stringRepresentation =>
-      '${_visibility.stringRepresentation} $_name(${_parameters.map((arg) => arg.stringRepresentation).join(', ')}): ${_returnType.stringRepresentation}';
+  String get stringRepresentation {
+    final parameters =
+        _parameters.map((arg) => arg.stringRepresentation).join(', ');
+    return '${_visibility.stringRepresentation} $_name($parameters): ${_returnType.stringRepresentation}';
+  }
+
+  static const _xmlTag = 'operation';
+  static const _nameTag = 'name';
+  String get xmlRepresentation {
+    final visibility = 'visibility="${_visibility.xmlRepresentation}"';
+    final returnType = 'returnType="${_returnType.xmlRepresentation}"';
+    final name = '<$_nameTag>' + _name + '</$_nameTag>';
+    final params = _parameters.map((param) => param.xmlRepresentation).join();
+    return '<$_xmlTag $visibility $returnType>' + name + params + '</$_xmlTag>';
+  }
 }
 
 class UMLOperationParameter {
@@ -69,4 +82,8 @@ class UMLOperationParameter {
   UMLDataType get type => _type;
 
   String get stringRepresentation => '$_name: ${_type.stringRepresentation}';
+
+  static const _xmlTag = 'param';
+  String get xmlRepresentation =>
+      '<$_xmlTag type="${_type.xmlRepresentation}">' + _name + '</$_xmlTag>';
 }

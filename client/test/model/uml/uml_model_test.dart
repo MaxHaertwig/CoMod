@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:client/model/uml/uml_attribute.dart';
+import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_data_type.dart';
+import 'package:client/model/uml/uml_operation.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:either_dart/either.dart';
 import 'package:test/test.dart';
@@ -48,5 +51,79 @@ void main() {
         UMLDataType(Left(UMLPrimitiveType.string)));
     expect(studentStudy.parameters[1].type,
         UMLDataType(Left(UMLPrimitiveType.integer)));
+  });
+
+  test('UMLModel xmlRepresentation', () {
+    final umlModel = UMLModel(
+      uuid: 'M',
+      classes: [
+        UMLClass(
+          id: 'P',
+          name: 'Person',
+          attributes: [
+            UMLAttribute(
+              name: 'name',
+              visibility: UMLVisibility.public,
+              dataType: UMLDataType.string(),
+            ),
+            UMLAttribute(
+              name: 'age',
+              visibility: UMLVisibility.private,
+              dataType: UMLDataType.integer(),
+            ),
+          ],
+        ),
+        UMLClass(
+          id: 'S',
+          name: 'Student',
+          y: 100,
+          attributes: [
+            UMLAttribute(
+              name: 'major',
+              visibility: UMLVisibility.public,
+              dataType: UMLDataType.string(),
+            ),
+          ],
+          operations: [
+            UMLOperation(
+              name: 'study',
+              visibility: UMLVisibility.protected,
+              parameters: [
+                UMLOperationParameter(
+                  name: 'subject',
+                  type: UMLDataType.string(),
+                ),
+                UMLOperationParameter(
+                  name: 'hours',
+                  type: UMLDataType.integer(),
+                )
+              ],
+            )
+          ],
+        ),
+      ],
+    );
+    final xml = '''<?xml version="1.0" encoding="UTF-8"?>
+    <model version="1.0" uuid="M">
+      <class id="P" x="0" y="0">
+        <name>Person</name>
+        <attribute visibility="public" type="string">name</attribute>
+        <attribute visibility="private" type="integer">age</attribute>
+      </class>
+      <class id="S" x="0" y="100">
+        <name>Student</name>
+        <attribute visibility="public" type="string">major</attribute>
+        <operation visibility="protected" returnType="void">
+          <name>study</name>
+          <param type="string">subject</param>
+          <param type="integer">hours</param>
+        </operation>
+      </class>
+    </model>
+    '''
+        .split('\n')
+        .map((line) => line.trim())
+        .join();
+    expect(umlModel.xmlRepresentation, xml);
   });
 }
