@@ -4,13 +4,29 @@ import 'package:client/model/model.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Document {
-  final String path;
+  String _path;
+  bool isDeleted = false;
 
-  Document(this.path);
+  Document(this._path);
 
   String get name {
-    final fileName = path.split('/').last;
+    final fileName = _path.split('/').last;
     return fileName.substring(0, fileName.length - 4);
+  }
+
+  String get path => _path;
+
+  Future<void> rename(String newName) async {
+    assert(!isDeleted);
+    final parts = _path.split('/');
+    final newPath = parts.take(parts.length - 1).join('/') + '/$newName.xml';
+    await File(_path).rename(newPath);
+    _path = newPath;
+  }
+
+  Future<void> delete() async {
+    isDeleted = true;
+    await File(_path).delete();
   }
 
   static Future<List<Document>> allDocuments() async {
@@ -22,7 +38,7 @@ class Document {
   static Future<Document> newDocument(String name) async {
     final directory = await getApplicationDocumentsDirectory();
     final path = '${directory.path}/$name.xml';
-    await Model(path, name).save();
+    await Model(path).save();
     return Document(path);
   }
 }

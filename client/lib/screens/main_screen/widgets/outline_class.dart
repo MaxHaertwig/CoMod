@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 class OutlineClass extends StatelessWidget {
   final UMLClass _umlClass;
 
-  OutlineClass(this._umlClass);
+  OutlineClass(this._umlClass, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Selector<Model, UMLClass>(

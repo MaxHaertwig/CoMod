@@ -10,11 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class EditAttributeRow extends StatefulWidget {
-  final Key? key;
   final UMLClass _umlClass;
   final UMLAttribute _attribute;
 
-  EditAttributeRow(this._umlClass, this._attribute, {this.key})
+  EditAttributeRow(this._umlClass, this._attribute, {Key? key})
       : super(key: key);
 
   @override

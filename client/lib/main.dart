@@ -1,4 +1,4 @@
-import 'package:client/screens/models_screen.dart';
+import 'package:client/screens/models/models_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

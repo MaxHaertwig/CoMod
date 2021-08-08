@@ -1,7 +1,8 @@
 import 'package:client/model/document.dart';
 import 'package:client/model/model.dart';
 import 'package:client/screens/main_screen/main_screen.dart';
-import 'package:client/screens/new_model_screen.dart';
+import 'package:client/screens/models/widgets/model_row.dart';
+import 'package:client/screens/edit_model_screen.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
 
@@ -34,14 +35,14 @@ class _DocumentsScreenState extends State<ModelsScreen> {
                   'No Models',
                   'It looks pretty empty here. Create a model to get started.',
                   'Create Model',
-                  _newDocument)
+                  () => _newDocument(context))
               : ListView(
                   children: _documents!
-                      .map((document) => ListTile(
-                            title: Text(document.name),
-                            onTap: () {
-                              _openDocument(document, context);
-                            },
+                      .map((document) => ModelRow(
+                            document.name,
+                            onTap: () => _openDocument(document, context),
+                            onAction: (action) =>
+                                _modelAction(context, document, action),
                           ))
                       .toList(),
                 ),
@@ -49,18 +50,14 @@ class _DocumentsScreenState extends State<ModelsScreen> {
           ? null
           : FloatingActionButton(
               child: const Icon(Icons.add),
-              onPressed: _documents != null ? _newDocument : null,
+              onPressed: () =>
+                  _documents == null ? null : _newDocument(context),
             ),
     );
   }
 
-  void _newDocument() async {
-    final document = await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => NewModelScreen(
-              _documents!.map((document) => document.name).toSet())),
-    );
+  void _newDocument(BuildContext context) async {
+    final document = await _editDocument(context, null);
     if (document != null) {
       setState(() {
         _documents?.add(document);
@@ -71,9 +68,35 @@ class _DocumentsScreenState extends State<ModelsScreen> {
 
   void _openDocument(Document document, BuildContext context) async {
     final model = await Model.fromDocument(document);
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MainScreen(model)),
     );
   }
+
+  void _modelAction(
+      BuildContext context, Document document, ModelRowAction action) async {
+    switch (action) {
+      case ModelRowAction.rename:
+        await _editDocument(context, document);
+        setState(() => _documents?.sort((a, b) => a.name.compareTo(b.name)));
+        break;
+      case ModelRowAction.delete:
+        document.delete();
+        setState(() => _documents?.remove(document));
+        break;
+    }
+  }
+
+  Future<Document?> _editDocument(
+          BuildContext context, Document? document) async =>
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => EditModelScreen(
+            document,
+            existingNames: _documents!.map((document) => document.name).toSet(),
+          ),
+        ),
+      );
 }
