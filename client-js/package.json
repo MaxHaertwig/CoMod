@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "build": "npx tsc",
+    "lint": "npx eslint 'src/**/*'",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^3.19.0",
+    "yjs": "^13.5.12"
+  },
+  "devDependencies": {
+    "eslint": "^7.31.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "mocha": "^9.0.3"
+  }
+}

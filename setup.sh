@@ -10,13 +10,20 @@ fi
 
 echo "Setting up client..."
 
-# Protocol
+# Client-JS
 
 if ! command -v node &> /dev/null
 then
   echo "Please install Node.js: https://nodejs.dev"
   exit
 fi
+
+echo "Setting up client-js..."
+cd client-js
+npm install 1> /dev/null
+cd ..
+
+# Protocol
 
 if ! command -v protoc &> /dev/null
 then
