@@ -51,7 +51,7 @@ class UMLOperation {
   String get stringRepresentation {
     final parameters =
         _parameters.map((arg) => arg.stringRepresentation).join(', ');
-    return '${_visibility.stringRepresentation} $_name($parameters): ${_returnType.stringRepresentation}';
+    return '${_visibility.symbol} $_name($parameters): ${_returnType.stringRepresentation}';
   }
 
   static const _xmlTag = 'operation';

@@ -16,7 +16,7 @@ class VisibilityButton extends StatelessWidget {
           height: 48,
           child: Center(
             child: Text(
-              visibility.stringRepresentation,
+              visibility.symbol,
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 18, color: Colors.blue),
             ),
@@ -26,7 +26,7 @@ class VisibilityButton extends StatelessWidget {
         itemBuilder: (_) => UMLVisibility.values
             .map((v) => PopupMenuItem(
                   value: v,
-                  child: Text(v.longStringRepresentation),
+                  child: Text(v.stringRepresentation),
                 ))
             .toList(),
         onSelected: onChanged,

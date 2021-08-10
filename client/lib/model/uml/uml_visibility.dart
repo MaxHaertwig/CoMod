@@ -6,7 +6,7 @@ extension UMLVisibilityExt on UMLVisibility {
   static UMLVisibility fromString(String string) =>
       UMLVisibility.values.firstWhere((value) => describeEnum(value) == string);
 
-  String get stringRepresentation {
+  String get symbol {
     switch (this) {
       case UMLVisibility.public:
         return '+';
@@ -19,8 +19,7 @@ extension UMLVisibilityExt on UMLVisibility {
     }
   }
 
-  String get longStringRepresentation =>
-      stringRepresentation + ' ' + describeEnum(this);
+  String get stringRepresentation => symbol + ' ' + describeEnum(this);
 
   String get xmlRepresentation => describeEnum(this);
 }
