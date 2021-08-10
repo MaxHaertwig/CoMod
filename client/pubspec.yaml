@@ -12,6 +12,7 @@ dependencies:
   either_dart: ^0.1.2
   flutter:
     sdk: flutter
+  flutter_js: ^0.5.0+2
   path_provider: ^2.0.2
   protobuf: ^2.0.0
   provider: ^5.0.0
@@ -26,4 +27,6 @@ dev_dependencies:
   test: ^1.16.8
 
 flutter:
+  assets:
+    - assets/
   uses-material-design: true

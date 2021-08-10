@@ -11,11 +11,14 @@ class Model extends ChangeNotifier {
 
   Model(this._path, {UMLModel? umlModel}) : umlModel = umlModel ?? UMLModel();
 
-  static Future<Model> fromDocument(Document document) async {
-    final xml = await File(document.path).readAsString();
-    final root = XmlDocument.parse(xml).rootElement;
-    return Model(document.path, umlModel: UMLModel.fromXml(root));
-  }
+  Model.fromXML(String xml, String path)
+      : this(
+          path,
+          umlModel: UMLModel.fromXml(XmlDocument.parse(xml).rootElement),
+        );
+
+  static Future<Model> fromDocument(Document document) async =>
+      Model.fromXML(await document.readXML(), document.path);
 
   String get name {
     final fileName = _path.split('/').last;

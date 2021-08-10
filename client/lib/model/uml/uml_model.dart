@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:client/logic/js_bridge.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
@@ -31,8 +32,16 @@ class UMLModel {
 
   UnmodifiableMapView<String, UMLClass> get classes =>
       UnmodifiableMapView(_classes);
-  void addClass(UMLClass umlClass) => _classes[umlClass.id] = umlClass;
-  void removeClass(UMLClass umlClass) => _classes.remove(umlClass.id);
+
+  void addClass(UMLClass umlClass) {
+    _classes[umlClass.id] = umlClass;
+    JSBridge().insertElement(null, umlClass.id, UMLClass.xmlTag);
+  }
+
+  void removeClass(UMLClass umlClass) {
+    _classes.remove(umlClass.id);
+    JSBridge().deleteElement(umlClass.id);
+  }
 
   static const _xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>';
   static const _xmlTag = 'model';

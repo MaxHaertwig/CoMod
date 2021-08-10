@@ -16,6 +16,8 @@ class Document {
 
   String get path => _path;
 
+  Future<String> readXML() async => await File(_path).readAsString();
+
   Future<void> rename(String newName) async {
     assert(!isDeleted);
     final parts = _path.split('/');

@@ -1,3 +1,4 @@
+import 'package:client/logic/js_bridge.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:uuid/uuid.dart';
@@ -33,19 +34,36 @@ class UMLAttribute {
   set name(String name) => _name = name;
 
   UMLVisibility get visibility => _visibility;
-  set visibility(UMLVisibility visibility) => _visibility = visibility;
+  set visibility(UMLVisibility visibility) {
+    if (visibility != _visibility) {
+      _visibility = visibility;
+      JSBridge().updateAttribute(
+          id, _visibilityAttribute, visibility.xmlRepresentation);
+    }
+  }
 
   UMLDataType get dataType => _dataType;
-  set dataType(UMLDataType dataType) => _dataType = dataType;
+
+  set dataType(UMLDataType dataType) {
+    if (dataType != _dataType) {
+      _dataType = dataType;
+      JSBridge()
+          .updateAttribute(id, _typeAttribute, dataType.xmlRepresentation);
+    }
+  }
 
   String get stringRepresentation =>
-      '${_visibility.stringRepresentation} ${_name.isEmpty ? '<name>' : _name}: ${_dataType.stringRepresentation}';
+      '${_visibility.symbol} ${_name.isEmpty ? '<name>' : _name}: ${_dataType.stringRepresentation}';
 
-  static const _xmlTag = 'attribute';
+  static const xmlTag = 'attribute';
+  static const _visibilityAttribute = 'visibility';
+  static const _typeAttribute = 'type';
+
   String get xmlRepresentation {
-    final visibility = 'visibility="${_visibility.xmlRepresentation}"';
-    final type = 'type="${_dataType.xmlRepresentation}"';
-    return '<$_xmlTag id="$id" $visibility $type>' + _name + '</$_xmlTag>';
+    final visibility =
+        '$_visibilityAttribute="${_visibility.xmlRepresentation}"';
+    final type = '$_typeAttribute="${_dataType.xmlRepresentation}"';
+    return '<$xmlTag id="$id" $visibility $type>' + _name + '</$xmlTag>';
   }
 
   @override

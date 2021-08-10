@@ -1,3 +1,4 @@
+import 'package:client/logic/js_bridge.dart';
 import 'package:client/model/document.dart';
 import 'package:client/model/model.dart';
 import 'package:client/screens/main_screen/main_screen.dart';
@@ -62,7 +63,9 @@ class _DocumentsScreenState extends State<ModelsScreen> {
   }
 
   void _openDocument(BuildContext context, Document document) async {
-    final model = await Model.fromDocument(document);
+    final xml = await document.readXML();
+    final model = await Model.fromXML(xml, document.path);
+    await JSBridge().loadModel(xml);
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MainScreen(model)),

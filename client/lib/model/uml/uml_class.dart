@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:client/extensions.dart';
+import 'package:client/logic/js_bridge.dart';
 import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:collection/collection.dart';
@@ -55,28 +56,36 @@ class UMLClass {
 
   UnmodifiableMapView<String, UMLAttribute> get attributes =>
       UnmodifiableMapView(_attributes);
-  void addAttribute(UMLAttribute attribute) =>
-      _attributes[attribute.id] = attribute;
-  void removeAttribute(UMLAttribute attribute) =>
-      _attributes.remove(attribute.id);
+
+  void addAttribute(UMLAttribute attribute) {
+    _attributes[attribute.id] = attribute;
+    JSBridge().insertElement(id, attribute.id, UMLAttribute.xmlTag);
+  }
+
+  void removeAttribute(UMLAttribute attribute) {
+    _attributes.remove(attribute.id);
+    JSBridge().deleteElement(id);
+  }
+
   void moveAttribute(UMLAttribute attribute, MoveType moveType) =>
       _attributes.move(attribute.id, moveType);
 
   UnmodifiableListView<UMLOperation> get operations =>
       UnmodifiableListView(_operations);
 
-  static const _xmlTag = 'class';
+  static const xmlTag = 'class';
   static const _nameTag = 'name';
+
   String get xmlRepresentation {
     final name = '<$_nameTag>' + _name + '</$_nameTag>';
     final attributes =
         _attributes.values.map((attr) => attr.xmlRepresentation).join();
     final operations = _operations.map((op) => op.xmlRepresentation).join();
-    return '<$_xmlTag id="$id" x="$_x" y="$_y">' +
+    return '<$xmlTag id="$id" x="$_x" y="$_y">' +
         name +
         attributes +
         operations +
-        '</$_xmlTag>';
+        '</$xmlTag>';
   }
 
   @override
