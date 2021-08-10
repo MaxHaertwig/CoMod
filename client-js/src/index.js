@@ -23,13 +23,20 @@ function xmlToYjs(xml) {
   };
   const jsonObject = parser.parse(xml, options);
   const doc = new yjs.Doc();
-  const model = doc.getXmlFragment('uml');
-  model.push(jsonObject['model'][0].class.map(cls => xmlElementToYjsElement('class', cls)));
+  const model = jsonObject['model'][0];
+  const yjsModel = doc.getXmlFragment('uml');
+  if (model.class) {
+    yjsModel.push(model.class.map(cls => xmlElementToYjsElement('class', cls)));
+  }
   return doc;
 }
 
 function addToMapping(element) {
-  mapping[element.id] = element;
+  const id = element.getAttribute('id');
+  if (!id || id === '') {
+    throw `Element without id: ${element}`;
+  }
+  mapping.set(id, element);
   element.toArray()
     .filter(element => element instanceof yjs.XmlElement)
     .forEach(element => addToMapping(element));
@@ -46,16 +53,29 @@ function loadModel(xml) {
   activeModel.toArray().forEach(element => addToMapping(element));
 }
 
+function insertElement(parentID, id, nodeName) {
+  const element = new yjs.XmlElement(nodeName);
+  element.setAttribute('id', id);
+  mapping.set(id, element);
+  (parentID ? mapping.get(parentID) : activeModel).push([element]);
+}
+
+function deleteElement(id) {
+  const element = mapping.get(id);
+  element.parent.delete(element.parent.toArray().indexOf(element));
+  mapping.delete(id);
+}
+
 function updateAttribute(id, attribute, value) {
-  mapping[id].setAttribute(attribute, value);
+  mapping.get(id).setAttribute(attribute, value);
 }
 
 function updateTextInsert(id, index, text) {
-  mapping[id].get(0).insert(index, text);
+  mapping.get(id).get(0).insert(index, text);
 }
 
 function updateTextDelete(id, index, length) {
-  mapping[id].get(0).delete(index, length);
+  mapping.get(id).get(0).delete(index, length);
 }
 
-module.exports = { xmlToYjs, loadModel, updateAttribute, updateTextInsert, updateTextDelete };
+module.exports = { xmlToYjs, loadModel, insertElement, deleteElement, updateAttribute, updateTextInsert, updateTextDelete };

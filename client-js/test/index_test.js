@@ -19,7 +19,7 @@ function assertStructure(element, expectation) {
 }
 
 describe('index_test.js', () => {
-  const {xmlToYjs} = require('../src/index');
+  const { xmlToYjs } = require('../src/index');
 
   it('should convert an XML structure to a yjs tree', () => {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
