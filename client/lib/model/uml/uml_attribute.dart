@@ -5,6 +5,10 @@ import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 class UMLAttribute {
+  static const xmlTag = 'attribute';
+  static const _visibilityAttribute = 'visibility';
+  static const _typeAttribute = 'type';
+
   final String id;
   String _name;
   UMLVisibility _visibility;
@@ -54,10 +58,6 @@ class UMLAttribute {
 
   String get stringRepresentation =>
       '${_visibility.symbol} ${_name.isEmpty ? '<name>' : _name}: ${_dataType.stringRepresentation}';
-
-  static const xmlTag = 'attribute';
-  static const _visibilityAttribute = 'visibility';
-  static const _typeAttribute = 'type';
 
   String get xmlRepresentation {
     final visibility =

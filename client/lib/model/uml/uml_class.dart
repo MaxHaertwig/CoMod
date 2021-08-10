@@ -9,6 +9,9 @@ import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 class UMLClass {
+  static const xmlTag = 'class';
+  static const _nameTag = 'name';
+
   final String id;
   String _name;
   int _x, _y;
@@ -72,9 +75,6 @@ class UMLClass {
 
   UnmodifiableListView<UMLOperation> get operations =>
       UnmodifiableListView(_operations);
-
-  static const xmlTag = 'class';
-  static const _nameTag = 'name';
 
   String get xmlRepresentation {
     final name = '<$_nameTag>' + _name + '</$_nameTag>';

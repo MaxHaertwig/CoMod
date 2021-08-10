@@ -7,6 +7,11 @@ import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 class UMLOperation {
+  static const xmlTag = 'operation';
+  static const _nameTag = 'name';
+  static const _visibilityAttribute = 'visibility';
+  static const _returnTypeAttribute = 'returnType';
+
   final String id;
   String _name;
   UMLVisibility _visibility;
@@ -54,21 +59,23 @@ class UMLOperation {
     return '${_visibility.symbol} $_name($parameters): ${_returnType.stringRepresentation}';
   }
 
-  static const _xmlTag = 'operation';
-  static const _nameTag = 'name';
   String get xmlRepresentation {
-    final visibility = 'visibility="${_visibility.xmlRepresentation}"';
-    final returnType = 'returnType="${_returnType.xmlRepresentation}"';
+    final visibility =
+        '$_visibilityAttribute="${_visibility.xmlRepresentation}"';
+    final returnType =
+        '$_returnTypeAttribute="${_returnType.xmlRepresentation}"';
     final name = '<$_nameTag>' + _name + '</$_nameTag>';
     final params = _parameters.map((param) => param.xmlRepresentation).join();
-    return '<$_xmlTag id="$id" $visibility $returnType>' +
+    return '<$xmlTag id="$id" $visibility $returnType>' +
         name +
         params +
-        '</$_xmlTag>';
+        '</$xmlTag>';
   }
 }
 
 class UMLOperationParameter {
+  static const xmlTag = 'param';
+
   final String id;
   String _name;
   UMLDataType _type;
@@ -92,9 +99,8 @@ class UMLOperationParameter {
 
   String get stringRepresentation => '$_name: ${_type.stringRepresentation}';
 
-  static const _xmlTag = 'param';
   String get xmlRepresentation =>
-      '<$_xmlTag id="$id" type="${_type.xmlRepresentation}">' +
+      '<$xmlTag id="$id" type="${_type.xmlRepresentation}">' +
       _name +
-      '</$_xmlTag>';
+      '</$xmlTag>';
 }
