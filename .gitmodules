@@ -1,3 +1,0 @@
-[submodule "yjs-pack/yjs"]
-	path = yjs-pack/yjs
-	url = https://github.com/yjs/yjs

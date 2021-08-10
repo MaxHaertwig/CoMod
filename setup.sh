@@ -44,13 +44,4 @@ cd server
 npm install 1> /dev/null
 cd ..
 
-# Yjs-Pack
-
-echo "Setting up yjs-pack..."
-cd yjs-pack
-npm install 1> /dev/null
-cd yjs
-npm install 1> /dev/null
-cd ...
-
 echo "Done"
