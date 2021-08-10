@@ -35,7 +35,13 @@ class UMLAttribute {
   }
 
   String get name => _name;
-  set name(String name) => _name = name;
+
+  set name(String name) {
+    if (name != _name) {
+      JSBridge().updateText(id, _name, name);
+      _name = name;
+    }
+  }
 
   UMLVisibility get visibility => _visibility;
   set visibility(UMLVisibility visibility) {

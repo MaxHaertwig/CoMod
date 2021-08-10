@@ -53,9 +53,16 @@ function loadModel(xml) {
   activeModel.toArray().forEach(element => addToMapping(element));
 }
 
-function insertElement(parentID, id, nodeName) {
+function insertElement(parentID, id, nodeName, hasNameElement) {
   const element = new yjs.XmlElement(nodeName);
   element.setAttribute('id', id);
+  if (hasNameElement) {
+    const nameElement = new yjs.XmlElement('name');
+    nameElement.push([new yjs.Text()]);
+    element.push([nameElement]);
+  } else {
+    element.push([new yjs.Text()]);
+  }
   mapping.set(id, element);
   (parentID ? mapping.get(parentID) : activeModel).push([element]);
 }
@@ -66,16 +73,19 @@ function deleteElement(id) {
   mapping.delete(id);
 }
 
+// TODO: apply delta
+function updateText(id, name) {
+  const element = mapping.get(id);
+  let text = element.get(0);
+  if (text instanceof yjs.XmlElement) {
+    text = text.get(0);
+  }
+  text.delete(0, text.length);
+  text.insert(0, name);
+}
+
 function updateAttribute(id, attribute, value) {
   mapping.get(id).setAttribute(attribute, value);
 }
 
-function updateTextInsert(id, index, text) {
-  mapping.get(id).get(0).insert(index, text);
-}
-
-function updateTextDelete(id, index, length) {
-  mapping.get(id).get(0).delete(index, length);
-}
-
-module.exports = { xmlToYjs, loadModel, insertElement, deleteElement, updateAttribute, updateTextInsert, updateTextDelete };
+module.exports = { xmlToYjs, loadModel, insertElement, deleteElement, updateAttribute, updateText };

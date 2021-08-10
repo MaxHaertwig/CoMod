@@ -55,7 +55,13 @@ class UMLClass {
       _name.isEmpty && _attributes.isEmpty && _operations.isEmpty;
 
   String get name => _name;
-  void set name(String newName) => _name = newName;
+
+  void set name(String newName) {
+    if (newName != _name) {
+      JSBridge().updateText(id, _name, newName);
+      _name = newName;
+    }
+  }
 
   UnmodifiableMapView<String, UMLAttribute> get attributes =>
       UnmodifiableMapView(_attributes);
