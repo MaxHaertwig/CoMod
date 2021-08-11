@@ -1,5 +1,72 @@
 syntax = "proto3";
 
-message CollaborationMessage {
-    string message = 1;
+// Protocol for the communication between client (C) and server (S):
+//
+// Phase 1: connecting
+// ConnectRequest - C provides local state vector.
+// ConnectResponse - S provides update and its own state vector (if any).
+//
+// Phase 2: syncing
+// SyncDocumentRequest - C provides update (or entire document if it didn't
+//   receive a state vector).
+// SyncDocumentResponse - S confirms the update.
+//
+// Phase 3: connected
+// [repeated] CollaborationRequest with document_update
+
+// Sent from clients to the server.
+message CollaborationRequest {
+    oneof message {
+        ConnectRequest connect_request = 1;
+        SyncDocumentRequest sync_document_request = 2;
+        bytes document_update = 3;
+    }
+}
+
+// Sent by clients when connecting to a collaboration session. Server responds
+// with a ConnectResponse.
+message ConnectRequest {
+    // The model's unique identifier.
+    string uuid = 1;
+    // The client model's state vector.
+    bytes state_vector = 2;
+}
+
+// Sent by clients to provide the server with the data it needs to 
+message SyncDocumentRequest {
+    // The model's unique identifier;
+    string uuid = 1;
+    // A document update from the client.
+    bytes document_update = 2;
+}
+
+// Sent from the server to clients.
+message CollaborationResponse {
+    oneof message {
+        ConnectResponse connect_response = 1;
+        SyncDocumentResponse sync_document_response = 2;
+        bytes document_update = 3;
+    }
+}
+
+// Sent by the server in response to a ConnectRequest.
+message ConnectResponse {
+    enum Status {
+        OK = 0;
+        NOT_FOUND = 1;
+    }
+    Status status = 1;
+    // The server model's state vector.
+    bytes state_vector = 2;
+    // A document update from the server.
+    bytes document_update = 3;
+}
+
+// Sent by the server in response to a SyncDocumentRequest.
+message SyncDocumentResponse {
+    enum Status {
+        OK = 0;
+        NOT_FOUND = 1;
+    }
+    Status status = 1;
 }
