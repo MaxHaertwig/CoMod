@@ -1,3 +1,4 @@
+const { bytesToBase64 } = require('./base64');
 const parser = require('fast-xml-parser');
 const yjs = require('yjs');
 
@@ -42,12 +43,20 @@ function addToMapping(element) {
     .forEach(element => addToMapping(element));
 }
 
-var activeModel, mapping;
+var activeDoc, activeModel, mapping, onUpdateHandler;
 
 // Functions for client
 
 function loadModel(xml) {
-  const activeDoc = xmlToYjs(xml);
+  if (activeDoc) {
+    activeDoc.off('update', onUpdateHandler);
+  }
+
+  activeDoc = xmlToYjs(xml);
+  onUpdateHandler = data => {
+    sendMessage('DocUpdate', `"${bytesToBase64(data)}"`);
+  };
+  activeDoc.on('update', onUpdateHandler);
   activeModel = activeDoc.getXmlFragment('uml');
   mapping = new Map();
   activeModel.toArray().forEach(element => addToMapping(element));
@@ -80,8 +89,10 @@ function updateText(id, name) {
   if (text instanceof yjs.XmlElement) {
     text = text.get(0);
   }
-  text.delete(0, text.length);
-  text.insert(0, name);
+  activeDoc.transact(() => {
+    text.delete(0, text.length);
+    text.insert(0, name);
+  });
 }
 
 function updateAttribute(id, attribute, value) {
