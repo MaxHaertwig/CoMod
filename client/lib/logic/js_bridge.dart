@@ -24,10 +24,7 @@ class JSBridge {
             throw Exception('Error initializing JS runtime: $result');
           }
         }) {
-    if (!kReleaseMode) {
-      _jsRuntime.onMessage(
-          'ConsoleLog', (args) => print('[js] ConsoleLog: $args'));
-    }
+    _jsRuntime.onMessage('DocUpdate', (args) => print('[js] DocUpdate: $args'));
   }
 
   Future<void> loadModel(String xml) async {
