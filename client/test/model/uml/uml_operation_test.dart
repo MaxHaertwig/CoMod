@@ -1,5 +1,6 @@
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_operation.dart';
+import 'package:client/model/uml/uml_operation_parameter.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:test/test.dart';
 

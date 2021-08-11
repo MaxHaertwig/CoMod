@@ -104,14 +104,12 @@ class EditClassScreen extends StatelessWidget {
         model.umlModel.removeClass(_umlClass);
       }
     }
-    model.didChange();
   }
 
   void _deleteClass(BuildContext context) {
     if (!_umlClass.isEmpty) {
       final model = Provider.of<Model>(context, listen: false);
       model.umlModel.removeClass(_umlClass);
-      model.didChange();
     }
     Navigator.pop(context);
   }

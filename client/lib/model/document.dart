@@ -40,7 +40,7 @@ class Document {
   static Future<Document> newDocument(String name) async {
     final directory = await getApplicationDocumentsDirectory();
     final path = '${directory.path}/$name.xml';
-    await Model(path).save();
+    await Model(path: path).save();
     return Document(path);
   }
 }

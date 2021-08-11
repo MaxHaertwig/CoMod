@@ -49,10 +49,7 @@ class _EditAttributeRowState extends State<EditAttributeRow> {
             children: [
               VisibilityButton(
                 attribute.visibility,
-                onChanged: (v) => _editAttribute(
-                  context,
-                  (attribute) => attribute.visibility = v,
-                ),
+                onChanged: (v) => attribute.visibility = v,
               ),
               const SizedBox(width: 8),
               Flexible(
@@ -88,10 +85,8 @@ class _EditAttributeRowState extends State<EditAttributeRow> {
         ),
       );
 
-  void _editAttribute(BuildContext context, EditAttributeFunction f) {
-    f(widget._attribute);
-    Provider.of<Model>(context, listen: false).didChange();
-  }
+  void _editAttribute(BuildContext context, EditAttributeFunction f) =>
+      f(widget._attribute);
 
   void _attributeAction(BuildContext context, Either<MoveType, int> action) {
     if (action.isLeft) {
@@ -99,6 +94,5 @@ class _EditAttributeRowState extends State<EditAttributeRow> {
     } else {
       widget._umlClass.removeAttribute(widget._attribute);
     }
-    Provider.of<Model>(context, listen: false).didChange();
   }
 }

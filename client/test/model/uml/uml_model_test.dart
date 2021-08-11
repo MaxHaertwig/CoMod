@@ -4,6 +4,7 @@ import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_operation.dart';
+import 'package:client/model/uml/uml_operation_parameter.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:either_dart/either.dart';
 import 'package:test/test.dart';

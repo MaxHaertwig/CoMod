@@ -64,11 +64,15 @@ class _DocumentsScreenState extends State<ModelsScreen> {
 
   void _openDocument(BuildContext context, Document document) async {
     final xml = await document.readXML();
-    final model = await Model.fromXML(xml, document.path);
+    final model = await Model.fromXML(
+      xml,
+      path: document.path,
+      setUpJSBridge: true,
+    );
     await JSBridge().loadModel(xml);
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MainScreen(model)),
+      MaterialPageRoute(builder: (_) => MainScreen(model)),
     );
   }
 

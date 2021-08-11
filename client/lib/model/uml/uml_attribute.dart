@@ -1,4 +1,5 @@
-import 'package:client/logic/js_bridge.dart';
+import 'package:client/model/model.dart';
+import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:uuid/uuid.dart';
@@ -9,6 +10,7 @@ class UMLAttribute {
   static const _visibilityAttribute = 'visibility';
   static const _typeAttribute = 'type';
 
+  UMLClass? _umlClass;
   final String id;
   String _name;
   UMLVisibility _visibility;
@@ -34,12 +36,17 @@ class UMLAttribute {
     );
   }
 
+  set umlClass(UMLClass umlClass) => _umlClass = umlClass;
+
+  Model? get model => _umlClass?.model;
+
   String get name => _name;
 
   set name(String name) {
     if (name != _name) {
-      JSBridge().updateText(id, _name, name);
+      model?.jsBridge?.updateText(id, _name, name);
       _name = name;
+      model?.didChange();
     }
   }
 
@@ -47,8 +54,9 @@ class UMLAttribute {
   set visibility(UMLVisibility visibility) {
     if (visibility != _visibility) {
       _visibility = visibility;
-      JSBridge().updateAttribute(
+      model?.jsBridge?.updateAttribute(
           id, _visibilityAttribute, visibility.xmlRepresentation);
+      model?.didChange();
     }
   }
 
@@ -57,8 +65,9 @@ class UMLAttribute {
   set dataType(UMLDataType dataType) {
     if (dataType != _dataType) {
       _dataType = dataType;
-      JSBridge()
-          .updateAttribute(id, _typeAttribute, dataType.xmlRepresentation);
+      model?.jsBridge
+          ?.updateAttribute(id, _typeAttribute, dataType.xmlRepresentation);
+      model?.didChange();
     }
   }
 
