@@ -1,5 +1,6 @@
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_operation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_js/flutter_js.dart';
 
@@ -23,19 +24,22 @@ class JSBridge {
             throw Exception('Error initializing JS runtime: $result');
           }
         }) {
-    _jsRuntime.onMessage('ConsoleLog', (args) {
-      print('[js] ConsoleLog: $args');
-    });
+    if (!kReleaseMode) {
+      _jsRuntime.onMessage(
+          'ConsoleLog', (args) => print('[js] ConsoleLog: $args'));
+    }
   }
 
   Future<void> loadModel(String xml) async {
     await _ready;
     final code = 'client.loadModel(`$xml`);';
     final result = await _jsRuntime.evaluateAsync(code);
-    if (result.isError) {
-      print('[js] $code completed with $result');
-    } else {
-      print('[js] loadModel(...) ✓');
+    if (!kReleaseMode) {
+      if (result.isError) {
+        print('[js] $code completed with $result');
+      } else {
+        print('[js] loadModel(...) ✓');
+      }
     }
   }
 
@@ -61,12 +65,14 @@ class JSBridge {
   void updateAttribute(String id, String attribute, String value) =>
       _evaluate('client.updateAttribute("$id", "$attribute", "$value");');
 
-  void _evaluate(String code) {
-    final result = _jsRuntime.evaluate(code);
-    if (result.isError) {
-      print('[js] $code completed with $result');
-    } else {
-      print('[js] $code ✓');
+  void _evaluate(String code) async {
+    final result = await _jsRuntime.evaluateAsync(code);
+    if (!kReleaseMode) {
+      if (result.isError) {
+        print('[js] $code completed with $result');
+      } else {
+        print('[js] $code ✓');
+      }
     }
   }
 }
