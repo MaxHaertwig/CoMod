@@ -43,20 +43,19 @@ function addToMapping(element) {
     .forEach(element => addToMapping(element));
 }
 
-var activeDoc, activeModel, mapping, onUpdateHandler;
+var activeDoc, activeModel, mapping;
 
 // Functions for client
 
 function loadModel(xml) {
   if (activeDoc) {
-    activeDoc.off('update', onUpdateHandler);
+    activeDoc.destroy();
   }
 
   activeDoc = xmlToYjs(xml);
-  onUpdateHandler = data => {
+  activeDoc.on('update', data => {
     sendMessage('DocUpdate', `"${bytesToBase64(data)}"`);
-  };
-  activeDoc.on('update', onUpdateHandler);
+  });
   activeModel = activeDoc.getXmlFragment('uml');
   mapping = new Map();
   activeModel.toArray().forEach(element => addToMapping(element));
