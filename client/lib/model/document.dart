@@ -33,8 +33,12 @@ class Document {
 
   static Future<List<Document>> allDocuments() async {
     final directory = await getApplicationDocumentsDirectory();
-    return directory.listSync().map((file) => Document(file.path)).toList()
-      ..sort((a, b) => a.name.compareTo(b.name));
+    return directory
+        .listSync()
+        .where((file) => file.path.endsWith('.xml'))
+        .map((file) => Document(file.path))
+        .toList()
+          ..sort((a, b) => a.name.compareTo(b.name));
   }
 
   static Future<Document> newDocument(String name) async {
