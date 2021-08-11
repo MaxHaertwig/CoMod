@@ -1,19 +1,11 @@
-import * as Koa from 'koa';
-import * as websockify from 'koa-websocket';
+import * as WebSocket from 'ws';
 import { CollaborationRequest } from './pb/collaboration_pb';
 
-const wsOptions = {};
-const app = websockify(new Koa(), wsOptions);
+const server = new WebSocket.Server({ port: +process.env.PORT || 3000 });
 
-app.ws.use(ctx => {
-  ctx.websocket.binaryType = 'arraybuffer';
-  ctx.websocket.on('message', (buffer: Buffer) => {
-    const message = CollaborationRequest.deserializeBinary(buffer);
+server.on('connection', ws => {
+  ws.on('message', (data: Uint8Array) => {
+    const message = CollaborationRequest.deserializeBinary(data);
     console.log(`Received message: ${message}`);
   });
-});
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Running on port ${port}.`);
 });
