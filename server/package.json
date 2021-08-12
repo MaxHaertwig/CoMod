@@ -2,7 +2,8 @@
   "scripts": {
     "build": "npx tsc",
     "lint": "npx eslint 'src/**/*'",
-    "start": "npm run build 1> /dev/null && node dist/index.js"
+    "start": "npm run build 1> /dev/null && node dist/index.js",
+    "test": "mocha --exit -r ts-node/register test/*_test.ts"
   },
   "dependencies": {
     "google-protobuf": "^3.17.3",
@@ -12,12 +13,15 @@
   },
   "devDependencies": {
     "@types/google-protobuf": "^3.15.3",
+    "@types/mocha": "^9.0.0",
     "@types/node": "^16.3.3",
     "@types/uuid": "^8.3.1",
     "@types/ws": "^7.4.7",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
     "eslint": "^7.30.0",
+    "mocha": "^9.0.3",
+    "ts-node": "^10.2.0",
     "typescript": "^4.3.5"
   }
 }
