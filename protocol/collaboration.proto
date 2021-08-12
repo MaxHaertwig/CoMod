@@ -32,12 +32,12 @@ message ConnectRequest {
     bytes state_vector = 2;
 }
 
-// Sent by clients to provide the server with the data it needs to 
+// Sent by clients to provide the server with a document update (or its entire
+// content). Server responds with a SyncDocumentResponse.
 message SyncDocumentRequest {
-    // The model's unique identifier;
-    string uuid = 1;
-    // A document update from the client.
-    bytes document_update = 2;
+    // [optional] A document update from the client. Contains the entire
+    // document if the server didn't send a state vector.
+    bytes document_update = 1;
 }
 
 // Sent from the server to clients.
@@ -51,22 +51,11 @@ message CollaborationResponse {
 
 // Sent by the server in response to a ConnectRequest.
 message ConnectResponse {
-    enum Status {
-        OK = 0;
-        NOT_FOUND = 1;
-    }
-    Status status = 1;
-    // The server model's state vector.
-    bytes state_vector = 2;
-    // A document update from the server.
-    bytes document_update = 3;
+    // [optional] The server model's state vector.
+    bytes state_vector = 1;
+    // [optional] A document update from the server.
+    bytes document_update = 2;
 }
 
 // Sent by the server in response to a SyncDocumentRequest.
-message SyncDocumentResponse {
-    enum Status {
-        OK = 0;
-        NOT_FOUND = 1;
-    }
-    Status status = 1;
-}
+message SyncDocumentResponse {}
