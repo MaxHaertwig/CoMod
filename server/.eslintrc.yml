@@ -4,6 +4,7 @@ env:
   node: true
 extends:
   - eslint:recommended
+  - plugin:@typescript-eslint/recommended
 ignorePatterns:
   - src/pb
 parser: '@typescript-eslint/parser'
@@ -12,4 +13,5 @@ parserOptions:
 plugins:
   - '@typescript-eslint'
 rules:
+  '@typescript-eslint/no-non-null-assertion': off
   quotes: [1, 'single']

@@ -2,15 +2,18 @@
   "scripts": {
     "build": "npx tsc",
     "lint": "npx eslint 'src/**/*'",
-    "start": "npm run build && node dist/index.js"
+    "start": "npm run build 1> /dev/null && node dist/index.js"
   },
   "dependencies": {
     "google-protobuf": "^3.17.3",
-    "ws": "^7.5.3"
+    "uuid": "^8.3.2",
+    "ws": "^7.5.3",
+    "yjs": "^13.5.12"
   },
   "devDependencies": {
     "@types/google-protobuf": "^3.15.3",
     "@types/node": "^16.3.3",
+    "@types/uuid": "^8.3.1",
     "@types/ws": "^7.4.7",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",

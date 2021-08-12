@@ -1,12 +1,15 @@
 {
-    "compilerOptions": {
-      "allowJs": true,
-      "module": "commonjs",
-      "noImplicitAny": true,
-      "outDir": "./dist",
-      "removeComments": true,
-      "preserveConstEnums": true,
-      "sourceMap": true
-    },
-    "include": ["./src/**/*"]
+  "compilerOptions": {
+    "allowJs": true,
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "outDir": "./dist",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "./src/**/*"
+  ]
 }
