@@ -3,12 +3,17 @@ import * as WebSocket from 'ws';
 import * as yjs from 'yjs';
 import { CollaborationRequest, CollaborationResponse, ConnectRequest, ConnectResponse, SyncDocumentRequest, SyncDocumentResponse } from './pb/collaboration_pb';
 import { Session } from './session';
-import { SessionManager } from './session_manager';
+import { WSCloseCode } from './ws_close_code';
 
 export enum ClientState {
   Connecting = 1,
   Syncing,
   Connected
+}
+
+interface SessionManager {
+  session(uuid: string): Session | undefined;
+  addSession(uuid: string, session: Session): void;
 }
 
 export class Client {
@@ -26,51 +31,51 @@ export class Client {
   }
 
   send(response: CollaborationResponse): void {
-    this.ws.send(response.serializeBinary, error => {
-      console.log(`Sending response ${response} failed with error: ${error}`);
+    this.ws.send(response.serializeBinary(), error => {
+      if (error) {
+        console.log(`Sending response ${response} failed with error: ${error}`);
+      }
     });
+  }
+
+  close(code: WSCloseCode, reason: string): void {
+    this.remove();
+    this.ws.close(code, reason);
   }
 
   remove(): void {
     this.session?.removeParticipant(this.id);
-    if (this.ws.readyState === WebSocket.OPEN) {
-      this.ws.close();
-    }
   }
 
   handleRequest(request: CollaborationRequest): void {
     switch (this.state) {
-      case ClientState.Connecting:
-        if (!request.hasConnectRequest()) {
-          console.log('Connecting client did not receive ConnectRequest.');
-          this.remove();
-          return;
-        }
-        this.handleConnectRequest(request.getConnectRequest()!);
-        break;
-      case ClientState.Syncing:
-        if (!request.hasSyncDocumentRequest()) {
-          console.log('Syncing client did not receive SyncDocumentRequest.');
-          this.remove();
-          return;
-        }
-        this.handleSyncDocumentRequest(request.getSyncDocumentRequest()!);
-        break;
-      case ClientState.Connected:
-        if (!request.hasDocumentUpdate) {
-          console.log('Connected client did not receive document update.');
-          this.remove();
-          return;
-        }
-        this.handleDocumentUpdate(request.getDocumentUpdate_asU8());
-        break;
+    case ClientState.Connecting:
+      if (!request.hasConnectRequest()) {
+        this.close(WSCloseCode.ProtocolError, 'Connecting client did not receive ConnectRequest.');
+        return;
+      }
+      this.handleConnectRequest(request.getConnectRequest()!);
+      break;
+    case ClientState.Syncing:
+      if (!request.hasSyncDocumentRequest()) {
+        this.close(WSCloseCode.ProtocolError, 'Syncing client did not receive SyncDocumentRequest.');
+        return;
+      }
+      this.handleSyncDocumentRequest(request.getSyncDocumentRequest()!);
+      break;
+    case ClientState.Connected:
+      if (!request.hasDocumentUpdate()) {
+        this.close(WSCloseCode.ProtocolError, 'Connected client did not receive document update.');
+        return;
+      }
+      this.handleDocumentUpdate(request.getDocumentUpdate_asU8());
+      break;
     }
   }
 
   handleConnectRequest(request: ConnectRequest): void {
     if (!request.getUuid() || !request.getStateVector_asU8().length) {
-      console.log(`Received invalid ConnectRequest: ${request}`);
-      this.remove();
+      this.close(WSCloseCode.UnsuportedData, `Received invalid ConnectRequest: ${request}`);
       return;
     }
 
@@ -91,9 +96,8 @@ export class Client {
   }
 
   handleSyncDocumentRequest(request: SyncDocumentRequest): void {
-    if (!this.session && !request.getDocumentUpdate_asU8.length) {
-      console.log(`Received invalid SyncDocumentRequest: ${request}`);
-      this.remove();
+    if (!this.session && !request.getDocumentUpdate_asU8().length) {
+      this.close(WSCloseCode.UnsuportedData, `Received invalid SyncDocumentRequest: ${request}`);
       return;
     }
 
