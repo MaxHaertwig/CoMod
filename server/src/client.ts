@@ -98,9 +98,6 @@ export class Client {
       connectResponse.setDocumentUpdate(yjs.encodeStateAsUpdate(this.session.yDoc));
       this.session.addParticipant(this);
       this.state = ClientState.Connected;
-    } else {
-      // Session not found
-      connectResponse.setStatus(ConnectResponse.Status.NOT_FOUND);
     }
 
     const response = new CollaborationResponse();

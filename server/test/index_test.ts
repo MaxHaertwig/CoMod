@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import { describe, it } from 'mocha';
 import { v4 as uuidv4 } from 'uuid';
 import * as yjs from 'yjs';
-import { CollaborationRequest, ConnectRequest, ConnectResponse, SyncDocumentRequest } from '../src/pb/collaboration_pb';
+import { CollaborationRequest, ConnectRequest, SyncDocumentRequest } from '../src/pb/collaboration_pb';
 import { Server } from '../src/server';
 import { Session } from '../src/session';
 import { WSCloseCode } from '../src/ws_close_code';
@@ -31,18 +31,6 @@ describe('Server', () => {
           ws.send(request.serializeBinary());
         });
         assert.strictEqual(code, WSCloseCode.UnsuportedData);
-      });
-
-      it('returns status NOT_FOUND when receiving no state vector for an unknown document', async () => {
-        await testWebSocket(ws => {
-          const request = new CollaborationRequest();
-          request.setConnectRequest(new ConnectRequest());
-          ws.send(request.serializeBinary());
-        }, (ws, response) => {
-          assert(response.hasConnectResponse());
-          assert.strictEqual(response.getConnectResponse()!.getStatus(), ConnectResponse.Status.NOT_FOUND);
-          ws.close();
-        });
       });
 
       it('closes when receiving SyncDocumentRequest', async () => {

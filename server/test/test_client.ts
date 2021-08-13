@@ -53,9 +53,6 @@ export class TestClient {
   }
 
   private handleConnectResponse(response: ConnectResponse): void {
-    if (response.getStatus() === ConnectResponse.Status.NOT_FOUND) {
-      return;
-    }
     if (this._yDoc) {
       yjs.applyUpdate(this._yDoc, response.getDocumentUpdate_asU8());
       this.state = ClientState.Syncing;
@@ -65,7 +62,7 @@ export class TestClient {
       const request = new CollaborationRequest();
       request.setSyncDocumentRequest(syncDocumentRequest);
       this.send(request);
-    } else {
+    } else if (response.getDocumentUpdate_asU8().length) {
       this._yDoc = new yjs.Doc();
       yjs.applyUpdate(this._yDoc!, response.getDocumentUpdate_asU8());
       this.state = ClientState.Connected;
