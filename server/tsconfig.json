@@ -2,7 +2,11 @@
   "compilerOptions": {
     "allowJs": true,
     "module": "commonjs",
-    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "outDir": "./dist",
     "removeComments": true,
     "preserveConstEnums": true,
