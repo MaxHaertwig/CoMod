@@ -1,6 +1,21 @@
-import { CollaborationRequest, ConnectRequest, SyncDocumentRequest } from '../src/pb/collaboration_pb';
 import { v4 as uuidv4 } from 'uuid';
+import * as WebSocket from 'ws';
 import * as yjs from 'yjs';
+import { CollaborationRequest, ConnectRequest, SyncDocumentRequest } from '../src/pb/collaboration_pb';
+import { WSCloseCode } from '../src/ws_close_code';
+
+export const PORT = 3000;
+
+export async function testWebSocket(onOpen: (ws: WebSocket) => void, onMessage?: (ws: WebSocket, data: Uint8Array) => void): Promise<WSCloseCode> {
+  return new Promise(resolve => {
+    const ws = new WebSocket(`ws://localhost:${PORT}`);
+    ws.on('open', () => onOpen(ws));
+    if (onMessage) {
+      ws.on('message', data => onMessage(ws, data as Uint8Array));
+    }
+    ws.on('close', resolve);
+  });
+}
 
 export function createConnectRequest(uuid?: string): CollaborationRequest {
   const connectRequest = new ConnectRequest();

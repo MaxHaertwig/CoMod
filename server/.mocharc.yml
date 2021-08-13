@@ -1,0 +1,3 @@
+file: 
+  - 'test/index_test.ts'
+require: ts-node/register
