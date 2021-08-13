@@ -13,6 +13,7 @@ parserOptions:
 plugins:
   - '@typescript-eslint'
 rules:
-  indent: ['error', 2]
-  quotes: [1, 'single']
+  indent: ['warn', 2]
+  quotes: ['warn', 'single']
+  semi: ['warn', 'always']
   '@typescript-eslint/no-non-null-assertion': off
