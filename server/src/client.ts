@@ -68,31 +68,43 @@ export class Client {
         this.close(WSCloseCode.ProtocolError, 'Connected client did not receive document update.');
         return;
       }
-      this.handleDocumentUpdate(request.getDocumentUpdate_asU8());
+      this.session?.processDocumentUpdate(request.getDocumentUpdate_asU8(), this.id);
       break;
     }
   }
 
   handleConnectRequest(request: ConnectRequest): void {
-    if (!request.getUuid() || !request.getStateVector_asU8().length) {
-      this.close(WSCloseCode.UnsuportedData, `Received invalid ConnectRequest: ${request}`);
+    if (!request.getUuid()) {
+      this.close(WSCloseCode.UnsuportedData, 'Invalid ConnectRequest: missing uuid.');
       return;
     }
 
+    this.sessionUUID = request.getUuid();
+    
     const connectResponse = new ConnectResponse();
     const session = this.sessionManager.session(request.getUuid());
-    if (session) {
-      connectResponse.setStateVector(yjs.encodeStateVector(session.doc));
-      connectResponse.setDocumentUpdate(yjs.encodeStateAsUpdate(session.doc, request.getStateVector_asU8()));
-      this.session = session;
+
+    if (request.getStateVector_asU8().length) {
+      // Client has a version of the document -> syncing
+      if (session) {
+        connectResponse.setStateVector(yjs.encodeStateVector(session.yDoc));
+        connectResponse.setDocumentUpdate(yjs.encodeStateAsUpdate(session.yDoc, request.getStateVector_asU8()));
+        this.session = session;
+      }
+      this.state = ClientState.Syncing;
+    } else if (session) {
+      // Client doesn't yet have the document -> connected
+      connectResponse.setStateVector(yjs.encodeStateVector(session.yDoc));
+      connectResponse.setDocumentUpdate(yjs.encodeStateAsUpdate(session.yDoc));
+      this.state = ClientState.Connected;
+    } else {
+      // Session not found
+      connectResponse.setStatus(ConnectResponse.Status.NOT_FOUND);
     }
 
     const response = new CollaborationResponse();
     response.setConnectResponse(connectResponse);
     this.send(response);
-
-    this.state = ClientState.Syncing;
-    this.sessionUUID = request.getUuid();
   }
 
   handleSyncDocumentRequest(request: SyncDocumentRequest): void {
@@ -105,7 +117,7 @@ export class Client {
       this.session = new Session(request.getDocumentUpdate_asU8());
       this.sessionManager.addSession(this.sessionUUID!, this.session);
     } else if (request.getDocumentUpdate_asU8().length) {
-      yjs.applyUpdate(this.session.doc, request.getDocumentUpdate_asU8());
+      yjs.applyUpdate(this.session.yDoc, request.getDocumentUpdate_asU8());
     }
 
     const response = new CollaborationResponse();
@@ -113,11 +125,5 @@ export class Client {
     this.send(response);
 
     this.state = ClientState.Connected;
-  }
-
-  handleDocumentUpdate(documentUpdate: Uint8Array): void {
-    const response = new CollaborationResponse();
-    response.setDocumentUpdate(documentUpdate);
-    this.session?.broadcast(response, this.id);
   }
 }

@@ -3,10 +3,10 @@ syntax = "proto3";
 // Protocol for the communication between client (C) and server (S):
 //
 // Phase 1: connecting
-// ConnectRequest - C provides local state vector.
+// ConnectRequest - C provides local state vector (if any).
 // ConnectResponse - S provides update and its own state vector (if any).
 //
-// Phase 2: syncing
+// Phase 2: syncing (skipped if the client doesn't provide a state vector)
 // SyncDocumentRequest - C provides update (or entire document if it didn't
 //   receive a state vector).
 // SyncDocumentResponse - S confirms the update.
@@ -28,7 +28,7 @@ message CollaborationRequest {
 message ConnectRequest {
     // The model's unique identifier.
     string uuid = 1;
-    // The client model's state vector.
+    // [optional] The client model's state vector.
     bytes state_vector = 2;
 }
 
@@ -51,10 +51,18 @@ message CollaborationResponse {
 
 // Sent by the server in response to a ConnectRequest.
 message ConnectResponse {
+    enum Status {
+        OK = 0;
+        // Client didn't provide a state vector and the server doesn't know
+        // about the document.
+        NOT_FOUND = 1;
+    }
+    Status status = 1;
     // [optional] The server model's state vector.
-    bytes state_vector = 1;
-    // [optional] A document update from the server.
-    bytes document_update = 2;
+    bytes state_vector = 2;
+    // [optional] A document update from the server. Contains the entire
+    // document if the client didn't sent a state vector.
+    bytes document_update = 3;
 }
 
 // Sent by the server in response to a SyncDocumentRequest.

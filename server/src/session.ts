@@ -3,13 +3,13 @@ import { Client } from './client';
 import { CollaborationResponse } from './pb/collaboration_pb';
 
 export class Session {
-  readonly doc: yjs.Doc;
+  readonly yDoc: yjs.Doc;
 
   private participants = new Map<string, Client>();
 
   constructor(documentData: Uint8Array) {
-    this.doc = new yjs.Doc();
-    yjs.applyUpdate(this.doc, documentData);
+    this.yDoc = new yjs.Doc();
+    yjs.applyUpdate(this.yDoc, documentData);
   }
 
   addParticipant(client: Client): void {
@@ -20,7 +20,14 @@ export class Session {
     this.participants.delete(id);
   }
 
-  broadcast(response: CollaborationResponse, excludeID: string): void {
+  processDocumentUpdate(update: Uint8Array, fromParticipantID: string): void {
+    yjs.applyUpdate(this.yDoc, update);
+    const response = new CollaborationResponse();
+    response.setDocumentUpdate(update);
+    this.broadcast(response, fromParticipantID);
+  }
+
+  private broadcast(response: CollaborationResponse, excludeID: string): void {
     this.participants.forEach((participant, id) => {
       if (id !== excludeID) {
         participant.send(response);
