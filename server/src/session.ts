@@ -7,9 +7,13 @@ export class Session {
 
   private participants = new Map<string, Client>();
 
-  constructor(documentData: Uint8Array) {
-    this.yDoc = new yjs.Doc();
-    yjs.applyUpdate(this.yDoc, documentData);
+  constructor(document: yjs.Doc|Uint8Array) {
+    if (document instanceof yjs.Doc) {
+      this.yDoc = document;
+    } else {
+      this.yDoc = new yjs.Doc();
+      yjs.applyUpdate(this.yDoc, document);
+    }
   }
 
   addParticipant(client: Client): void {

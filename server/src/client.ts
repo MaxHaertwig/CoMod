@@ -68,7 +68,7 @@ export class Client {
         this.close(WSCloseCode.ProtocolError, 'Connected client did not receive document update.');
         return;
       }
-      this.session?.processDocumentUpdate(request.getDocumentUpdate_asU8(), this.id);
+      this.session!.processDocumentUpdate(request.getDocumentUpdate_asU8(), this.id);
       break;
     }
   }
@@ -82,20 +82,21 @@ export class Client {
     this.sessionUUID = request.getUuid();
     
     const connectResponse = new ConnectResponse();
-    const session = this.sessionManager.session(request.getUuid());
+    this.session = this.sessionManager.session(request.getUuid());
 
     if (request.getStateVector_asU8().length) {
       // Client has a version of the document -> syncing
-      if (session) {
-        connectResponse.setStateVector(yjs.encodeStateVector(session.yDoc));
-        connectResponse.setDocumentUpdate(yjs.encodeStateAsUpdate(session.yDoc, request.getStateVector_asU8()));
-        this.session = session;
+      if (this.session) {
+        connectResponse.setStateVector(yjs.encodeStateVector(this.session.yDoc));
+        connectResponse.setDocumentUpdate(yjs.encodeStateAsUpdate(this.session.yDoc, request.getStateVector_asU8()));
+        this.session.addParticipant(this);
       }
       this.state = ClientState.Syncing;
-    } else if (session) {
+    } else if (this.session) {
       // Client doesn't yet have the document -> connected
-      connectResponse.setStateVector(yjs.encodeStateVector(session.yDoc));
-      connectResponse.setDocumentUpdate(yjs.encodeStateAsUpdate(session.yDoc));
+      connectResponse.setStateVector(yjs.encodeStateVector(this.session.yDoc));
+      connectResponse.setDocumentUpdate(yjs.encodeStateAsUpdate(this.session.yDoc));
+      this.session.addParticipant(this);
       this.state = ClientState.Connected;
     } else {
       // Session not found
@@ -115,6 +116,7 @@ export class Client {
 
     if (!this.session) {
       this.session = new Session(request.getDocumentUpdate_asU8());
+      this.session.addParticipant(this);
       this.sessionManager.addSession(this.sessionUUID!, this.session);
     } else if (request.getDocumentUpdate_asU8().length) {
       yjs.applyUpdate(this.session.yDoc, request.getDocumentUpdate_asU8());

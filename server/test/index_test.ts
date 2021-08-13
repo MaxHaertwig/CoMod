@@ -1,10 +1,12 @@
 import * as assert from 'assert';
 import { describe, it } from 'mocha';
-import * as WebSocket from 'ws';
-import { CollaborationRequest, CollaborationResponse, ConnectRequest, ConnectResponse, SyncDocumentRequest } from '../src/pb/collaboration_pb';
+import { v4 as uuidv4 } from 'uuid';
+import * as yjs from 'yjs';
+import { CollaborationRequest, ConnectRequest, ConnectResponse, SyncDocumentRequest } from '../src/pb/collaboration_pb';
 import { Server } from '../src/server';
+import { Session } from '../src/session';
 import { WSCloseCode } from '../src/ws_close_code';
-import { createConnectRequest, createSyncDocumentRequest, PORT, testWebSocket } from './test_utils';
+import { createConnectRequest, createSyncDocumentRequest, createYDocWithText, openTestClient, PORT, testWebSocket, TEXT_ID, yDocUpdate } from './test_utils';
 
 describe('Server', () => {
   let server: Server;
@@ -36,8 +38,7 @@ describe('Server', () => {
           const request = new CollaborationRequest();
           request.setConnectRequest(new ConnectRequest());
           ws.send(request.serializeBinary());
-        }, (ws, data) => {
-          const response = CollaborationResponse.deserializeBinary(data);
+        }, (ws, response) => {
           assert(response.hasConnectResponse());
           assert.strictEqual(response.getConnectResponse()!.getStatus(), ConnectResponse.Status.NOT_FOUND);
           ws.close();
@@ -108,5 +109,54 @@ describe('Server', () => {
         assert.strictEqual(code, WSCloseCode.ProtocolError);
       });
     });
+  });
+
+  it('provides data of known documents', async () => {
+    const uuid = uuidv4();
+    const serverDoc = createYDocWithText();
+    server.addSession(uuid, new Session(serverDoc));
+    
+    await testWebSocket(ws => {
+      ws.send(createConnectRequest(uuid, false).serializeBinary());
+    }, (ws, response) => {
+      assert(response.hasConnectResponse());
+      const clientDoc = new yjs.Doc();
+      yjs.applyUpdate(clientDoc, response.getConnectResponse()!.getDocumentUpdate_asU8());
+      assert.strictEqual(clientDoc.getText(TEXT_ID).toString(), serverDoc.getText(TEXT_ID).toString());
+      ws.close();
+    });
+  });
+
+  it('processes and broadcasts document data', async () => {
+    const uuid = uuidv4();
+    const suffix = 'world';
+    server.addSession(uuid, new Session(createYDocWithText(suffix)));
+
+    const ws1 = await openTestClient();
+    await ws1.connect(uuid);
+
+    const ws2 = await openTestClient();
+    await ws2.connect(uuid);
+
+    const prefix = 'Hello ';
+    const update = await yDocUpdate(ws1.yDoc!, yDoc => {
+      yDoc.getText(TEXT_ID).insert(0, prefix);
+    });
+
+    const updateReceived = new Promise<void>(resolve => {
+      ws2.onResponse(response => {
+        if (response.hasDocumentUpdate()) {
+          assert.deepStrictEqual(response.getDocumentUpdate_asU8(), update);
+          resolve();
+        }
+      });
+    });
+    
+    const request = new CollaborationRequest();
+    request.setDocumentUpdate(update);
+    ws1.send(request);
+    await updateReceived;
+
+    assert.strictEqual(server.session(uuid)!.yDoc.getText(TEXT_ID).toString(), prefix + suffix);
   });
 });
