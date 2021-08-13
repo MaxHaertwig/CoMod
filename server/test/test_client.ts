@@ -10,6 +10,7 @@ enum ClientState {
 }
 
 type OnStateChangedListener = (newState: ClientState) => void;
+type OnYDocChangedListener = (yDoc: yjs.Doc) => void;
 
 export class TestClient {
   private ws: WebSocket;
@@ -20,6 +21,8 @@ export class TestClient {
     this.onStateChangedListeners.forEach(l => l(newState));
   }
   private onStateChangedListeners = new Array<OnStateChangedListener>();
+
+  private onYDocChangedListeners = new Array<OnYDocChangedListener>();
 
   private _yDoc?: yjs.Doc;
   get yDoc(): yjs.Doc|undefined {
@@ -47,6 +50,8 @@ export class TestClient {
         if (!response.hasDocumentUpdate()) {
           throw `Invalid response ${response} for state ${this._state}.`;
         }
+        yjs.applyUpdate(this._yDoc!, response.getDocumentUpdate_asU8());
+        this.onYDocChangedListeners.forEach(l => l(this._yDoc!));
         break;
       }
     });
@@ -117,5 +122,9 @@ export class TestClient {
 
   onStateChanged(listener: OnStateChangedListener): void {
     this.onStateChangedListeners.push(listener);
+  }
+
+  onYDocChanged(listener: OnYDocChangedListener): void {
+    this.onYDocChangedListeners.push(listener);
   }
 }

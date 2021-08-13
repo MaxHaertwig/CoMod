@@ -126,25 +126,18 @@ describe('Server', () => {
     const ws2 = await openTestClient();
     await ws2.connect(uuid);
 
-    const prefix = 'Hello ';
-    const update = await yDocUpdate(ws1.yDoc!, yDoc => {
-      yDoc.getText(TEXT_ID).insert(0, prefix);
-    });
-
-    const updateReceived = new Promise<void>(resolve => {
-      ws2.onResponse(response => {
-        if (response.hasDocumentUpdate()) {
-          assert.deepStrictEqual(response.getDocumentUpdate_asU8(), update);
-          resolve();
-        }
-      });
-    });
+    const changedDocPromise = new Promise<yjs.Doc>(resolve => ws2.onYDocChanged(resolve));
     
+    const prefix = 'Hello ';
+    const update = await yDocUpdate(ws1.yDoc!, yDoc => yDoc.getText(TEXT_ID).insert(0, prefix));
+
     const request = new CollaborationRequest();
     request.setDocumentUpdate(update);
     ws1.send(request);
-    await updateReceived;
+    
+    const changedDoc = await changedDocPromise;
 
+    assert.strictEqual(changedDoc.getText(TEXT_ID).toString(), prefix + suffix);
     assert.strictEqual(server.session(uuid)!.yDoc.getText(TEXT_ID).toString(), prefix + suffix);
   });
 });
