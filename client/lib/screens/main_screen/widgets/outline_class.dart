@@ -36,9 +36,9 @@ class OutlineClass extends StatelessWidget {
                     .map((attribute) =>
                         Text(attribute.stringRepresentation)) // TODO: monospace
                     .toList(),
-                if (!umlClass.operations.isEmpty)
+                if (umlClass.operations.isNotEmpty)
                   const Divider(color: Colors.grey),
-                if (!umlClass.operations.isEmpty)
+                if (umlClass.operations.isNotEmpty)
                   ...umlClass.operations
                       .map((operation) => Text(
                           operation.stringRepresentation)) // TODO: monospace

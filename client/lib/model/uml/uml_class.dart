@@ -13,7 +13,7 @@ class UMLClass {
   static const xmlTag = 'class';
   static const _nameTag = 'name';
 
-  UMLModel? _umlModel = null;
+  UMLModel? _umlModel;
   final String id;
   String _name;
   int _x, _y;
@@ -63,7 +63,7 @@ class UMLClass {
 
   String get name => _name;
 
-  void set name(String newName) {
+  set name(String newName) {
     if (newName != _name) {
       model?.jsBridge.updateText(id, _name, newName);
       _name = newName;

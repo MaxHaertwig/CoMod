@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:client/logic/js_bridge.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:uuid/uuid.dart';

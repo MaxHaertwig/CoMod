@@ -69,6 +69,7 @@ class EditClassScreen extends StatelessWidget {
                       'Add attribute',
                       textAlign: TextAlign.center,
                     ),
+                    // TODO: focus new text field
                     onPressed: () => _editClass(
                       context,
                       (cls) => cls.addAttribute(UMLAttribute()),

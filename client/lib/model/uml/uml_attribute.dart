@@ -2,6 +2,7 @@ import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_visibility.dart';
+import 'package:quiver/core.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
@@ -83,6 +84,9 @@ class UMLAttribute {
 
   @override
   String toString() => stringRepresentation;
+
+  @override
+  int get hashCode => hash3(_name, _visibility, _dataType);
 
   @override
   bool operator ==(other) =>
