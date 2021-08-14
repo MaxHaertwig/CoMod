@@ -65,9 +65,9 @@ class UMLClass {
 
   set name(String newName) {
     if (newName != _name) {
-      model?.jsBridge.updateText(id, _name, newName);
+      final oldName = _name;
       _name = newName;
-      model?.didChange();
+      model?.updateText(id, oldName, newName);
     }
   }
 
@@ -77,17 +77,16 @@ class UMLClass {
   void addAttribute(UMLAttribute attribute) {
     attribute.umlClass = this;
     _attributes[attribute.id] = attribute;
-    model?.jsBridge.insertElement(id, attribute.id, UMLAttribute.xmlTag);
-    model?.didChange();
+    model?.insertElement(id, attribute.id, UMLAttribute.xmlTag);
   }
 
   void removeAttribute(UMLAttribute attribute) {
     _attributes.remove(attribute.id);
-    model?.jsBridge.deleteElement(id);
-    model?.didChange();
+    model?.deleteElement(id);
   }
 
   void moveAttribute(UMLAttribute attribute, MoveType moveType) {
+    // TODO: replicate in yjs
     _attributes.move(attribute.id, moveType);
     model?.didChange();
   }

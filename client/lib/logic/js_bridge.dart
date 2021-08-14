@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:client/logic/models_manager.dart';
-import 'package:client/model/uml/uml_class.dart';
-import 'package:client/model/uml/uml_operation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_js/flutter_js.dart';
@@ -63,17 +61,10 @@ class JSBridge {
     return _loadedModelXml!;
   }
 
-  static const _elementsWithNameElement = {
-    UMLClass.xmlTag,
-    UMLOperation.xmlTag
-  };
-
-  void insertElement(String parentID, String id, String nodeName) {
-    final hasNameElement =
-        _elementsWithNameElement.contains(nodeName) ? 'true' : 'false';
-    _evaluate(
-        'client.insertElement("$parentID", "$id", "$nodeName", $hasNameElement);');
-  }
+  void insertElement(
+          String parentID, String id, String nodeName, bool hasNameElement) =>
+      _evaluate(
+          'client.insertElement("$parentID", "$id", "$nodeName", ${hasNameElement ? "true" : "false"});');
 
   void deleteElement(String id) => _evaluate('client.deleteElement("$id");');
 

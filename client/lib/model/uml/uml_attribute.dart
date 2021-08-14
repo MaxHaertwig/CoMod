@@ -45,9 +45,9 @@ class UMLAttribute {
 
   set name(String name) {
     if (name != _name) {
-      model?.jsBridge.updateText(id, _name, name);
+      final oldName = _name;
       _name = name;
-      model?.didChange();
+      model?.updateText(id, oldName, name);
     }
   }
 
@@ -55,9 +55,8 @@ class UMLAttribute {
   set visibility(UMLVisibility visibility) {
     if (visibility != _visibility) {
       _visibility = visibility;
-      model?.jsBridge.updateAttribute(
+      model?.updateAttribute(
           id, _visibilityAttribute, visibility.xmlRepresentation);
-      model?.didChange();
     }
   }
 
@@ -66,9 +65,7 @@ class UMLAttribute {
   set dataType(UMLDataType dataType) {
     if (dataType != _dataType) {
       _dataType = dataType;
-      model?.jsBridge
-          .updateAttribute(id, _typeAttribute, dataType.xmlRepresentation);
-      model?.didChange();
+      model?.updateAttribute(id, _typeAttribute, dataType.xmlRepresentation);
     }
   }
 

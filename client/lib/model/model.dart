@@ -2,14 +2,16 @@ import 'dart:io';
 
 import 'package:client/logic/js_bridge.dart';
 import 'package:client/logic/models_manager.dart';
+import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_model.dart';
+import 'package:client/model/uml/uml_operation.dart';
 import 'package:flutter/material.dart';
 
 class Model extends ChangeNotifier {
-  // TODO: make private and expose functions
-  final jsBridge = JSBridge();
   final String path;
   late final UMLModel umlModel;
+
+  final _jsBridge = JSBridge();
 
   String _name;
   bool _hasModel = false;
@@ -47,7 +49,32 @@ class Model extends ChangeNotifier {
     await File(path).delete();
   }
 
-  void didChange() {
+  static const _elementsWithNameElement = {
+    UMLClass.xmlTag,
+    UMLOperation.xmlTag
+  };
+
+  void insertElement(String parentID, String id, String nodeName) {
+    _jsBridge.insertElement(
+        parentID, id, nodeName, _elementsWithNameElement.contains(nodeName));
     notifyListeners();
   }
+
+  void deleteElement(String id) {
+    _jsBridge.deleteElement(id);
+    notifyListeners();
+  }
+
+  // TODO: apply delta
+  void updateText(String id, String oldText, String newText) {
+    _jsBridge.updateText(id, oldText, newText);
+    notifyListeners();
+  }
+
+  void updateAttribute(String id, String attribute, String value) {
+    _jsBridge.updateAttribute(id, attribute, value);
+    notifyListeners();
+  }
+
+  void didChange() => notifyListeners();
 }

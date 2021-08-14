@@ -44,14 +44,12 @@ class UMLModel {
   void addClass(UMLClass umlClass) {
     umlClass.umlModel = this;
     _classes[umlClass.id] = umlClass;
-    _model?.jsBridge.insertElement(_model!.uuid, umlClass.id, UMLClass.xmlTag);
-    _model?.didChange();
+    _model?.insertElement(_model!.uuid, umlClass.id, UMLClass.xmlTag);
   }
 
   void removeClass(UMLClass umlClass) {
     _classes.remove(umlClass.id);
-    _model?.jsBridge.deleteElement(umlClass.id);
-    _model?.didChange();
+    _model?.deleteElement(umlClass.id);
   }
 
   String get xmlRepresentation {
