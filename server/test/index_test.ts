@@ -2,11 +2,11 @@ import * as assert from 'assert';
 import { describe, it } from 'mocha';
 import { v4 as uuidv4 } from 'uuid';
 import * as yjs from 'yjs';
-import { CollaborationRequest, ConnectRequest, SyncDocumentRequest } from '../src/pb/collaboration_pb';
+import { CollaborationRequest, ConnectRequest, SyncRequest } from '../src/pb/collaboration_pb';
 import { Server } from '../src/server';
 import { Session } from '../src/session';
 import { WSCloseCode } from '../src/ws_close_code';
-import { createConnectRequest, createSyncDocumentRequest, createYDocWithText, openTestClient, PORT, testWebSocket, TEXT_ID, yDocUpdate } from './test_utils';
+import { createConnectRequest, createSyncRequest, createYDocWithText, openTestClient, PORT, testWebSocket, TEXT_ID, yDocUpdate } from './test_utils';
 
 describe('Server', () => {
   let server: Server;
@@ -33,10 +33,10 @@ describe('Server', () => {
         assert.strictEqual(code, WSCloseCode.UnsuportedData);
       });
 
-      it('closes when receiving SyncDocumentRequest', async () => {
+      it('closes when receiving SyncRequest', async () => {
         const code = await testWebSocket(ws => {
           const request = new CollaborationRequest();
-          request.setSyncDocumentRequest(new SyncDocumentRequest());
+          request.setSyncRequest(new SyncRequest());
           ws.send(request.serializeBinary());
         });
         assert.strictEqual(code, WSCloseCode.ProtocolError);
@@ -45,7 +45,7 @@ describe('Server', () => {
       it('closes when receiving document data', async () => {
         const code = await testWebSocket(ws => {
           const request = new CollaborationRequest();
-          request.setDocumentUpdate(new Uint8Array());
+          request.setUpdate(new Uint8Array());
           ws.send(request.serializeBinary());
         });
         assert.strictEqual(code, WSCloseCode.ProtocolError);
@@ -67,7 +67,7 @@ describe('Server', () => {
         const code = await testWebSocket(ws => {
           ws.send(createConnectRequest().serializeBinary());
           const request = new CollaborationRequest();
-          request.setDocumentUpdate(new Uint8Array());
+          request.setUpdate(new Uint8Array());
           ws.send(request.serializeBinary());
         });
         assert.strictEqual(code, WSCloseCode.ProtocolError);
@@ -78,7 +78,7 @@ describe('Server', () => {
       it('closes when receiving ConnectRequest', async () => {
         const code = await testWebSocket(ws => {
           ws.send(createConnectRequest().serializeBinary());
-          ws.send(createSyncDocumentRequest().serializeBinary());
+          ws.send(createSyncRequest().serializeBinary());
           const request = new CollaborationRequest();
           request.setConnectRequest(new ConnectRequest());
           ws.send(request.serializeBinary());
@@ -86,12 +86,12 @@ describe('Server', () => {
         assert.strictEqual(code, WSCloseCode.ProtocolError);
       });
 
-      it('closes when receiving SyncDocumentRequest', async () => {
+      it('closes when receiving SyncRequest', async () => {
         const code = await testWebSocket(ws => {
           ws.send(createConnectRequest().serializeBinary());
-          ws.send(createSyncDocumentRequest().serializeBinary());
+          ws.send(createSyncRequest().serializeBinary());
           const request = new CollaborationRequest();
-          request.setSyncDocumentRequest(new SyncDocumentRequest());
+          request.setSyncRequest(new SyncRequest());
           ws.send(request.serializeBinary());
         });
         assert.strictEqual(code, WSCloseCode.ProtocolError);
@@ -109,7 +109,7 @@ describe('Server', () => {
     }, (ws, response) => {
       assert(response.hasConnectResponse());
       const clientDoc = new yjs.Doc();
-      yjs.applyUpdate(clientDoc, response.getConnectResponse()!.getDocumentUpdate_asU8());
+      yjs.applyUpdate(clientDoc, response.getConnectResponse()!.getUpdate_asU8());
       assert.strictEqual(clientDoc.getText(TEXT_ID).toString(), serverDoc.getText(TEXT_ID).toString());
       ws.close();
     });
@@ -132,7 +132,7 @@ describe('Server', () => {
     const update = await yDocUpdate(ws1.yDoc!, yDoc => yDoc.getText(TEXT_ID).insert(0, prefix));
 
     const request = new CollaborationRequest();
-    request.setDocumentUpdate(update);
+    request.setUpdate(update);
     ws1.send(request);
     
     const changedDoc = await changedDocPromise;

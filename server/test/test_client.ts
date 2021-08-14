@@ -1,7 +1,7 @@
 import { URL } from 'url';
 import * as WebSocket from 'ws';
 import * as yjs from 'yjs';
-import { CollaborationRequest, CollaborationResponse, ConnectRequest, ConnectResponse, SyncDocumentRequest } from '../src/pb/collaboration_pb';
+import { CollaborationRequest, CollaborationResponse, ConnectRequest, ConnectResponse, SyncRequest } from '../src/pb/collaboration_pb';
 
 enum ClientState {
   Connecting = 1,
@@ -41,16 +41,16 @@ export class TestClient {
         this.handleConnectResponse(response.getConnectResponse()!);
         break;
       case ClientState.Syncing:
-        if (!response.hasSyncDocumentResponse()) {
+        if (!response.hasSyncResponse()) {
           throw `Invalid response ${response} for state ${this._state}.`;
         }
         this.state = ClientState.Connected;
         break;
       case ClientState.Connected:
-        if (!response.hasDocumentUpdate()) {
+        if (!response.hasUpdate()) {
           throw `Invalid response ${response} for state ${this._state}.`;
         }
-        yjs.applyUpdate(this._yDoc!, response.getDocumentUpdate_asU8());
+        yjs.applyUpdate(this._yDoc!, response.getUpdate_asU8());
         this.onYDocChangedListeners.forEach(l => l(this._yDoc!));
         break;
       }
@@ -59,17 +59,17 @@ export class TestClient {
 
   private handleConnectResponse(response: ConnectResponse): void {
     if (this._yDoc) {
-      yjs.applyUpdate(this._yDoc, response.getDocumentUpdate_asU8());
+      yjs.applyUpdate(this._yDoc, response.getUpdate_asU8());
       this.state = ClientState.Syncing;
 
-      const syncDocumentRequest = new SyncDocumentRequest();
-      syncDocumentRequest.setDocumentUpdate(yjs.encodeStateAsUpdate(this._yDoc, response.getStateVector_asU8()));
+      const syncRequest = new SyncRequest();
+      syncRequest.setUpdate(yjs.encodeStateAsUpdate(this._yDoc, response.getStateVector_asU8()));
       const request = new CollaborationRequest();
-      request.setSyncDocumentRequest(syncDocumentRequest);
+      request.setSyncRequest(syncRequest);
       this.send(request);
-    } else if (response.getDocumentUpdate_asU8().length) {
+    } else if (response.getUpdate_asU8().length) {
       this._yDoc = new yjs.Doc();
-      yjs.applyUpdate(this._yDoc!, response.getDocumentUpdate_asU8());
+      yjs.applyUpdate(this._yDoc!, response.getUpdate_asU8());
       this.state = ClientState.Connected;
     }
   }

@@ -7,19 +7,19 @@ syntax = "proto3";
 // ConnectResponse - S provides update and its own state vector (if any).
 //
 // Phase 2: syncing (skipped if the client doesn't provide a state vector)
-// SyncDocumentRequest - C provides update (or entire document if it didn't
+// SyncRequest - C provides update (or entire model if it didn't
 //   receive a state vector).
-// SyncDocumentResponse - S confirms the update.
+// SyncResponse - S confirms the update.
 //
 // Phase 3: connected
-// [repeated] CollaborationRequest with document_update
+// [repeated] CollaborationRequest with update
 
 // Sent from clients to the server.
 message CollaborationRequest {
     oneof message {
         ConnectRequest connect_request = 1;
-        SyncDocumentRequest sync_document_request = 2;
-        bytes document_update = 3;
+        SyncRequest sync_request = 2;
+        bytes update = 3;
     }
 }
 
@@ -32,30 +32,31 @@ message ConnectRequest {
     bytes state_vector = 2;
 }
 
-// Sent by clients to provide the server with a document update (or its entire
-// content). Server responds with a SyncDocumentResponse.
-message SyncDocumentRequest {
-    // [optional] A document update from the client. Contains the entire
-    // document if the server didn't send a state vector.
-    bytes document_update = 1;
+// Sent by clients to provide the server with a model update (or its entire
+// content). Server responds with a SyncResponse.
+message SyncRequest {
+    // [optional] A model update from the client. Contains the entire model if
+    // the server didn't send a state vector.
+    bytes update = 1;
 }
 
 // Sent from the server to clients.
 message CollaborationResponse {
     oneof message {
         ConnectResponse connect_response = 1;
-        SyncDocumentResponse sync_document_response = 2;
-        bytes document_update = 3;
+        SyncResponse sync_response = 2;
+        bytes update = 3;
     }
 }
 
 // Sent by the server in response to a ConnectRequest.
 message ConnectResponse {
+    // [optional] The server model's state vector.
     bytes state_vector = 1;
-    // [optional] A document update from the server. Contains the entire
-    // document if the client didn't sent a state vector.
-    bytes document_update = 2;
+    // [optional] A model update from the server. Contains the entire model if
+    // the client didn't sent a state vector.
+    bytes update = 2;
 }
 
-// Sent by the server in response to a SyncDocumentRequest.
-message SyncDocumentResponse {}
+// Sent by the server in response to a SyncRequest.
+message SyncResponse {}

@@ -24,10 +24,10 @@ export class Session {
     this.participants.delete(id);
   }
 
-  processDocumentUpdate(update: Uint8Array, fromParticipantID: string): void {
+  processUpdate(update: Uint8Array, fromParticipantID: string): void {
     yjs.applyUpdate(this.yDoc, update);
     const response = new CollaborationResponse();
-    response.setDocumentUpdate(update);
+    response.setUpdate(update);
     this.broadcast(response, fromParticipantID);
   }
 

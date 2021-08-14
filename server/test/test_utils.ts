@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import * as WebSocket from 'ws';
 import * as yjs from 'yjs';
-import { CollaborationRequest, CollaborationResponse, ConnectRequest, SyncDocumentRequest } from '../src/pb/collaboration_pb';
+import { CollaborationRequest, CollaborationResponse, ConnectRequest, SyncRequest } from '../src/pb/collaboration_pb';
 import { TestClient } from './test_client';
 import { WSCloseCode } from '../src/ws_close_code';
 
@@ -36,11 +36,11 @@ export function createConnectRequest(uuid?: string, yDoc: boolean|yjs.Doc = true
   return request;
 }
 
-export function createSyncDocumentRequest(): CollaborationRequest {
-  const syncDocumentRequest = new SyncDocumentRequest();
-  syncDocumentRequest.setDocumentUpdate(yjs.encodeStateAsUpdate(createYDocWithText()));
+export function createSyncRequest(): CollaborationRequest {
+  const syncRequest = new SyncRequest();
+  syncRequest.setUpdate(yjs.encodeStateAsUpdate(createYDocWithText()));
   const request = new CollaborationRequest();
-  request.setSyncDocumentRequest(syncDocumentRequest);
+  request.setSyncRequest(syncRequest);
   return request;
 }
 
