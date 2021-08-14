@@ -1,32 +1,5 @@
 const { Base64 } = require('js-base64');
-const parser = require('fast-xml-parser');
 const yjs = require('yjs');
-
-function xmlElementToYjsElement(tagName, tagObject) {
-  const element = new yjs.XmlElement(tagName);
-  for (const [key, value] of Object.entries(tagObject)) {
-    if (key.startsWith('_')) {
-      element.setAttribute(key.substring(1), value);
-    } else if (key === '#text' || typeof value === 'string') {
-      element.push([new yjs.XmlText(value)]);
-    } else {
-      element.push(value.map(v => xmlElementToYjsElement(key, v)));
-    }
-  }
-  return element;
-}
-
-function xmlToYjs(xml) {
-  const options = {
-    arrayMode: true,
-    attributeNamePrefix: '_',
-    ignoreAttributes: false
-  };
-  const jsonObject = parser.parse(xml, options);
-  const yDoc = new yjs.Doc();
-  yDoc.getXmlFragment().push([xmlElementToYjsElement('model', jsonObject['model'][0])]);
-  return yDoc;
-}
 
 function addToMapping(element) {
   const id = element.getAttribute('id');
@@ -115,4 +88,4 @@ function updateAttribute(id, attribute, value) {
   serializeModel();
 }
 
-module.exports = { xmlToYjs, newModel, loadModel, insertElement, deleteElement, updateAttribute, updateText };
+module.exports = { newModel, loadModel, insertElement, deleteElement, updateAttribute, updateText };
