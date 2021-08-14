@@ -16,7 +16,6 @@ void main() {
     final xmlString = await File('test_resources/valid.xml').readAsString();
     final root = XmlDocument.parse(xmlString).rootElement;
     final model = UMLModel.fromXml(root);
-    expect(model.version, '1.0');
     expect(model.classes.values.map((c) => c.name).toSet(),
         {'Person', 'Student', 'Book'});
 
@@ -111,7 +110,7 @@ void main() {
       ],
     );
     final xml = '''<?xml version="1.0" encoding="UTF-8"?>
-    <model version="1.0" uuid="M">
+    <model uuid="M">
       <class id="P" x="0" y="0">
         <name>Person</name>
         <attribute id="PA1" visibility="public" type="string">name</attribute>

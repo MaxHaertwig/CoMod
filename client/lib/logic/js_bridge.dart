@@ -1,3 +1,8 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:client/logic/models_manager.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +14,8 @@ class JSBridge {
   static final _jsRuntime = getJavascriptRuntime();
 
   final Future<void> _ready;
+
+  String? _loadedModelXml;
 
   factory JSBridge() => _shared;
 
@@ -24,12 +31,27 @@ class JSBridge {
             throw Exception('Error initializing JS runtime: $result');
           }
         }) {
+    _setupChannels();
+  }
+
+  void _setupChannels() {
+    _jsRuntime.onMessage('ModelLoaded', (args) {
+      _loadedModelXml = args;
+    });
+    _jsRuntime.onMessage('ModelSerialized', (args) {
+      ModelsManager.saveModel(args['uuid'], base64Decode(args['data']));
+    });
     _jsRuntime.onMessage('DocUpdate', (args) => print('[js] DocUpdate: $args'));
   }
 
-  Future<void> loadModel(String xml) async {
+  Future<void> newModel(String uuid) async {
     await _ready;
-    final code = 'client.loadModel(`$xml`);';
+    await _evaluate('client.newModel("$uuid");');
+  }
+
+  Future<String> loadModel(String uuid, Uint8List data) async {
+    await _ready;
+    final code = 'client.loadModel("$uuid", "${base64Encode(data)}");';
     final result = await _jsRuntime.evaluateAsync(code);
     if (!kReleaseMode) {
       if (result.isError) {
@@ -38,6 +60,7 @@ class JSBridge {
         print('[js] loadModel(...) ✓');
       }
     }
+    return _loadedModelXml!;
   }
 
   static const _elementsWithNameElement = {
@@ -45,12 +68,11 @@ class JSBridge {
     UMLOperation.xmlTag
   };
 
-  void insertElement(String? parentID, String id, String nodeName) {
-    final parentIDArg = parentID != null ? '"$parentID"' : 'null';
+  void insertElement(String parentID, String id, String nodeName) {
     final hasNameElement =
         _elementsWithNameElement.contains(nodeName) ? 'true' : 'false';
     _evaluate(
-        'client.insertElement($parentIDArg, "$id", "$nodeName", $hasNameElement);');
+        'client.insertElement("$parentID", "$id", "$nodeName", $hasNameElement);');
   }
 
   void deleteElement(String id) => _evaluate('client.deleteElement("$id");');
@@ -62,7 +84,7 @@ class JSBridge {
   void updateAttribute(String id, String attribute, String value) =>
       _evaluate('client.updateAttribute("$id", "$attribute", "$value");');
 
-  void _evaluate(String code) async {
+  Future<void> _evaluate(String code) async {
     final result = await _jsRuntime.evaluateAsync(code);
     if (!kReleaseMode) {
       if (result.isError) {

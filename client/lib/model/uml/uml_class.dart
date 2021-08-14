@@ -40,8 +40,8 @@ class UMLClass {
     return UMLClass(
       name: element.getElement('name')!.innerText.trim(),
       id: element.getAttribute('id')!,
-      x: int.parse(element.getAttribute('x')!),
-      y: int.parse(element.getAttribute('y')!),
+      x: int.parse(element.getAttribute('x') ?? '0'),
+      y: int.parse(element.getAttribute('y') ?? '0'),
       attributes: element
           .findElements('attribute')
           .map((child) => UMLAttribute.fromXml(child))
@@ -65,7 +65,7 @@ class UMLClass {
 
   void set name(String newName) {
     if (newName != _name) {
-      model?.jsBridge?.updateText(id, _name, newName);
+      model?.jsBridge.updateText(id, _name, newName);
       _name = newName;
       model?.didChange();
     }
@@ -77,13 +77,13 @@ class UMLClass {
   void addAttribute(UMLAttribute attribute) {
     attribute.umlClass = this;
     _attributes[attribute.id] = attribute;
-    model?.jsBridge?.insertElement(id, attribute.id, UMLAttribute.xmlTag);
+    model?.jsBridge.insertElement(id, attribute.id, UMLAttribute.xmlTag);
     model?.didChange();
   }
 
   void removeAttribute(UMLAttribute attribute) {
     _attributes.remove(attribute.id);
-    model?.jsBridge?.deleteElement(id);
+    model?.jsBridge.deleteElement(id);
     model?.didChange();
   }
 

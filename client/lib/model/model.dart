@@ -1,55 +1,53 @@
 import 'dart:io';
 
 import 'package:client/logic/js_bridge.dart';
-import 'package:client/model/document.dart';
+import 'package:client/logic/models_manager.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:flutter/material.dart';
-import 'package:xml/xml.dart';
 
 class Model extends ChangeNotifier {
-  final String? path;
-  final UMLModel umlModel;
-  JSBridge? jsBridge;
+  // TODO: make private and expose functions
+  final jsBridge = JSBridge();
+  final String path;
+  late final UMLModel umlModel;
 
-  Model({this.path, UMLModel? umlModel, bool setUpJSBridge = false})
-      : umlModel = umlModel ?? UMLModel() {
-    if (setUpJSBridge) {
-      jsBridge = JSBridge();
+  String _name;
+  bool _hasModel = false;
+  bool _isDeleted = false;
+
+  Model(this.path, this._name, {UMLModel? umlModel}) {
+    if (umlModel != null) {
+      this.umlModel = umlModel;
     }
-    this.umlModel.model = this;
   }
 
-  Model.fromXML(String xml, {String? path, bool setUpJSBridge = false})
-      : this(
-          path: path,
-          umlModel: UMLModel.fromXml(XmlDocument.parse(xml).rootElement),
-          setUpJSBridge: setUpJSBridge,
-        );
+  String get name => _name;
 
-  static Future<Model> fromDocument(Document document,
-          {bool setUpJSBridge = true}) async =>
-      Model.fromXML(
-        await document.readXML(),
-        path: document.path,
-        setUpJSBridge: setUpJSBridge,
-      );
+  String get uuid => path.split('/').last.split('.').first;
 
-  String get name {
-    if (path == null) {
-      return '';
+  Future<void> load() async {
+    final xml =
+        await JSBridge().loadModel(uuid, await File(path).readAsBytes());
+    if (!_hasModel) {
+      _hasModel = true;
+      umlModel = UMLModel.fromXmlString(xml);
+      umlModel.model = this;
     }
-    final fileName = path!.split('/').last;
-    return fileName.substring(0, fileName.length - 4);
   }
 
-  Future<void> save() async {
-    if (path != null) {
-      await File(path!).writeAsString(umlModel.xmlRepresentation);
-    }
+  Future<void> rename(String newName) async {
+    assert(!_isDeleted);
+    _name = newName;
+    ModelsManager.renameModel(uuid, newName);
+  }
+
+  Future<void> delete() async {
+    assert(!_isDeleted);
+    _isDeleted = true;
+    await File(path).delete();
   }
 
   void didChange() {
     notifyListeners();
-    save();
   }
 }

@@ -1,3 +1,4 @@
+import 'package:client/model/model.dart';
 import 'package:client/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 
@@ -7,15 +8,19 @@ typedef OnTapFunction = void Function();
 typedef OnActionFunction = void Function(ModelRowAction);
 
 class ModelRow extends StatelessWidget {
-  final String name;
+  final Model model;
   final OnTapFunction onTap;
   final OnActionFunction onAction;
 
-  ModelRow(this.name, {required this.onTap, required this.onAction});
+  ModelRow(this.model, {required this.onTap, required this.onAction});
 
   @override
   Widget build(BuildContext context) => ListTile(
-        title: Text(name),
+        title: Text(
+          model.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(model.uuid, style: const TextStyle(fontSize: 10)),
         trailing: PopupMenuButton<ModelRowAction>(
           tooltip: 'Model actions',
           itemBuilder: (_) => [

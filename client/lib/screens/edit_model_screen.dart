@@ -1,14 +1,15 @@
-import 'package:client/model/document.dart';
+import 'package:client/logic/models_manager.dart';
+import 'package:client/model/model.dart';
 import 'package:flutter/material.dart';
 
 class EditModelScreen extends StatefulWidget {
-  final Document? document;
+  final Model? model;
   final Set<String>? existingNames;
 
-  EditModelScreen(this.document, {this.existingNames});
+  EditModelScreen(this.model, {this.existingNames});
 
   @override
-  State<StatefulWidget> createState() => _EditModelScreenState(document);
+  State<StatefulWidget> createState() => _EditModelScreenState(model);
 }
 
 class _EditModelScreenState extends State<EditModelScreen> {
@@ -17,8 +18,8 @@ class _EditModelScreenState extends State<EditModelScreen> {
 
   var _isValid = false;
 
-  _EditModelScreenState(Document? document) {
-    _textEditingController.text = document?.name ?? '';
+  _EditModelScreenState(Model? model) {
+    _textEditingController.text = model?.name ?? '';
   }
 
   @override
@@ -30,7 +31,7 @@ class _EditModelScreenState extends State<EditModelScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text(widget.document == null ? 'New Model' : 'Edit Model'),
+          title: Text(widget.model == null ? 'New Model' : 'Edit Model'),
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
@@ -78,12 +79,12 @@ class _EditModelScreenState extends State<EditModelScreen> {
 
   void _done() async {
     final name = _textEditingController.text.trim();
-    if (widget.document == null) {
-      final document = await Document.newDocument(name);
+    if (widget.model == null) {
+      final document = await ModelsManager.newModel(name);
       Navigator.pop(context, document);
-    } else if (widget.document!.name != name) {
-      await widget.document!.rename(name);
-      Navigator.pop(context, widget.document!);
+    } else if (widget.model!.name != name) {
+      await widget.model!.rename(name);
+      Navigator.pop(context, widget.model!);
     }
   }
 }

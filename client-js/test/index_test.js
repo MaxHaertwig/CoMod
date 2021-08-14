@@ -1,16 +1,16 @@
 const assert = require('assert');
 
 function assertStructure(element, expectation) {
-  assert.equal(element.nodeName, expectation.nodeName);
+  assert.strictEqual(element.nodeName, expectation.nodeName);
   if (expectation.attributes) {
-    assert.equal(Object.entries(element.getAttributes()).length, expectation.attributes.size);
+    assert.strictEqual(Object.entries(element.getAttributes()).length, expectation.attributes.size);
     expectation.attributes.forEach((value, attribute) => assert.equal(element.getAttribute(attribute), value));
   }
   if (expectation.elements) {
-    assert.equal(element.length, expectation.elements.length);
+    assert.strictEqual(element.length, expectation.elements.length);
     expectation.elements.forEach((child, index) => {
       if (typeof (child) === 'string') {
-        assert.equal(element.get(index).toString(), child);
+        assert.strictEqual(element.get(index).toString(), child);
       } else {
         assertStructure(element.get(index), child);
       }
@@ -23,7 +23,7 @@ describe('index_test.js', () => {
 
   it('should convert an XML structure to a yjs tree', () => {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-      <model version="1.0" uuid="M">
+      <model uuid="M">
         <class id="P" x="0" y="0">
           <name>Person</name>
           <attribute id="PA1" visibility="public" type="string">name</attribute>
@@ -41,10 +41,10 @@ describe('index_test.js', () => {
       </model>
       `;
 
-    const classes = xmlToYjs(xml).getXmlFragment('uml');
-    assert.equal(classes.length, 2);
+    const model = xmlToYjs(xml).getXmlFragment().get(0);
+    assert.strictEqual(model.length, 2);
 
-    assertStructure(classes.get(0), {
+    assertStructure(model.get(0), {
       nodeName: 'class',
       attributes: new Map([['id', 'P'], ['x', '0'], ['y', '0']]),
       elements: [
@@ -61,7 +61,7 @@ describe('index_test.js', () => {
         }
       ]
     });
-    assertStructure(classes.get(1), {
+    assertStructure(model.get(1), {
       nodeName: 'class',
       attributes: new Map([['id', 'S'], ['x', '0'], ['y', '100']]),
       elements: [
