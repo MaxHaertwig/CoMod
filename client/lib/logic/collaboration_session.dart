@@ -51,6 +51,10 @@ class CollaborationSession {
     if (onStateChanged != null) {
       onStateChanged!(state);
     }
+    if (_state == SessionState.connected && cachedUpdates != null) {
+      cachedUpdates!.forEach(sendUpdate);
+      cachedUpdates = null;
+    }
   }
 
   void _onMessage(message) {
@@ -123,12 +127,17 @@ class CollaborationSession {
     _setState(SessionState.disconnected);
   }
 
+  List<List<int>>? cachedUpdates;
+
   void sendUpdate(List<int> update) {
-    if (_state != SessionState.connected) {
-      print('Cannot send document data when being disconnected.');
-      return;
+    assert(_state != SessionState.disconnected);
+    if (_state == SessionState.connected) {
+      _send(CollaborationRequest(update: update));
+    } else if (cachedUpdates != null) {
+      cachedUpdates!.add(update);
+    } else {
+      cachedUpdates = [update];
     }
-    _send(CollaborationRequest(update: update));
   }
 
   Future<void> close() async => await _channel.sink.close();
