@@ -34,12 +34,11 @@ class JSBridge {
   }
 
   void _setupChannels() {
-    _jsRuntime.onMessage('ModelLoaded', (args) {
-      _loadedModelXml = args;
-    });
-    _jsRuntime.onMessage('ModelSerialized', (args) {
-      ModelsManager.saveModel(args['uuid'], base64Decode(args['data']));
-    });
+    _jsRuntime.onMessage('ModelLoaded', (args) => _loadedModelXml = args);
+    _jsRuntime.onMessage(
+        'ModelSerialized',
+        (args) =>
+            ModelsManager.saveModel(args['uuid'], base64Decode(args['data'])));
     _jsRuntime.onMessage('DocUpdate', (args) => print('[js] DocUpdate: $args'));
   }
 
@@ -48,7 +47,7 @@ class JSBridge {
     await _evaluate('client.newModel("$uuid");');
   }
 
-  Future<String> loadModel(String uuid, Uint8List data) async {
+  Future<String> loadModel(String uuid, List<int> data) async {
     await _ready;
     final code = 'client.loadModel("$uuid", "${base64Encode(data)}");';
     final result = await _jsRuntime.evaluateAsync(code);
@@ -61,6 +60,23 @@ class JSBridge {
     }
     return _loadedModelXml!;
   }
+
+  Future<List<int>> stateVector() async =>
+      base64Decode(await _evaluate('client.stateVector()'));
+
+  Future<List<int>?> sync(
+      List<int> serverStateVector, List<int> serverUpdate) async {
+    final serverStateVectorString = serverStateVector.isEmpty
+        ? 'undefined'
+        : '"${base64Encode(serverStateVector)}"';
+    final serverUpdateString =
+        serverUpdate.isEmpty ? 'undefined' : '"${base64Encode(serverUpdate)}"';
+    return base64Decode(await _evaluate(
+        'client.sync($serverStateVectorString, $serverUpdateString)'));
+  }
+
+  void processUpdate(List<int> data) =>
+      _evaluate('client.processUpdate("${base64Encode(data)}");');
 
   void insertElement(
       String parentID,
@@ -86,7 +102,7 @@ class JSBridge {
   void updateAttribute(String id, String attribute, String value) =>
       _evaluate('client.updateAttribute("$id", "$attribute", "$value");');
 
-  Future<void> _evaluate(String code) async {
+  Future<String> _evaluate(String code) async {
     final result = await _jsRuntime.evaluateAsync(code);
     if (!kReleaseMode) {
       if (result.isError) {
@@ -95,5 +111,6 @@ class JSBridge {
         print('[js] $code ✓');
       }
     }
+    return result.stringResult;
   }
 }

@@ -47,6 +47,24 @@ function loadModel(uuid, base64Data) {
   sendMessage('ModelLoaded', JSON.stringify(activeModel.toJSON()));
 }
 
+function stateVector() {
+  return Base64.fromUint8Array(yjs.encodeStateVector(activeDoc));
+}
+
+function sync(serverStateVector, serverUpdate) {
+  if (serverUpdate) {
+    yjs.applyUpdate(Base64.toUint8Array(serverUpdate));
+  }
+  const update = yjs.encodeStateAsUpdate(activeDoc, serverStateVector);
+  serializeModel();
+  return Base64.fromUint8Array(update);
+}
+
+function processUpdate(data) {
+  yjs.applyUpdate(activeDoc, data);
+  serializeModel();
+}
+
 function insertElement(parentID, id, nodeName, hasNameElement, name, attributes) {
   const element = new yjs.XmlElement(nodeName);
   element.setAttribute('id', id);
@@ -93,4 +111,4 @@ function updateAttribute(id, attribute, value) {
   serializeModel();
 }
 
-module.exports = { newModel, loadModel, insertElement, deleteElement, updateAttribute, updateText };
+module.exports = { newModel, loadModel, stateVector, sync, processUpdate, insertElement, deleteElement, updateAttribute, updateText };

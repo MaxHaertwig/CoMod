@@ -48,7 +48,7 @@ class ModelsManager {
     return document;
   }
 
-  static Future<void> saveModel(String uuid, Uint8List data) async {
+  static Future<void> saveModel(String uuid, List<int> data) async {
     final directory = await _documentsDirectory;
     await File('${directory.path}/$uuid.yjs').writeAsBytes(data);
   }

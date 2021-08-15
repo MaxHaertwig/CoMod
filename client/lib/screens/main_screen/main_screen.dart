@@ -2,8 +2,8 @@ import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/screens/edit_class/edit_class_screen.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
+import 'package:client/screens/main_screen/widgets/collaboration_menu_button.dart';
 import 'package:client/screens/main_screen/widgets/outline_class.dart';
-import 'package:client/widgets/menu_item.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,27 +16,23 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider.value(
         value: _model,
-        child: Selector<Model, Iterable<UMLClass>>(
-          selector: (_, model) => model.umlModel.classes.values,
-          shouldRebuild: (_, __) => true,
-          builder: (context, classes, __) => Scaffold(
+        child: Consumer<Model>(
+          builder: (context, model, __) => Scaffold(
             appBar: AppBar(
               title: Selector<Model, String>(
                 selector: (_, model) => model.name,
                 builder: (_, name, __) => Text(name),
               ),
               actions: [
-                PopupMenuButton(
-                  icon: const Icon(Icons.person_add),
-                  tooltip: 'Collaborate',
-                  itemBuilder: (_) => [
-                    MenuItem(Icons.person_add, 'Collaborate', 0),
-                  ],
-                  onSelected: (_) => _collaborate(context),
+                CollaborationMenuButton(
+                  model.isSessionInProgress,
+                  onSelected: (_) => model.isSessionInProgress
+                      ? _stopCollaborating()
+                      : _collaborate(context),
                 ),
               ],
             ),
-            body: classes.isEmpty
+            body: model.umlModel.classes.isEmpty
                 ? NoDataView(
                     'No classes',
                     'Your model doesn\'t have any classes yet. Press the button to create one.',
@@ -45,7 +41,7 @@ class MainScreen extends StatelessWidget {
                   })
                 : ListView(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    children: classes
+                    children: model.umlModel.classes.values
                         .where((cls) => !cls.isEmpty)
                         .map((cls) => GestureDetector(
                               child: OutlineClass(cls),
@@ -53,7 +49,7 @@ class MainScreen extends StatelessWidget {
                             ))
                         .toList(),
                   ),
-            floatingActionButton: classes.isEmpty
+            floatingActionButton: model.umlModel.classes.isEmpty
                 ? null
                 : FloatingActionButton(
                     child: const Icon(Icons.add),
@@ -78,7 +74,7 @@ class MainScreen extends StatelessWidget {
     );
   }
 
-  void _collaborate(BuildContext context) {
+  void _collaborate(BuildContext context) async {
     showDialog(
       context: context,
       builder: (_) => CollaborationDialog(
@@ -86,5 +82,9 @@ class MainScreen extends StatelessWidget {
       ),
       barrierDismissible: false,
     );
+    await _model.collaborate();
+    Navigator.pop(context);
   }
+
+  void _stopCollaborating() {}
 }

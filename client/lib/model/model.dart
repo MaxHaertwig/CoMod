@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:client/logic/collaboration_session.dart';
 import 'package:client/logic/js_bridge.dart';
 import 'package:client/logic/models_manager.dart';
 import 'package:client/model/uml/uml_class.dart';
@@ -18,6 +20,8 @@ class Model extends ChangeNotifier {
   bool _hasModel = false;
   bool _isDeleted = false;
 
+  CollaborationSession? _session;
+
   Model(this.path, this._name, {UMLModel? umlModel}) {
     if (umlModel != null) {
       this.umlModel = umlModel;
@@ -27,6 +31,8 @@ class Model extends ChangeNotifier {
   String get name => _name;
 
   String get uuid => path.split('/').last.split('.').first;
+
+  bool get isSessionInProgress => _session != null;
 
   Future<void> load() async {
     final xml =
@@ -48,6 +54,33 @@ class Model extends ChangeNotifier {
     assert(!_isDeleted);
     _isDeleted = true;
     await File(path).delete();
+  }
+
+  Future<void> collaborate() async {
+    final completer = Completer();
+    _session = CollaborationSession(
+      uuid,
+      await _jsBridge.stateVector(),
+      onUpdateReceived: _jsBridge.processUpdate,
+      onSyncModel: _jsBridge.sync,
+      onStateChanged: (state) {
+        print('Session state changed: $state');
+        switch (state) {
+          case SessionState.connecting:
+          case SessionState.syncing:
+            break;
+          case SessionState.connected:
+            completer.complete();
+            break;
+          case SessionState.disconnected:
+            completer.complete();
+            _session = null;
+            notifyListeners();
+            break;
+        }
+      },
+    );
+    return completer.future;
   }
 
   static const _elementsWithNameElement = {

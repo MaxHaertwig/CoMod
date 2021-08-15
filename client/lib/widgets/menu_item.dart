@@ -11,11 +11,12 @@ class MenuItem<T> extends PopupMenuItem<T> {
           value: value,
           child: Row(
             children: [
-              Icon(icon, color: isDestructive ? Colors.red : null),
+              Icon(icon, color: isDestructive ? Colors.red : Colors.black),
               SizedBox(width: 8),
               Text(
                 title,
-                style: TextStyle(color: isDestructive ? Colors.red : null),
+                style:
+                    TextStyle(color: isDestructive ? Colors.red : Colors.black),
               )
             ],
           ),
