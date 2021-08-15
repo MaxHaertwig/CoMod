@@ -2,6 +2,7 @@ import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/screens/edit_class/edit_class_screen.dart';
 import 'package:client/screens/main_screen/widgets/outline_class.dart';
+import 'package:client/widgets/menu_item.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,16 @@ class MainScreen extends StatelessWidget {
                 selector: (_, model) => model.name,
                 builder: (_, name, __) => Text(name),
               ),
+              actions: [
+                PopupMenuButton(
+                  icon: const Icon(Icons.person_add),
+                  tooltip: 'Collaborate',
+                  itemBuilder: (_) => [
+                    MenuItem(Icons.person_add, 'Collaborate', 0),
+                  ],
+                  onSelected: (_) => _collaborate(context),
+                ),
+              ],
             ),
             body: classes.isEmpty
                 ? NoDataView(
@@ -63,6 +74,29 @@ class MainScreen extends StatelessWidget {
           child: EditClassScreen(umlClass, isNewClass),
         ),
       ),
+    );
+  }
+
+  void _collaborate(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Joining collaboration session...'),
+        content: SizedBox(
+          width: 40,
+          height: 40,
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
     );
   }
 }
