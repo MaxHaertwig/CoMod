@@ -12,6 +12,7 @@ export class Server {
     this.wss = new WebSocket.Server({ port: port || 3000 }, callback);
     this.wss.on('connection', ws => {
       const client = new Client(ws, this);
+      console.log(`New client connected: ${client.shortID}`);
 
       ws.on('message', data => {
         if (!(data instanceof Uint8Array)) {
@@ -27,8 +28,15 @@ export class Server {
         }
       });
 
-      ws.on('close', () => client.remove());
-      ws.on('error', () => client.remove());
+      ws.on('close', () => {
+        client.remove();
+        console.log(`Client disconnected: ${client.shortID}`);
+      });
+      ws.on('error', error => {
+        console.log(`WebSocket error: ${error}`);
+        client.remove();
+        console.log(`Client disconnected: ${client.shortID}`);
+      });
     });
   }
 
@@ -40,7 +48,7 @@ export class Server {
     return this.sessions.get(uuid);
   }
 
-  addSession(uuid: string, session: Session): void {
-    this.sessions.set(uuid, session);
+  addSession(session: Session): void {
+    this.sessions.set(session.uuid, session);
   }
 }

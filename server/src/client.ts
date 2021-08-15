@@ -13,7 +13,7 @@ export enum ClientState {
 
 interface SessionManager {
   session(uuid: string): Session | undefined;
-  addSession(uuid: string, session: Session): void;
+  addSession(session: Session): void;
 }
 
 export class Client {
@@ -30,6 +30,10 @@ export class Client {
     this.sessionManager = sessionManager;
   }
 
+  get shortID(): string {
+    return this.id.split('-')[0];
+  }
+
   send(response: CollaborationResponse): void {
     this.ws.send(response.serializeBinary(), error => {
       if (error) {
@@ -39,6 +43,7 @@ export class Client {
   }
 
   close(code: WSCloseCode, reason: string): void {
+    console.log(`Client ${this.shortID} closing channel (${code}: ${reason})`);
     this.remove();
     this.ws.close(code, reason);
   }
@@ -48,6 +53,7 @@ export class Client {
   }
 
   handleRequest(request: CollaborationRequest): void {
+    console.log(`Client ${this.shortID}(${this.state}) received ${request.getMessageCase()}`);
     switch (this.state) {
     case ClientState.Connecting:
       if (!request.hasConnectRequest()) {
@@ -68,12 +74,15 @@ export class Client {
         this.close(WSCloseCode.ProtocolError, 'Connected client did not receive model update.');
         return;
       }
+      console.log(`Client ${this.shortID} handling update`);
       this.session!.processUpdate(request.getUpdate_asU8(), this.id);
       break;
     }
   }
 
   handleConnectRequest(request: ConnectRequest): void {
+    console.log(`Client ${this.shortID} handling ConnectRequest`);
+
     if (!request.getUuid()) {
       this.close(WSCloseCode.UnsuportedData, 'Invalid ConnectRequest: missing uuid.');
       return;
@@ -106,15 +115,17 @@ export class Client {
   }
 
   handleSyncRequest(request: SyncRequest): void {
+    console.log(`Client ${this.shortID} handling SyncRequest`);
+
     if (!this.session && !request.getUpdate_asU8().length) {
-      this.close(WSCloseCode.UnsuportedData, `Received invalid SyncRequest: ${request}`);
+      this.close(WSCloseCode.UnsuportedData, 'Received invalid SyncRequest: missing update.');
       return;
     }
 
     if (!this.session) {
-      this.session = new Session(request.getUpdate_asU8());
+      this.session = new Session(this.sessionUUID!, request.getUpdate_asU8());
       this.session.addParticipant(this);
-      this.sessionManager.addSession(this.sessionUUID!, this.session);
+      this.sessionManager.addSession(this.session);
     } else if (request.getUpdate_asU8().length) {
       yjs.applyUpdate(this.session.yDoc, request.getUpdate_asU8());
     }

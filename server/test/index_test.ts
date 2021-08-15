@@ -102,7 +102,7 @@ describe('Server', () => {
   it('provides data of known documents', async () => {
     const uuid = uuidv4();
     const serverDoc = createYDocWithText();
-    server.addSession(uuid, new Session(serverDoc));
+    server.addSession(new Session(uuid, serverDoc));
     
     await testWebSocket(ws => {
       ws.send(createConnectRequest(uuid, false).serializeBinary());
@@ -118,7 +118,7 @@ describe('Server', () => {
   it('processes and broadcasts document data', async () => {
     const uuid = uuidv4();
     const suffix = 'world';
-    server.addSession(uuid, new Session(createYDocWithText(suffix)));
+    server.addSession(new Session(uuid, createYDocWithText(suffix)));
 
     const ws1 = await openTestClient();
     await ws1.connect(uuid);
