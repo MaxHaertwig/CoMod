@@ -1,6 +1,7 @@
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/screens/edit_class/edit_class_screen.dart';
+import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
 import 'package:client/screens/main_screen/widgets/outline_class.dart';
 import 'package:client/widgets/menu_item.dart';
 import 'package:client/widgets/no_data_view.dart';
@@ -80,21 +81,8 @@ class MainScreen extends StatelessWidget {
   void _collaborate(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Joining collaboration session...'),
-        content: SizedBox(
-          width: 40,
-          height: 40,
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
+      builder: (_) => CollaborationDialog(
+        onCancel: () => Navigator.pop(context),
       ),
       barrierDismissible: false,
     );
