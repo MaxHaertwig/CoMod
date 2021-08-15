@@ -74,6 +74,7 @@ class Model extends ChangeNotifier {
             break;
           case SessionState.disconnected:
             completer.complete();
+            _jsBridge.onDocUpdateFunction = null;
             _session = null;
             notifyListeners();
             break;
@@ -81,6 +82,7 @@ class Model extends ChangeNotifier {
       },
       onError: onError,
     );
+    _jsBridge.onDocUpdateFunction = _session!.sendUpdate;
     notifyListeners();
     return completer.future;
   }
