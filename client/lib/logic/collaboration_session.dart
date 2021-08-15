@@ -31,19 +31,9 @@ class CollaborationSession {
       this.onError})
       : _hasModel = stateVector != null {
     _channel.stream.listen(
-      _processMessage,
-      onError: (error) {
-        print('Received error: $error');
-        _setState(SessionState.disconnected);
-        if (onError != null) {
-          onError!('$error');
-        }
-      },
-      onDone: () {
-        print(
-            'Channel closed (${_channel.closeCode}: ${_channel.closeReason})');
-        _setState(SessionState.disconnected);
-      },
+      _onMessage,
+      onError: _onError,
+      onDone: _onDone,
       cancelOnError: true,
     );
     _send(CollaborationRequest(
@@ -63,7 +53,7 @@ class CollaborationSession {
     }
   }
 
-  void _processMessage(message) {
+  void _onMessage(message) {
     final response = CollaborationResponse.fromBuffer(message);
     print('[ws] Received response: ${response.whichMessage()}');
     switch (_state) {
@@ -109,6 +99,19 @@ class CollaborationSession {
     } else {
       print('Model not found on server');
       _disconnect();
+    }
+  }
+
+  void _onDone() {
+    print('Channel closed (${_channel.closeCode}: ${_channel.closeReason})');
+    _setState(SessionState.disconnected);
+  }
+
+  void _onError(dynamic error) {
+    print('Received error: $error');
+    _setState(SessionState.disconnected);
+    if (onError != null) {
+      onError!('$error');
     }
   }
 
