@@ -55,9 +55,12 @@ class JSBridge {
     await _evaluate('client.newModel("$uuid");');
   }
 
-  Future<String> loadModel(String uuid, List<int> data) async {
+  Future<String> loadModel(
+      String uuid, List<int> data, bool shouldSerialize) async {
     await _ready;
-    final code = 'client.loadModel("$uuid", "${base64Encode(data)}");';
+    final shouldSerializeString = shouldSerialize ? 'true' : 'false';
+    final code =
+        'client.loadModel("$uuid", "${base64Encode(data)}", $shouldSerializeString);';
     final result = await _jsRuntime.evaluateAsync(code);
     if (!kReleaseMode) {
       if (result.isError) {

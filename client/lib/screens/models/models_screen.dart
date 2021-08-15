@@ -1,8 +1,15 @@
+import 'dart:async';
+
+import 'package:client/logic/collaboration_session.dart';
+import 'package:client/logic/js_bridge.dart';
 import 'package:client/logic/models_manager.dart';
 import 'package:client/model/model.dart';
 import 'package:client/screens/main_screen/main_screen.dart';
+import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
+import 'package:client/screens/models/widgets/join_collaboration_session_dialog.dart';
 import 'package:client/screens/models/widgets/model_row.dart';
 import 'package:client/screens/edit_model_screen.dart';
+import 'package:client/widgets/menu_item.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +30,19 @@ class _ModelsScreenState extends State<ModelsScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Models')),
+        appBar: AppBar(
+          title: const Text('Models'),
+          actions: [
+            PopupMenuButton(
+              icon: const Icon(Icons.group_add),
+              tooltip: 'Collaborate',
+              itemBuilder: (_) => [
+                MenuItem(Icons.group_add, 'Collaborate', 0),
+              ],
+              onSelected: (_) => _collaborate(context),
+            )
+          ],
+        ),
         body: _models == null
             ? Container()
             : _models!.isEmpty
@@ -36,7 +55,10 @@ class _ModelsScreenState extends State<ModelsScreen> {
                     children: _models!
                         .map((model) => ModelRow(
                               model,
-                              onTap: () => _openModel(context, model),
+                              onTap: () async {
+                                await model.load();
+                                _openModel(context, model);
+                              },
                               onAction: (action) =>
                                   _modelAction(context, model, action),
                             ))
@@ -60,13 +82,12 @@ class _ModelsScreenState extends State<ModelsScreen> {
     }
   }
 
-  void _openModel(BuildContext context, Model model) async {
-    await model.load();
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => MainScreen(model)),
-    );
-  }
+  // TODO: leave session when navigating back
+  void _openModel(BuildContext context, Model model) async =>
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => MainScreen(model)),
+      );
 
   void _modelAction(
       BuildContext context, Model model, ModelRowAction action) async {
@@ -92,4 +113,50 @@ class _ModelsScreenState extends State<ModelsScreen> {
           ),
         ),
       );
+
+  void _collaborate(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => JoinCollaborationSessionDialog(
+          onJoinSession: _joinCollaborationSession),
+    );
+  }
+
+  void _joinCollaborationSession(String uuid) async {
+    showDialog(
+      context: context,
+      builder: (_) => CollaborationDialog(
+        onCancel: () => Navigator.pop(context),
+      ),
+      barrierDismissible: false,
+    );
+
+    final completer = Completer();
+    // TODO: model may exist locally
+    final session = CollaborationSession.joinWithoutModel(
+      uuid,
+      onModelReceived: (data) async {
+        print('Model received');
+        // TODO: don't save model right away; support collaboration-only models
+        final name = 'Shared';
+        final model = Model(await ModelsManager.path(uuid), name);
+        await model.load(await JSBridge().loadModel(uuid, data, true));
+        ModelsManager.addModel(uuid, name);
+        completer.complete(model);
+      },
+      onStateChanged: (state) {
+        if (state == SessionState.disconnected && !completer.isCompleted) {
+          completer.complete(null);
+        }
+      },
+      onError: (error) => ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error))),
+    );
+    final model = await completer.future;
+    Navigator.pop(context);
+    if (model != null) {
+      model.continueSession(session);
+      _openModel(context, model);
+    }
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:client/pb/collaboration.pb.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -9,24 +11,25 @@ typedef StateChangedFunction = void Function(SessionState);
 typedef OnErrorFunction = void Function(String);
 
 class CollaborationSession {
-  static const _host = 'localhost';
+  static final _host = Platform.isIOS ? 'localhost' : '10.0.2.2';
   static const _port = '3000';
 
-  final ProcessDataFunction onUpdateReceived;
   final SyncModelFunction? onSyncModel;
   final ProcessDataFunction? onModelReceived;
-  final StateChangedFunction? onStateChanged;
   final OnErrorFunction? onError;
+
+  ProcessDataFunction? onUpdateReceived;
+  StateChangedFunction? onStateChanged;
 
   final _channel = WebSocketChannel.connect(Uri.parse('ws://$_host:$_port'));
   final bool _hasModel;
 
   SessionState _state = SessionState.connecting;
 
-  CollaborationSession(String uuid, List<int>? stateVector,
-      {required this.onUpdateReceived,
-      this.onSyncModel,
+  CollaborationSession._(String uuid, List<int>? stateVector,
+      {this.onSyncModel,
       this.onModelReceived,
+      this.onUpdateReceived,
       this.onStateChanged,
       this.onError})
       : _hasModel = stateVector != null {
@@ -43,6 +46,26 @@ class CollaborationSession {
       ),
     ));
   }
+
+  CollaborationSession.joinWithModel(String uuid, List<int>? stateVector,
+      {required SyncModelFunction onSyncModel,
+      required ProcessDataFunction onUpdateReceived,
+      StateChangedFunction? onStateChanged,
+      OnErrorFunction? onError})
+      : this._(uuid, stateVector,
+            onSyncModel: onSyncModel,
+            onUpdateReceived: onUpdateReceived,
+            onStateChanged: onStateChanged,
+            onError: onError);
+
+  CollaborationSession.joinWithoutModel(String uuid,
+      {required ProcessDataFunction onModelReceived,
+      StateChangedFunction? onStateChanged,
+      OnErrorFunction? onError})
+      : this._(uuid, null,
+            onModelReceived: onModelReceived,
+            onStateChanged: onStateChanged,
+            onError: onError);
 
   SessionState get status => _state;
 
@@ -83,7 +106,7 @@ class CollaborationSession {
           _disconnect();
           break;
         }
-        onUpdateReceived(response.update);
+        onUpdateReceived!(response.update);
         break;
       case SessionState.disconnected:
         print('Received message while being disconnected.');

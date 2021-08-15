@@ -31,7 +31,7 @@ function newModel(uuid) {
   serializeModel(yDoc);
 }
 
-function loadModel(uuid, base64Data) {
+function loadModel(uuid, base64Data, shouldSerialize) {
   if (activeDoc) {
     activeDoc.destroy();
   }
@@ -44,6 +44,9 @@ function loadModel(uuid, base64Data) {
   mapping = new Map();
   mapping.set(uuid, activeModel);
   activeModel.toArray().forEach(element => addToMapping(element));
+  if (shouldSerialize) {
+    serializeModel();
+  }
   sendMessage('ModelLoaded', JSON.stringify(activeModel.toJSON()));
 }
 
@@ -61,6 +64,7 @@ function sync(serverStateVector, serverUpdate) {
 }
 
 function processUpdate(data) {
+  // TODO: report diff to Flutter; yjs observe
   yjs.applyUpdate(activeDoc, data);
   serializeModel();
 }

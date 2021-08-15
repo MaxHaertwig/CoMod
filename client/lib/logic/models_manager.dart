@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:client/model/model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -31,36 +30,42 @@ class ModelsManager {
         .toList();
   }
 
+  static Future<String> path(String uuid) async =>
+      '${(await _documentsDirectory).path}/$uuid.yjs';
+
   static Future<Model> newModel(String name) async {
-    final directory = await _documentsDirectory;
     final uuid = Uuid().v4();
     JSBridge().newModel(uuid);
 
-    final path = '${directory.path}/$uuid.yjs';
-    final document = Model(path, name);
+    final document = Model(await path(uuid), name);
     if (_models != null) {
       _models![uuid] = name;
     } else {
       _models = {uuid: name};
     }
-    await File('${directory.path}/$_modelsFile')
-        .writeAsString(jsonEncode(_models));
+    await _saveModels();
     return document;
   }
 
-  static Future<void> saveModel(String uuid, List<int> data) async {
-    final directory = await _documentsDirectory;
-    await File('${directory.path}/$uuid.yjs').writeAsBytes(data);
+  static Future<void> addModel(String uuid, String name) async {
+    _models![uuid] = name;
+    await _saveModels();
   }
+
+  static Future<void> saveModel(String uuid, List<int> data) async =>
+      await File(await path(uuid)).writeAsBytes(data);
 
   static void renameModel(String uuid, String newName) async {
     _models![uuid] = newName;
-    final directory = await _documentsDirectory;
-    await File('${directory.path}/$_modelsFile')
+    await File('${(await _documentsDirectory).path}/$_modelsFile')
         .writeAsString(jsonEncode(_models));
   }
 
   static void deleteModel(String uuid) {
     _models!.remove(uuid);
   }
+
+  static Future<void> _saveModels() async =>
+      await File('${(await _documentsDirectory).path}/$_modelsFile')
+          .writeAsString(jsonEncode(_models));
 }

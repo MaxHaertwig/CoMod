@@ -38,9 +38,9 @@ class Model extends ChangeNotifier {
       ? 'collaboration://maxhaertwig.com/thesis/$uuid'
       : null;
 
-  Future<void> load() async {
-    final xml =
-        await JSBridge().loadModel(uuid, await File(path).readAsBytes());
+  Future<void> load([String? inXml]) async {
+    final xml = inXml ??
+        await JSBridge().loadModel(uuid, await File(path).readAsBytes(), false);
     if (!_hasModel) {
       _hasModel = true;
       umlModel = UMLModel.fromXmlString(xml);
@@ -62,13 +62,12 @@ class Model extends ChangeNotifier {
 
   Future<void> collaborate(OnErrorFunction onError) async {
     final completer = Completer();
-    _session = CollaborationSession(
+    _session = CollaborationSession.joinWithModel(
       uuid,
       await _jsBridge.stateVector(),
-      onUpdateReceived: _jsBridge.processUpdate,
       onSyncModel: _jsBridge.sync,
+      onUpdateReceived: _jsBridge.processUpdate,
       onStateChanged: (state) {
-        print('Session state changed: $state');
         switch (state) {
           case SessionState.connecting:
           case SessionState.syncing:
@@ -95,6 +94,20 @@ class Model extends ChangeNotifier {
     await _session!.close();
     _session = null;
     notifyListeners();
+  }
+
+  void continueSession(CollaborationSession session) {
+    _session = session;
+    _session!.onStateChanged = (state) {
+      print('Session state changed: $state');
+      if (state == SessionState.disconnected) {
+        _jsBridge.onDocUpdateFunction = null;
+        _session = null;
+        notifyListeners();
+      }
+    };
+    _session!.onUpdateReceived = _jsBridge.processUpdate;
+    _jsBridge.onDocUpdateFunction = _session!.sendUpdate;
   }
 
   static const _elementsWithNameElement = {
