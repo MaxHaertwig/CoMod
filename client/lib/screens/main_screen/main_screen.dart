@@ -6,6 +6,7 @@ import 'package:client/screens/main_screen/widgets/collaboration_menu_button.dar
 import 'package:client/screens/main_screen/widgets/outline_class.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatelessWidget {
@@ -26,9 +27,7 @@ class MainScreen extends StatelessWidget {
               actions: [
                 CollaborationMenuButton(
                   model.isSessionInProgress,
-                  onSelected: (_) => model.isSessionInProgress
-                      ? _stopCollaborating()
-                      : _collaborate(context),
+                  onSelected: (index) => _collaborationAction(context, index),
                 ),
               ],
             ),
@@ -74,6 +73,20 @@ class MainScreen extends StatelessWidget {
     );
   }
 
+  void _collaborationAction(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        _collaborate(context);
+        break;
+      case 1:
+        Clipboard.setData(ClipboardData(text: _model.sessionLink));
+        break;
+      case 2:
+        _model.stopCollaborating();
+        break;
+    }
+  }
+
   void _collaborate(BuildContext context) async {
     showDialog(
       context: context,
@@ -86,6 +99,4 @@ class MainScreen extends StatelessWidget {
         .showSnackBar(SnackBar(content: Text(error))));
     Navigator.pop(context);
   }
-
-  void _stopCollaborating() {}
 }

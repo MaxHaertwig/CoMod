@@ -34,6 +34,10 @@ class Model extends ChangeNotifier {
 
   bool get isSessionInProgress => _session != null;
 
+  String? get sessionLink => isSessionInProgress
+      ? 'collaboration://maxhaertwig.com/thesis/$uuid'
+      : null;
+
   Future<void> load() async {
     final xml =
         await JSBridge().loadModel(uuid, await File(path).readAsBytes());

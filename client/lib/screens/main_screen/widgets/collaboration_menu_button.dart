@@ -12,11 +12,14 @@ class CollaborationMenuButton extends StatelessWidget {
   // Icon choices: group_add, person_add, group_work, people, compass_calibration, device_hub, record_voice_over
   @override
   Widget build(BuildContext context) => isSessionInProgress
-      ? PopupMenuButton(
+      ? PopupMenuButton<int>(
           icon: const Icon(Icons.group),
           tooltip: 'Collaboration',
           itemBuilder: (_) => [
-            MenuItem(Icons.cancel_outlined, 'Stop collaborating', 0),
+            MenuItem(Icons.link, 'Copy link', 1),
+            PopupMenuDivider(),
+            MenuItem(Icons.cancel_outlined, 'Stop collaborating', 2,
+                isDestructive: true),
           ],
           onSelected: onSelected,
         )
