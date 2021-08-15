@@ -53,11 +53,11 @@ function stateVector() {
 
 function sync(serverStateVector, serverUpdate) {
   if (serverUpdate) {
-    yjs.applyUpdate(Base64.toUint8Array(serverUpdate));
+    yjs.applyUpdate(activeDoc, Base64.toUint8Array(serverUpdate));
   }
-  const update = yjs.encodeStateAsUpdate(activeDoc, serverStateVector);
+  const update = yjs.encodeStateAsUpdate(activeDoc, serverStateVector ? Base64.toUint8Array(serverStateVector) : undefined);
   serializeModel();
-  return Base64.fromUint8Array(update);
+  return update ? Base64.fromUint8Array(update) : undefined;
 }
 
 function processUpdate(data) {

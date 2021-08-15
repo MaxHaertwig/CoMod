@@ -71,8 +71,9 @@ class JSBridge {
         : '"${base64Encode(serverStateVector)}"';
     final serverUpdateString =
         serverUpdate.isEmpty ? 'undefined' : '"${base64Encode(serverUpdate)}"';
-    return base64Decode(await _evaluate(
-        'client.sync($serverStateVectorString, $serverUpdateString)'));
+    final result = await _evaluate(
+        'client.sync($serverStateVectorString, $serverUpdateString)');
+    return result.isEmpty ? null : base64Decode(result);
   }
 
   void processUpdate(List<int> data) =>
