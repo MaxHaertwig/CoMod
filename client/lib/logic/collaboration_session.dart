@@ -127,4 +127,6 @@ class CollaborationSession {
     }
     _send(CollaborationRequest(update: update));
   }
+
+  Future<void> close() async => await _channel.sink.close();
 }

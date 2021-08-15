@@ -85,6 +85,12 @@ class Model extends ChangeNotifier {
     return completer.future;
   }
 
+  void stopCollaborating() async {
+    await _session!.close();
+    _session = null;
+    notifyListeners();
+  }
+
   static const _elementsWithNameElement = {
     UMLClass.xmlTag,
     UMLOperation.xmlTag
