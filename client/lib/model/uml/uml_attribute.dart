@@ -3,6 +3,7 @@ import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:quiver/core.dart';
+import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
@@ -68,6 +69,11 @@ class UMLAttribute {
       model?.updateAttribute(id, _typeAttribute, dataType.xmlRepresentation);
     }
   }
+
+  void addToModel() => model?.insertElement(_umlClass!.id, id, xmlTag, name, [
+        Tuple2(_visibilityAttribute, visibility.xmlRepresentation),
+        Tuple2(_typeAttribute, dataType.xmlRepresentation)
+      ]);
 
   String get stringRepresentation =>
       '${_visibility.symbol} ${_name.isEmpty ? '<name>' : _name}: ${_dataType.stringRepresentation}';

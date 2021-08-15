@@ -6,6 +6,7 @@ import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:flutter/material.dart';
+import 'package:tuple/tuple.dart';
 
 class Model extends ChangeNotifier {
   final String path;
@@ -54,9 +55,10 @@ class Model extends ChangeNotifier {
     UMLOperation.xmlTag
   };
 
-  void insertElement(String parentID, String id, String nodeName) {
-    _jsBridge.insertElement(
-        parentID, id, nodeName, _elementsWithNameElement.contains(nodeName));
+  void insertElement(String parentID, String id, String nodeName, String name,
+      List<Tuple2<String, String>>? attributes) {
+    _jsBridge.insertElement(parentID, id, nodeName,
+        _elementsWithNameElement.contains(nodeName), name, attributes);
     notifyListeners();
   }
 

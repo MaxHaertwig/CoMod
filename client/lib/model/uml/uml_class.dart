@@ -77,7 +77,7 @@ class UMLClass {
   void addAttribute(UMLAttribute attribute) {
     attribute.umlClass = this;
     _attributes[attribute.id] = attribute;
-    model?.insertElement(id, attribute.id, UMLAttribute.xmlTag);
+    attribute.addToModel();
   }
 
   void removeAttribute(UMLAttribute attribute) {
@@ -96,6 +96,9 @@ class UMLClass {
 
   bool get isEmpty =>
       _name.isEmpty && _attributes.isEmpty && _operations.isEmpty;
+
+  void addToModel() =>
+      model?.insertElement(model!.uuid, id, xmlTag, name, null);
 
   String get xmlRepresentation {
     final name = '<$_nameTag>' + _name + '</$_nameTag>';

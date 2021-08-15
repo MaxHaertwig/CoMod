@@ -47,15 +47,20 @@ function loadModel(uuid, base64Data) {
   sendMessage('ModelLoaded', JSON.stringify(activeModel.toJSON()));
 }
 
-function insertElement(parentID, id, nodeName, hasNameElement) {
+function insertElement(parentID, id, nodeName, hasNameElement, name, attributes) {
   const element = new yjs.XmlElement(nodeName);
   element.setAttribute('id', id);
+  if (attributes) {
+    for (const [key, value] of attributes) {
+      element.setAttribute(key, value);
+    }
+  }
   if (hasNameElement) {
     const nameElement = new yjs.XmlElement('name');
-    nameElement.push([new yjs.XmlText()]);
+    nameElement.push([new yjs.XmlText(name)]);
     element.push([nameElement]);
   } else {
-    element.push([new yjs.XmlText()]);
+    element.push([new yjs.XmlText(name)]);
   }
   mapping.set(id, element);
   mapping.get(parentID).push([element]);

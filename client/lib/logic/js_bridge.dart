@@ -6,6 +6,7 @@ import 'package:client/logic/models_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_js/flutter_js.dart';
+import 'package:tuple/tuple.dart';
 
 class JSBridge {
   static final JSBridge _shared = JSBridge._internal();
@@ -62,9 +63,19 @@ class JSBridge {
   }
 
   void insertElement(
-          String parentID, String id, String nodeName, bool hasNameElement) =>
-      _evaluate(
-          'client.insertElement("$parentID", "$id", "$nodeName", ${hasNameElement ? "true" : "false"});');
+      String parentID,
+      String id,
+      String nodeName,
+      bool hasNameElement,
+      String name,
+      List<Tuple2<String, String>>? attributes) {
+    final hasNameElementString = hasNameElement ? 'true' : 'false';
+    final attributesString = attributes != null
+        ? ', [${attributes.map((tuple) => '["${tuple.item1}", "${tuple.item2}"]').join(',')}]'
+        : '';
+    _evaluate(
+        'client.insertElement("$parentID", "$id", "$nodeName", "$name", "$hasNameElementString"$attributesString);');
+  }
 
   void deleteElement(String id) => _evaluate('client.deleteElement("$id");');
 

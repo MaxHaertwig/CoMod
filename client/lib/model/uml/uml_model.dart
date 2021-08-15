@@ -44,7 +44,7 @@ class UMLModel {
   void addClass(UMLClass umlClass) {
     umlClass.umlModel = this;
     _classes[umlClass.id] = umlClass;
-    _model?.insertElement(_model!.uuid, umlClass.id, UMLClass.xmlTag);
+    umlClass.addToModel();
   }
 
   void removeClass(UMLClass umlClass) {
