@@ -82,7 +82,8 @@ class MainScreen extends StatelessWidget {
       ),
       barrierDismissible: false,
     );
-    await _model.collaborate();
+    await _model.collaborate((error) => ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(error))));
     Navigator.pop(context);
   }
 

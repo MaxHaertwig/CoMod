@@ -6,6 +6,7 @@ enum SessionState { connecting, syncing, connected, disconnected }
 typedef SyncModelFunction = Future<List<int>?> Function(List<int>, List<int>);
 typedef ProcessDataFunction = void Function(List<int>);
 typedef StateChangedFunction = void Function(SessionState);
+typedef OnErrorFunction = void Function(String);
 
 class CollaborationSession {
   static const _host = 'localhost';
@@ -15,6 +16,7 @@ class CollaborationSession {
   final SyncModelFunction? onSyncModel;
   final ProcessDataFunction? onModelReceived;
   final StateChangedFunction? onStateChanged;
+  final OnErrorFunction? onError;
 
   final _channel = WebSocketChannel.connect(Uri.parse('ws://$_host:$_port'));
   final bool _hasModel;
@@ -25,13 +27,17 @@ class CollaborationSession {
       {required this.onUpdateReceived,
       this.onSyncModel,
       this.onModelReceived,
-      this.onStateChanged})
+      this.onStateChanged,
+      this.onError})
       : _hasModel = stateVector != null {
     _channel.stream.listen(
       _processMessage,
       onError: (error) {
         print('Received error: $error');
         _setState(SessionState.disconnected);
+        if (onError != null) {
+          onError!('$error');
+        }
       },
       onDone: () {
         print(

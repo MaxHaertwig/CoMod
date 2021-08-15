@@ -56,7 +56,7 @@ class Model extends ChangeNotifier {
     await File(path).delete();
   }
 
-  Future<void> collaborate() async {
+  Future<void> collaborate(OnErrorFunction onError) async {
     final completer = Completer();
     _session = CollaborationSession(
       uuid,
@@ -79,7 +79,9 @@ class Model extends ChangeNotifier {
             break;
         }
       },
+      onError: onError,
     );
+    notifyListeners();
     return completer.future;
   }
 
