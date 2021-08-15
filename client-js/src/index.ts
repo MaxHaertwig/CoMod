@@ -21,13 +21,13 @@ function serializeModel(yDoc?: yjs.Doc) {
   }));
 }
 
-var activeDoc: yjs.Doc;
+export var activeDoc: yjs.Doc; // exported for testing purposes
 var activeModel: yjs.XmlElement;
 var mapping: Map<string, yjs.XmlElement>;
 
 // Functions for client
 
-function newModel(uuid: string) {
+export function newModel(uuid: string) {
   const yDoc = new yjs.Doc({ guid: uuid });
   const model = new yjs.XmlElement('model');
   model.setAttribute('uuid', uuid);
@@ -35,14 +35,17 @@ function newModel(uuid: string) {
   serializeModel(yDoc);
 }
 
-function loadModel(uuid: string, base64Data: string, shouldSerialize: boolean) {
+export function loadModel(uuid: string, base64Data: string, shouldSerialize: boolean) {
   if (activeDoc) {
     activeDoc.destroy();
   }
   activeDoc = new yjs.Doc({ guid: uuid });
   yjs.applyUpdate(activeDoc, Base64.toUint8Array(base64Data));
-  activeDoc.on('update', (data: Uint8Array) => {
-    sendMessage('DocUpdate', `"${Base64.fromUint8Array(data)}"`);
+  activeDoc.on('update', (data: Uint8Array, origin: any) => {
+    if (origin !== activeDoc) {
+      console.log(origin);
+      sendMessage('DocUpdate', `"${Base64.fromUint8Array(data)}"`);
+    }
   });
   activeModel = activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
   mapping = new Map();
@@ -54,26 +57,26 @@ function loadModel(uuid: string, base64Data: string, shouldSerialize: boolean) {
   sendMessage('ModelLoaded', JSON.stringify(activeModel.toJSON()));
 }
 
-function stateVector() {
+export function stateVector() {
   return Base64.fromUint8Array(yjs.encodeStateVector(activeDoc));
 }
 
-function sync(serverStateVector: string, serverUpdate: string) {
+export function sync(serverStateVector?: string, serverUpdate?: string) {
   if (serverUpdate) {
     yjs.applyUpdate(activeDoc, Base64.toUint8Array(serverUpdate));
+    serializeModel();
   }
   const update = yjs.encodeStateAsUpdate(activeDoc, serverStateVector ? Base64.toUint8Array(serverStateVector) : undefined);
-  serializeModel();
   return update ? Base64.fromUint8Array(update) : undefined;
 }
 
-function processUpdate(data: string) {
+export function processUpdate(data: string) {
   // TODO: report diff to Flutter; yjs observe
-  yjs.applyUpdate(activeDoc, Base64.toUint8Array(data));
+  yjs.applyUpdate(activeDoc, Base64.toUint8Array(data), activeDoc);
   serializeModel();
 }
 
-function insertElement(parentID: string, id: string, nodeName: string, hasNameElement: boolean, name: string, attributes: Array<Array<string>>) {
+export function insertElement(parentID: string, id: string, nodeName: string, hasNameElement: boolean, name: string, attributes: Array<Array<string>>) {
   const element = new yjs.XmlElement(nodeName);
   element.setAttribute('id', id);
   if (attributes) {
@@ -93,7 +96,7 @@ function insertElement(parentID: string, id: string, nodeName: string, hasNameEl
   serializeModel();
 }
 
-function deleteElement(id: string) {
+export function deleteElement(id: string) {
   const element = mapping.get(id)!;
   const parent = element.parent! as yjs.XmlFragment;
   parent.delete(parent.toArray().indexOf(element));
@@ -102,7 +105,7 @@ function deleteElement(id: string) {
 }
 
 // TODO: apply delta
-function updateText(id: string, name: string) {
+export function updateText(id: string, name: string) {
   const element = mapping.get(id)!;
   let text = element.get(0);
   if (text instanceof yjs.XmlElement) {
@@ -115,13 +118,7 @@ function updateText(id: string, name: string) {
   serializeModel();
 }
 
-function updateAttribute(id: string, attribute: string, value: string) {
+export function updateAttribute(id: string, attribute: string, value: string) {
   mapping.get(id)!.setAttribute(attribute, value);
   serializeModel();
 }
-
-function startObservation() {
-  
-}
-
-module.exports = { newModel, loadModel, stateVector, sync, processUpdate, insertElement, deleteElement, updateAttribute, updateText, startObservation };
