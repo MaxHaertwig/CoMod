@@ -3,29 +3,9 @@ import * as yjs from 'yjs';
 
 declare function sendMessage(channel: string, message: string): void;
 
-function addToMapping(element: yjs.XmlElement) {
-  const id = element.getAttribute('id');
-  if (id) {
-    mapping.set(id, element);
-    element.toArray()
-      .filter(element => element instanceof yjs.XmlElement)
-      .forEach(element => addToMapping(element as yjs.XmlElement));
-  }
-}
-
-function serializeModel(yDoc?: yjs.Doc) {
-  const doc = yDoc || activeDoc;
-  sendMessage('ModelSerialized', JSON.stringify({
-    uuid: doc.guid,
-    data: Base64.fromUint8Array(yjs.encodeStateAsUpdate(doc))
-  }));
-}
-
 export let activeDoc: yjs.Doc; // exported for testing purposes
 let activeModel: yjs.XmlElement;
 let mapping: Map<string, yjs.XmlElement>;
-
-// Functions for client
 
 export function newModel(uuid: string): void {
   const yDoc = new yjs.Doc({ guid: uuid });
@@ -44,7 +24,6 @@ export function loadModel(uuid: string, base64Data: string, shouldSerialize: boo
   yjs.applyUpdate(activeDoc, Base64.toUint8Array(base64Data));
   activeDoc.on('update', (data: Uint8Array, origin: any) => {
     if (origin !== activeDoc) {
-      console.log(origin);
       sendMessage('DocUpdate', `"${Base64.fromUint8Array(data)}"`);
     }
   });
@@ -59,6 +38,16 @@ export function loadModel(uuid: string, base64Data: string, shouldSerialize: boo
   }
 
   return JSON.stringify(activeModel.toJSON());
+}
+
+function addToMapping(element: yjs.XmlElement) {
+  const id = element.getAttribute('id');
+  if (id) {
+    mapping.set(id, element);
+    element.toArray()
+      .filter(element => element instanceof yjs.XmlElement)
+      .forEach(element => addToMapping(element as yjs.XmlElement));
+  }
 }
 
 export function stateVector(): string {
@@ -95,8 +84,10 @@ export function insertElement(parentID: string, id: string, nodeName: string, ha
   } else {
     element.push([new yjs.XmlText(name)]);
   }
+
   mapping.set(id, element);
   mapping.get(parentID)!.push([element]);
+
   serializeModel();
 }
 
@@ -125,4 +116,12 @@ export function updateText(id: string, name: string): void {
 export function updateAttribute(id: string, attribute: string, value: string): void {
   mapping.get(id)!.setAttribute(attribute, value);
   serializeModel();
+}
+
+function serializeModel(yDoc?: yjs.Doc) {
+  const doc = yDoc || activeDoc;
+  sendMessage('ModelSerialized', JSON.stringify({
+    uuid: doc.guid,
+    data: Base64.fromUint8Array(yjs.encodeStateAsUpdate(doc))
+  }));
 }

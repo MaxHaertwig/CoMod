@@ -17,7 +17,7 @@ describe('client-js', () => {
 
   function assertChannels(expected: string[]) {
     assert.strictEqual(messages.length, expected.length);
-    for (let i = 0; i < messages.length; i += 1) {
+    for (let i = 0; i < messages.length; i++) {
       assert.strictEqual(messages[i].channel, expected[i]);
     }
   }
@@ -32,14 +32,12 @@ describe('client-js', () => {
   });
 
   it('loads models (without serialization)', () => {
-    const yDoc = createSampleYDoc();
-    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(yDoc)), false);
+    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(createSampleYDoc())), false);
     assert.strictEqual(messages.length, 0);
   });
 
   it('loads models (with serialization)', () => {
-    const yDoc = createSampleYDoc();
-    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(yDoc)), true);
+    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(createSampleYDoc())), true);
     assertChannels(['ModelSerialized']);
   });
 
@@ -74,7 +72,7 @@ describe('client-js', () => {
       Base64.fromUint8Array(yjs.encodeStateAsUpdate(serverDoc, Base64.toUint8Array(client.stateVector())))
     )!;
     yjs.applyUpdate(serverDoc, Base64.toUint8Array(update));
-    console.log(messages);
+    
     assert.strictEqual(person.getAttribute('a1'), 'localChange');
     assertChannels(['DocUpdate', 'ModelSerialized', 'ModelSerialized']); // modification + sync
   });
@@ -94,8 +92,7 @@ describe('client-js', () => {
   });
 
   it('inserts elements', () => {
-    const localDoc = createSampleYDoc();
-    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(localDoc)), false);
+    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(createSampleYDoc())), false);
 
     client.insertElement('P', 'A3', 'attribute', false, 'address', [['visibility', 'protected'], ['type', 'string']]);
 
