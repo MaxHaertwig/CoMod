@@ -79,19 +79,13 @@ class JSBridge {
   void processUpdate(List<int> data) =>
       _evaluate('client.processUpdate("${base64Encode(data)}");');
 
-  void insertElement(
-      String parentID,
-      String id,
-      String nodeName,
-      bool hasNameElement,
-      String name,
+  void insertElement(String parentID, String id, String nodeName, String name,
       List<Tuple2<String, String>>? attributes) {
-    final hasNameElementString = hasNameElement ? 'true' : 'false';
     final attributesString = attributes != null
         ? ', [${attributes.map((tuple) => '["${tuple.item1}", "${tuple.item2}"]').join(',')}]'
         : '';
     _evaluate(
-        'client.insertElement("$parentID", "$id", "$nodeName", "$name", "$hasNameElementString"$attributesString);');
+        'client.insertElement("$parentID", "$id", "$nodeName", "$name"$attributesString);');
   }
 
   void deleteElement(String id) => _evaluate('client.deleteElement("$id");');

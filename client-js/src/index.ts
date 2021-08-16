@@ -69,7 +69,7 @@ export function processUpdate(data: string): void {
   serializeModel();
 }
 
-export function insertElement(parentID: string, id: string, nodeName: string, hasNameElement: boolean, name: string, attributes: Array<Array<string>>): void {
+export function insertElement(parentID: string, id: string, nodeName: string, name: string, attributes?: [string, string][]): void {
   const element = new yjs.XmlElement(nodeName);
   element.setAttribute('id', id);
   if (attributes) {
@@ -77,13 +77,7 @@ export function insertElement(parentID: string, id: string, nodeName: string, ha
       element.setAttribute(key, value);
     }
   }
-  if (hasNameElement) {
-    const nameElement = new yjs.XmlElement('name');
-    nameElement.push([new yjs.XmlText(name)]);
-    element.push([nameElement]);
-  } else {
-    element.push([new yjs.XmlText(name)]);
-  }
+  element.push([new yjs.XmlText(name)]);
 
   mapping.set(id, element);
   mapping.get(parentID)!.push([element]);

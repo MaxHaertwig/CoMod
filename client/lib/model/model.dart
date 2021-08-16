@@ -110,15 +110,9 @@ class Model extends ChangeNotifier {
     _jsBridge.onDocUpdateFunction = _session!.sendUpdate;
   }
 
-  static const _elementsWithNameElement = {
-    UMLClass.xmlTag,
-    UMLOperation.xmlTag
-  };
-
   void insertElement(String parentID, String id, String nodeName, String name,
       List<Tuple2<String, String>>? attributes) {
-    _jsBridge.insertElement(parentID, id, nodeName,
-        _elementsWithNameElement.contains(nodeName), name, attributes);
+    _jsBridge.insertElement(parentID, id, nodeName, name, attributes);
     notifyListeners();
   }
 

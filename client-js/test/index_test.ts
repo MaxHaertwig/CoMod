@@ -94,7 +94,7 @@ describe('client-js', () => {
   it('inserts elements', () => {
     client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(createSampleYDoc())), false);
 
-    client.insertElement('P', 'A3', 'attribute', false, 'address', [['visibility', 'protected'], ['type', 'string']]);
+    client.insertElement('P', 'A3', 'attribute', 'address', [['visibility', 'protected'], ['type', 'string']]);
 
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     const person = model.get(0) as yjs.XmlElement;
