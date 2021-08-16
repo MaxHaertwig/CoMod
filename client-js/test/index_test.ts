@@ -34,27 +34,27 @@ describe('client-js', () => {
   it('loads models (without serialization)', () => {
     const yDoc = createSampleYDoc();
     client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(yDoc)), false);
-    assertChannels(['ModelLoaded']);
+    assert.strictEqual(messages.length, 0);
   });
 
   it('loads models (with serialization)', () => {
     const yDoc = createSampleYDoc();
     client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(yDoc)), true);
-    assertChannels(['ModelSerialized', 'ModelLoaded']);
+    assertChannels(['ModelSerialized']);
   });
 
   it('provides state vectors', () => {
     const yDoc = createSampleYDoc();
     client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(yDoc)), false);
     assert.strictEqual(client.stateVector(), Base64.fromUint8Array(yjs.encodeStateVector(yDoc)));
-    assertChannels(['ModelLoaded']);
+    assert.strictEqual(messages.length, 0);
   });
 
   it('syncs empty server updates', () => {
     const localDoc = createSampleYDoc();
     client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(localDoc)), false);
     client.sync(undefined, undefined);
-    assertChannels(['ModelLoaded']);
+    assert.strictEqual(messages.length, 0);
   });
 
   it('syncs server updates', () => {
@@ -74,9 +74,9 @@ describe('client-js', () => {
       Base64.fromUint8Array(yjs.encodeStateAsUpdate(serverDoc, Base64.toUint8Array(client.stateVector())))
     )!;
     yjs.applyUpdate(serverDoc, Base64.toUint8Array(update));
-
+    console.log(messages);
     assert.strictEqual(person.getAttribute('a1'), 'localChange');
-    assert.strictEqual(messages.filter(msg => msg.channel == 'ModelSerialized').length, 2); // modification + sync
+    assertChannels(['DocUpdate', 'ModelSerialized', 'ModelSerialized']); // modification + sync
   });
 
   it('processes updates', () => {
@@ -90,7 +90,7 @@ describe('client-js', () => {
     person.setAttribute('a2', 'remoteChange');
 
     client.processUpdate(Base64.fromUint8Array(yjs.encodeStateAsUpdate(serverDoc, Base64.toUint8Array(client.stateVector()))));
-    assertChannels(['ModelLoaded', 'ModelSerialized']);
+    assertChannels(['ModelSerialized']);
   });
 
   it('inserts elements', () => {
@@ -102,7 +102,7 @@ describe('client-js', () => {
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     const person = model.get(0) as yjs.XmlElement;
     assert.strictEqual(person.get(3).getAttribute('id'), 'A3');
-    assertChannels(['ModelLoaded', 'DocUpdate', 'ModelSerialized']);
+    assertChannels(['DocUpdate', 'ModelSerialized']);
   });
 
   it('deletes elements', () => {
@@ -113,7 +113,7 @@ describe('client-js', () => {
 
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     assert.strictEqual(model.get(0).length, 2); // name + attribute
-    assertChannels(['ModelLoaded', 'DocUpdate', 'ModelSerialized']);
+    assertChannels(['DocUpdate', 'ModelSerialized']);
   });
 
   it('updates text', () => {
@@ -126,7 +126,7 @@ describe('client-js', () => {
     const person = model.get(0) as yjs.XmlElement;
     const personName = person.get(1) as yjs.XmlElement;
     assert.strictEqual(personName.get(0).toString(), 'fullName');
-    assertChannels(['ModelLoaded', 'DocUpdate', 'ModelSerialized']);
+    assertChannels(['DocUpdate', 'ModelSerialized']);
   });
 
   it('updates attributes', () => {
@@ -138,6 +138,6 @@ describe('client-js', () => {
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     const person = model.get(0) as yjs.XmlElement;
     assert.strictEqual(person.getAttribute('test'), 'a');
-    assertChannels(['ModelLoaded', 'DocUpdate', 'ModelSerialized']);
+    assertChannels(['DocUpdate', 'ModelSerialized']);
   });
 });

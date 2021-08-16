@@ -17,8 +17,6 @@ class JSBridge {
 
   final Future<void> _ready;
 
-  String? _loadedModelXml;
-
   factory JSBridge() => _shared;
 
   JSBridge._internal()
@@ -37,7 +35,6 @@ class JSBridge {
   }
 
   void _setupChannels() {
-    _jsRuntime.onMessage('ModelLoaded', (args) => _loadedModelXml = args);
     _jsRuntime.onMessage(
         'ModelSerialized',
         (args) =>
@@ -61,15 +58,7 @@ class JSBridge {
     final shouldSerializeString = shouldSerialize ? 'true' : 'false';
     final code =
         'client.loadModel("$uuid", "${base64Encode(data)}", $shouldSerializeString);';
-    final result = await _jsRuntime.evaluateAsync(code);
-    if (!kReleaseMode) {
-      if (result.isError) {
-        print('[js] $code completed with $result');
-      } else {
-        print('[js] loadModel(...) ✓');
-      }
-    }
-    return _loadedModelXml!;
+    return await _evaluate(code);
   }
 
   Future<List<int>> stateVector() async =>
