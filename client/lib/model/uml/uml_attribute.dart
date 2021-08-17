@@ -29,10 +29,10 @@ class UMLAttribute implements UMLElement {
         _visibility = visibility,
         _dataType = dataType ?? UMLDataType.string();
 
-  static UMLAttribute fromXmlString(String xml) =>
-      fromXml(XmlDocument.parse(xml).rootElement);
+  static UMLAttribute fromXml(String xml) =>
+      fromXmlElement(XmlDocument.parse(xml).rootElement);
 
-  static UMLAttribute fromXml(XmlElement element) {
+  static UMLAttribute fromXmlElement(XmlElement element) {
     assert(element.name.toString() == 'attribute');
     return UMLAttribute(
       id: element.getAttribute('id')!,

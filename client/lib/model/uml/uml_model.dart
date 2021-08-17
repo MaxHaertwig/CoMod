@@ -18,16 +18,16 @@ class UMLModel {
       : uuid = uuid ?? Uuid().v4(),
         _classes = {for (var cls in classes ?? []) cls.id: cls};
 
-  static UMLModel fromXmlString(String xml) =>
-      fromXml(XmlDocument.parse(xml).rootElement);
+  static UMLModel fromXml(String xml) =>
+      fromXmlElement(XmlDocument.parse(xml).rootElement);
 
-  static UMLModel fromXml(XmlElement element) {
+  static UMLModel fromXmlElement(XmlElement element) {
     assert(element.name.toString() == 'model');
     return UMLModel(
       uuid: element.getAttribute('uuid')!,
       classes: element
           .findElements('class')
-          .map((child) => UMLClass.fromXml(child))
+          .map((child) => UMLClass.fromXmlElement(child))
           .toList(),
     );
   }

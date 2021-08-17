@@ -38,7 +38,10 @@ class UMLClass implements UMLElement {
         _operations =
             LinkedHashMap.fromIterable(operations ?? [], key: (op) => op.id);
 
-  static UMLClass fromXml(XmlElement element) {
+  static UMLClass fromXml(String xml) =>
+      fromXmlElement(XmlDocument.parse(xml).rootElement);
+
+  static UMLClass fromXmlElement(XmlElement element) {
     assert(element.name.toString() == 'class');
     return UMLClass(
       name: element.children.first.text.trim(),
@@ -47,11 +50,11 @@ class UMLClass implements UMLElement {
       y: int.parse(element.getAttribute('y') ?? '0'),
       attributes: element
           .findElements('attribute')
-          .map((child) => UMLAttribute.fromXml(child))
+          .map((child) => UMLAttribute.fromXmlElement(child))
           .toList(),
       operations: element
           .findElements('operation')
-          .map((child) => UMLOperation.fromXml(child))
+          .map((child) => UMLOperation.fromXmlElement(child))
           .toList(),
     );
   }
@@ -136,7 +139,7 @@ class UMLClass implements UMLElement {
       List<String> addedElements, List<String> deletedElements) {
     final List<UMLElement> newElements = [];
     for (final xml in addedElements) {
-      final attribute = UMLAttribute.fromXmlString(xml);
+      final attribute = UMLAttribute.fromXml(xml);
       _attributes[attribute.id] = attribute;
       newElements.add(attribute);
     }

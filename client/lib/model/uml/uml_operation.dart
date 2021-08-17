@@ -35,7 +35,10 @@ class UMLOperation implements UMLElement {
         _returnType = returnType ?? UMLDataType.voidType(),
         _parameters = parameters ?? [];
 
-  static UMLOperation fromXml(XmlElement element) {
+  static UMLOperation fromXml(String xml) =>
+      fromXmlElement(XmlDocument.parse(xml).rootElement);
+
+  static UMLOperation fromXmlElement(XmlElement element) {
     assert(element.name.toString() == 'operation');
     return UMLOperation(
       name: element.children.first.text.trim(),
@@ -44,7 +47,7 @@ class UMLOperation implements UMLElement {
       returnType: UMLDataType.fromString(element.getAttribute('returnType')!),
       parameters: element
           .findElements('param')
-          .map((el) => UMLOperationParameter.fromXml(el))
+          .map((el) => UMLOperationParameter.fromXmlElement(el))
           .toList(),
     );
   }

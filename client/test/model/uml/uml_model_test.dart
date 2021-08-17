@@ -9,13 +9,11 @@ import 'package:client/model/uml/uml_visibility.dart';
 import 'package:either_dart/either.dart';
 import 'package:test/test.dart';
 import 'package:client/model/uml/uml_model.dart';
-import 'package:xml/xml.dart';
 
 void main() {
   test('UMLModel should load model from XML file.', () async {
     final xmlString = await File('test_resources/valid.xml').readAsString();
-    final root = XmlDocument.parse(xmlString).rootElement;
-    final model = UMLModel.fromXml(root);
+    final model = UMLModel.fromXml(xmlString);
     expect(model.classes.values.map((c) => c.name).toSet(),
         {'Person', 'Student', 'Book'});
 

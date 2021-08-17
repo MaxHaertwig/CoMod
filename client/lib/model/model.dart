@@ -44,7 +44,7 @@ class Model extends ChangeNotifier {
         await JSBridge().loadModel(uuid, await File(path).readAsBytes(), false);
     if (!_hasModel) {
       _hasModel = true;
-      umlModel = UMLModel.fromXmlString(xml);
+      umlModel = UMLModel.fromXml(xml);
       umlModel.model = this;
       _createMapping();
     }
