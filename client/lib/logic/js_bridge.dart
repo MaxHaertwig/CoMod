@@ -57,8 +57,11 @@ class JSBridge {
     await _ready;
     final shouldSerializeString = shouldSerialize ? 'true' : 'false';
     final code =
-        'client.loadModel("$uuid", "${base64Encode(data)}", $shouldSerializeString);';
-    return await _evaluate(code);
+        'client.loadModel("$uuid", "${base64Encode(data)}", $shouldSerializeString)';
+    final xml = await _evaluate(code);
+    return xml
+        .substring(1, xml.length - 1) // Remove leading and trailing quotes
+        .replaceAll('\\"', '"'); // Replace escaped quotes
   }
 
   Future<List<int>> stateVector() async =>
