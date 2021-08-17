@@ -36,7 +36,7 @@ class UMLAttribute implements UMLElement {
     assert(element.name.toString() == 'attribute');
     return UMLAttribute(
       id: element.getAttribute('id')!,
-      name: element.innerText.trim(),
+      name: element.text.trim(),
       visibility:
           UMLVisibilityExt.fromString(element.getAttribute('visibility')!),
       dataType: UMLDataType.fromString(element.getAttribute('type')!),

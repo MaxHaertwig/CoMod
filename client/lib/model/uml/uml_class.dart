@@ -41,7 +41,7 @@ class UMLClass implements UMLElement {
   static UMLClass fromXml(XmlElement element) {
     assert(element.name.toString() == 'class');
     return UMLClass(
-      name: element.innerText.trim(),
+      name: element.children.first.text.trim(),
       id: element.getAttribute('id')!,
       x: int.parse(element.getAttribute('x') ?? '0'),
       y: int.parse(element.getAttribute('y') ?? '0'),

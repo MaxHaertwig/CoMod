@@ -38,7 +38,7 @@ class UMLOperation implements UMLElement {
   static UMLOperation fromXml(XmlElement element) {
     assert(element.name.toString() == 'operation');
     return UMLOperation(
-      name: element.innerText.trim(),
+      name: element.children.first.text.trim(),
       visibility:
           UMLVisibilityExt.fromString(element.getAttribute('visibility')!),
       returnType: UMLDataType.fromString(element.getAttribute('returnType')!),

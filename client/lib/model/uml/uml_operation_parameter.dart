@@ -24,7 +24,7 @@ class UMLOperationParameter implements UMLElement {
   static UMLOperationParameter fromXml(XmlElement element) {
     assert(element.name.toString() == 'param');
     return UMLOperationParameter(
-      name: element.innerText.trim(),
+      name: element.text.trim(),
       type: UMLDataType.fromString(element.getAttribute('type')!),
     );
   }
