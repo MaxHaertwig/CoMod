@@ -191,4 +191,14 @@ describe('client-js', () => {
     ]);
     assert.deepEqual(personElementChanges[3], ['PA2']);
   });
+
+  it('ignores local modifications when observing remote changes', () => {
+    const yDoc = createSampleYDoc();
+    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(yDoc)), false);
+    client.startObservingRemoteChanges();
+    
+    client.updateAttribute('P', 'key', 'value');
+
+    assertChannels(['DocUpdate', 'ModelSerialized']);
+  });
 });

@@ -115,7 +115,10 @@ export function updateAttribute(id: string, attribute: string, value: string): v
 let observationFunction: (arg0: yjs.YEvent[], arg1: yjs.Transaction) => void;
 
 export function startObservingRemoteChanges(): void {
-  observationFunction = events => {
+  observationFunction = (events, transaction) => {
+    if (transaction.local) {
+      return;
+    }
     // [
     //   [
     //     'id',                                   // ID
