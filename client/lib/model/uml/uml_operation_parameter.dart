@@ -7,7 +7,7 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLOperationParameter implements UMLElement {
+class UMLOperationParameter implements NamedUMLElement {
   static const xmlTag = 'param';
   static const _typeAttribute = 'type';
 

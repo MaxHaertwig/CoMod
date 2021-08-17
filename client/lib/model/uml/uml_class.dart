@@ -11,7 +11,7 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLClass implements UMLElement {
+class UMLClass implements NamedUMLElement {
   static const xmlTag = 'class';
   static const _nameTag = 'name';
 

@@ -10,7 +10,7 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLOperation implements UMLElement {
+class UMLOperation implements NamedUMLElement {
   static const xmlTag = 'operation';
   static const _nameTag = 'name';
   static const _visibilityAttribute = 'visibility';

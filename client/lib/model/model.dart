@@ -115,7 +115,8 @@ class Model extends ChangeNotifier {
     _jsBridge.startObservingRemoteChanges();
     _jsBridge.onLocalUpdate = _session!.sendUpdate;
     _jsBridge.onRemoteUpdate = (textChanges, elementChanges) {
-      textChanges.forEach((tuple) => _mapping[tuple.item1]?.name = tuple.item2);
+      textChanges.forEach((tuple) =>
+          (_mapping[tuple.item1] as NamedUMLElement).name = tuple.item2);
       for (final tuple in elementChanges) {
         final element = _mapping[tuple.item1];
         if (element != null) {

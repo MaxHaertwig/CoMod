@@ -8,7 +8,7 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLAttribute implements UMLElement {
+class UMLAttribute implements NamedUMLElement {
   static const xmlTag = 'attribute';
   static const _visibilityAttribute = 'visibility';
   static const _typeAttribute = 'type';
