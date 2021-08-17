@@ -112,6 +112,45 @@ export function updateAttribute(id: string, attribute: string, value: string): v
   serializeModel();
 }
 
+let observationFunction: (arg0: yjs.YEvent[], arg1: yjs.Transaction) => void;
+
+export function startObservingRemoteChanges(): void {
+  observationFunction = events => {
+    // [
+    //   [
+    //     'id',                                   // ID
+    //     [['attr1', 'val1'], ['attr2', 'val2']], // attributes
+    //     ['<param>...</param>'],                 // added elements
+    //     ['id1']                                 // deleted element IDs  
+    //   ]
+    // ]
+    const elementChanges: [string, [string, string][], string[], string[]][] = [];
+    const textChanges: [string, string][] = [];
+    for (const event of events) {
+      if (event instanceof yjs.YTextEvent) {
+        textChanges.push([
+          (event.target.parent as yjs.XmlElement).getAttribute('id'),
+          (event.target as yjs.XmlText).toString()
+        ]);
+      } else if (event instanceof yjs.YXmlEvent) {
+        const element = event.target as yjs.XmlElement;
+        elementChanges.push([
+          element.getAttribute(element.nodeName === 'model' ? 'uuid' : 'id'),
+          Array.from(event.attributesChanged.values()).map(key => [key, element.getAttribute(key)]),
+          Array.from(event.changes.added.values()).map(item => item.content.getContent()[0].toJSON()),
+          Array.from(event.changes.deleted.values()).map(item => item.content.getContent()[0]._map.get('id').content.getContent()[0]) // workaround, getAttribute('id') returns undefined, because the type is deleted
+        ]);
+      }
+    }
+    sendMessage('RemoteUpdate', JSON.stringify({ text: textChanges, elements: elementChanges }));
+  };
+  activeModel.observeDeep(observationFunction);
+}
+
+export function stopObservingRemoteChanges(): void {
+  activeModel.unobserveDeep(observationFunction);
+}
+
 function serializeModel(yDoc?: yjs.Doc) {
   const doc = yDoc || activeDoc;
   sendMessage('ModelSerialized', JSON.stringify({

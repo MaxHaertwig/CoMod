@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import { Base64 } from 'js-base64';
 import * as yjs from 'yjs';
 import * as client from '../src/index';
-import {createSampleYDoc} from './test_utils';
+import { createSampleYDoc } from './test_utils';
 
 interface Message {
   channel: string;
@@ -136,5 +136,59 @@ describe('client-js', () => {
     const person = model.get(0) as yjs.XmlElement;
     assert.strictEqual(person.getAttribute('test'), 'a');
     assertChannels(['DocUpdate', 'ModelSerialized']);
+  });
+
+  it('observes remote changes', () => {
+    const yDoc = createSampleYDoc();
+    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(yDoc)), false);
+    client.startObservingRemoteChanges();
+
+    const serverDoc = new yjs.Doc();
+    yjs.applyUpdate(serverDoc, yjs.encodeStateAsUpdate(yDoc));
+    const person = (serverDoc.getXmlFragment().get(0) as yjs.XmlElement).get(0) as yjs.XmlElement;
+
+    // Modify name element
+    const personNameText = (person.get(1) as yjs.XmlElement).get(0) as yjs.XmlText;
+    personNameText.delete(0, 1); // name -> ame
+    personNameText.insert(0, 'fullN'); // ame -> fullName
+
+    // Add 2 attributes
+    person.setAttribute('key1', 'value1');
+    person.setAttribute('key2', 'value2');
+
+    // Add 2 elements
+    const address = new yjs.XmlElement('attribute');
+    address.setAttribute('id', 'PA3');
+    address.setAttribute('visibility', 'protected');
+    address.setAttribute('type', 'string');
+    address.push([new yjs.XmlText('address')]);
+    person.push([address]);
+
+    const ssn = new yjs.XmlElement('attribute');
+    ssn.setAttribute('id', 'PA4');
+    ssn.setAttribute('visibility', 'private');
+    ssn.setAttribute('type', 'string');
+    ssn.push([new yjs.XmlText('ssn')]);
+    person.push([ssn]);
+
+    // Remove age element
+    person.delete(2);
+    
+    yjs.applyUpdate(client.activeDoc, yjs.encodeStateAsUpdate(serverDoc, yjs.encodeStateVector(yDoc)));
+
+    const changes = JSON.parse(messages.find(msg => msg.channel === 'RemoteUpdate')!.message);
+    assert.strictEqual(changes['text'].length, 1);
+    assert.strictEqual(changes['elements'].length, 1);
+
+    assert.deepEqual(changes['text'][0], ['PA1', 'fullName']);
+
+    const personElementChanges = changes['elements'][0];
+    assert.strictEqual(personElementChanges[0], 'P');
+    assert.deepEqual(personElementChanges[1], [['key1', 'value1'], ['key2', 'value2']]);
+    assert.deepEqual(personElementChanges[2], [
+      '<attribute id="PA3" type="string" visibility="protected">address</attribute>',
+      '<attribute id="PA4" type="string" visibility="private">ssn</attribute>'
+    ]);
+    assert.deepEqual(personElementChanges[3], ['PA2']);
   });
 });
