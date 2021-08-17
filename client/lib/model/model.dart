@@ -58,6 +58,7 @@ class Model extends ChangeNotifier {
     assert(!_isDeleted);
     _isDeleted = true;
     await File(path).delete();
+    await ModelsManager.deleteModel(uuid);
   }
 
   Future<void> collaborate(OnErrorFunction onError) async {

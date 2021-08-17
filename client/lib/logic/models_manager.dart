@@ -61,8 +61,9 @@ class ModelsManager {
         .writeAsString(jsonEncode(_models));
   }
 
-  static void deleteModel(String uuid) {
+  static Future<void> deleteModel(String uuid) async {
     _models!.remove(uuid);
+    await _saveModels();
   }
 
   static Future<void> _saveModels() async =>
