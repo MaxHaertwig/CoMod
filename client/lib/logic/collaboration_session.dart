@@ -67,7 +67,7 @@ class CollaborationSession {
             onStateChanged: onStateChanged,
             onError: onError);
 
-  SessionState get status => _state;
+  SessionState get state => _state;
 
   void _setState(SessionState state) {
     _state = state;

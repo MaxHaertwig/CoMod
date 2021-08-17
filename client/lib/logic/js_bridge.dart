@@ -7,13 +7,20 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
 
+typedef TextChange = Tuple2<String, String>;
+typedef ElementChange
+    = Tuple4<String, List<Tuple2<String, String>>, List<String>, List<String>>;
+
 typedef LocalUpdateFunction = void Function(List<int>);
+typedef RemoteUpdateFunction = void Function(
+    List<TextChange>, List<ElementChange>);
 
 class JSBridge {
   static final JSBridge _shared = JSBridge._internal();
   static final _jsRuntime = getJavascriptRuntime();
 
   LocalUpdateFunction? onLocalUpdate;
+  RemoteUpdateFunction? onRemoteUpdate;
 
   final Future<void> _ready;
 
@@ -43,6 +50,26 @@ class JSBridge {
       print('[js] LocalUpdate: $args');
       if (onLocalUpdate != null) {
         onLocalUpdate!(base64Decode(args));
+      }
+    });
+    _jsRuntime.onMessage('RemoteUpdate', (args) {
+      print('[js] RemoteUpdate: $args');
+      if (onRemoteUpdate != null) {
+        final textChanges = args['text']
+            .map<TextChange>((tc) => Tuple2(tc[0] as String, tc[1] as String))
+            .toList() as List<TextChange>;
+        final elementChanges = args['elements']
+            .map<ElementChange>((ec) => Tuple4(
+                  ec[0] as String,
+                  ec[1]
+                      .map<Tuple2<String, String>>(
+                          (c) => Tuple2(c[0] as String, c[1] as String))
+                      .toList() as List<Tuple2<String, String>>,
+                  ec[2].cast<String>() as List<String>,
+                  ec[3].cast<String>() as List<String>,
+                ))
+            .toList() as List<ElementChange>;
+        onRemoteUpdate!(textChanges, elementChanges);
       }
     });
   }
@@ -99,6 +126,12 @@ class JSBridge {
 
   void updateAttribute(String id, String attribute, String value) =>
       _evaluate('client.updateAttribute("$id", "$attribute", "$value");');
+
+  void startObservingRemoteChanges() =>
+      _evaluate('client.startObservingRemoteChanges();');
+
+  void stopObservingRemoteChanges() =>
+      _evaluate('client.stopObservingRemoteChanges();');
 
   Future<String> _evaluate(String code) async {
     final result = await _jsRuntime.evaluateAsync(code);

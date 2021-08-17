@@ -1,13 +1,14 @@
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_data_type.dart';
+import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:quiver/core.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLAttribute {
+class UMLAttribute implements UMLElement {
   static const xmlTag = 'attribute';
   static const _visibilityAttribute = 'visibility';
   static const _typeAttribute = 'type';
@@ -28,9 +29,13 @@ class UMLAttribute {
         _visibility = visibility,
         _dataType = dataType ?? UMLDataType.string();
 
+  static UMLAttribute fromXmlString(String xml) =>
+      fromXml(XmlDocument.parse(xml).rootElement);
+
   static UMLAttribute fromXml(XmlElement element) {
     assert(element.name.toString() == 'attribute');
     return UMLAttribute(
+      id: element.getAttribute('id')!,
       name: element.innerText.trim(),
       visibility:
           UMLVisibilityExt.fromString(element.getAttribute('visibility')!),
@@ -70,7 +75,8 @@ class UMLAttribute {
     }
   }
 
-  void addToModel() => model?.insertElement(_umlClass!.id, id, xmlTag, name, [
+  void addToModel() =>
+      model?.insertElement(this, _umlClass!.id, id, xmlTag, name, [
         Tuple2(_visibilityAttribute, visibility.xmlRepresentation),
         Tuple2(_typeAttribute, dataType.xmlRepresentation)
       ]);
@@ -97,4 +103,18 @@ class UMLAttribute {
       _name == other._name &&
       _visibility == other._visibility &&
       _dataType == other._dataType;
+
+  List<UMLElement>? update(List<Tuple2<String, String>> attributes,
+      List<String> addedElements, List<String> deletedElements) {
+    for (final tuple in attributes) {
+      switch (tuple.item1) {
+        case _visibilityAttribute:
+          _visibility = UMLVisibilityExt.fromString(tuple.item2);
+          break;
+        case _typeAttribute:
+          _dataType = UMLDataType.fromString(tuple.item2);
+          break;
+      }
+    }
+  }
 }

@@ -38,17 +38,16 @@ class ModelsManager {
     JSBridge().newModel(uuid);
 
     final document = Model(await path(uuid), name);
+    await addModel(uuid, name);
+    return document;
+  }
+
+  static Future<void> addModel(String uuid, String name) async {
     if (_models != null) {
       _models![uuid] = name;
     } else {
       _models = {uuid: name};
     }
-    await _saveModels();
-    return document;
-  }
-
-  static Future<void> addModel(String uuid, String name) async {
-    _models![uuid] = name;
     await _saveModels();
   }
 

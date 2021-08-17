@@ -1,11 +1,13 @@
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_data_type.dart';
+import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:either_dart/either.dart';
+import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLOperationParameter {
+class UMLOperationParameter implements UMLElement {
   static const xmlTag = 'param';
   static const _typeAttribute = 'type';
 
@@ -33,6 +35,14 @@ class UMLOperationParameter {
 
   String get name => _name;
 
+  set name(String newName) {
+    if (newName != _name) {
+      final oldName = _name;
+      _name = newName;
+      model?.updateText(id, oldName, newName);
+    }
+  }
+
   UMLDataType get type => _type;
 
   String get stringRepresentation => '$_name: ${_type.stringRepresentation}';
@@ -41,4 +51,9 @@ class UMLOperationParameter {
       '<$xmlTag id="$id" $_typeAttribute="${_type.xmlRepresentation}">' +
       _name +
       '</$xmlTag>';
+
+  List<UMLElement>? update(List<Tuple2<String, String>> attributes,
+      List<String> addedElements, List<String> deletedElements) {
+    // TODO: implement update
+  }
 }

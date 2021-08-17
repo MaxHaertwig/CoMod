@@ -3,12 +3,14 @@ import 'dart:collection';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_data_type.dart';
+import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_operation_parameter.dart';
 import 'package:client/model/uml/uml_visibility.dart';
+import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLOperation {
+class UMLOperation implements UMLElement {
   static const xmlTag = 'operation';
   static const _nameTag = 'name';
   static const _visibilityAttribute = 'visibility';
@@ -36,7 +38,7 @@ class UMLOperation {
   static UMLOperation fromXml(XmlElement element) {
     assert(element.name.toString() == 'operation');
     return UMLOperation(
-      name: element.getElement('name')!.innerText.trim(),
+      name: element.innerText.trim(),
       visibility:
           UMLVisibilityExt.fromString(element.getAttribute('visibility')!),
       returnType: UMLDataType.fromString(element.getAttribute('returnType')!),
@@ -55,6 +57,14 @@ class UMLOperation {
   Model? get model => _umlClass?.model;
 
   String get name => _name;
+
+  set name(String newName) {
+    if (newName != _name) {
+      final oldName = _name;
+      _name = newName;
+      model?.updateText(id, oldName, newName);
+    }
+  }
 
   UMLVisibility get visibility => _visibility;
 
@@ -80,5 +90,15 @@ class UMLOperation {
         name +
         params +
         '</$xmlTag>';
+  }
+
+  void addToMapping(Map<String, UMLElement> mapping) {
+    mapping[id] = this;
+    _parameters.forEach((param) => mapping[param.id] = param);
+  }
+
+  List<UMLElement>? update(List<Tuple2<String, String>> attributes,
+      List<String> addedElements, List<String> deletedElements) {
+    // TODO: implement update
   }
 }

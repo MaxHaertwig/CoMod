@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_element.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
@@ -59,4 +60,7 @@ class UMLModel {
         classes +
         '</$_xmlTag>';
   }
+
+  void addToMapping(Map<String, UMLElement> mapping) =>
+      _classes.values.forEach((cls) => cls.addToMapping(mapping));
 }

@@ -3,13 +3,15 @@ import 'dart:collection';
 import 'package:client/extensions.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
+import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:collection/collection.dart';
+import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLClass {
+class UMLClass implements UMLElement {
   static const xmlTag = 'class';
   static const _nameTag = 'name';
 
@@ -39,7 +41,7 @@ class UMLClass {
   static UMLClass fromXml(XmlElement element) {
     assert(element.name.toString() == 'class');
     return UMLClass(
-      name: element.getElement('name')!.innerText.trim(),
+      name: element.innerText.trim(),
       id: element.getAttribute('id')!,
       x: int.parse(element.getAttribute('x') ?? '0'),
       y: int.parse(element.getAttribute('y') ?? '0'),
@@ -99,7 +101,7 @@ class UMLClass {
       _name.isEmpty && _attributes.isEmpty && _operations.isEmpty;
 
   void addToModel() =>
-      model?.insertElement(model!.uuid, id, xmlTag, name, null);
+      model?.insertElement(this, model!.uuid, id, xmlTag, name, null);
 
   String get xmlRepresentation {
     final name = '<$_nameTag>' + _name + '</$_nameTag>';
@@ -122,5 +124,26 @@ class UMLClass {
     final operations =
         _operations.values.map((op) => op.stringRepresentation).join(', ');
     return '$name[$attributes | $operations]';
+  }
+
+  void addToMapping(Map<String, UMLElement> mapping) {
+    mapping[id] = this;
+    _attributes.values.forEach((a) => mapping[a.id] = a);
+    _operations.values.forEach((op) => op.addToMapping(mapping));
+  }
+
+  List<UMLElement>? update(List<Tuple2<String, String>> attributes,
+      List<String> addedElements, List<String> deletedElements) {
+    final List<UMLElement> newElements = [];
+    for (final xml in addedElements) {
+      final attribute = UMLAttribute.fromXmlString(xml);
+      _attributes[attribute.id] = attribute;
+      newElements.add(attribute);
+    }
+    deletedElements.forEach((id) {
+      _attributes.remove(id);
+      _operations.remove(id);
+    });
+    return newElements;
   }
 }

@@ -4,9 +4,8 @@ import 'dart:io';
 import 'package:client/logic/collaboration_session.dart';
 import 'package:client/logic/js_bridge.dart';
 import 'package:client/logic/models_manager.dart';
-import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_model.dart';
-import 'package:client/model/uml/uml_operation.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
@@ -16,6 +15,7 @@ class Model extends ChangeNotifier {
 
   final _jsBridge = JSBridge();
 
+  late final Map<String, UMLElement> _mapping;
   String _name;
   bool _hasModel = false;
   bool _isDeleted = false;
@@ -25,6 +25,7 @@ class Model extends ChangeNotifier {
   Model(this.path, this._name, {UMLModel? umlModel}) {
     if (umlModel != null) {
       this.umlModel = umlModel;
+      _createMapping();
     }
   }
 
@@ -45,6 +46,7 @@ class Model extends ChangeNotifier {
       _hasModel = true;
       umlModel = UMLModel.fromXmlString(xml);
       umlModel.model = this;
+      _createMapping();
     }
   }
 
@@ -74,19 +76,18 @@ class Model extends ChangeNotifier {
           case SessionState.syncing:
             break;
           case SessionState.connected:
+            _sessionConnected();
             completer.complete();
             break;
           case SessionState.disconnected:
             completer.complete();
-            _jsBridge.onDocUpdateFunction = null;
-            _session = null;
-            notifyListeners();
+            _sessionDisconnected();
             break;
         }
       },
       onError: onError,
     );
-    _jsBridge.onDocUpdateFunction = _session!.sendUpdate;
+    _jsBridge.onLocalUpdate = _session!.sendUpdate;
     notifyListeners();
     return completer.future;
   }
@@ -98,26 +99,52 @@ class Model extends ChangeNotifier {
   }
 
   void continueSession(CollaborationSession session) {
+    assert(session.state == SessionState.connected);
     _session = session;
     _session!.onStateChanged = (state) {
       print('Session state changed: $state');
       if (state == SessionState.disconnected) {
-        _jsBridge.onDocUpdateFunction = null;
-        _session = null;
-        notifyListeners();
+        _sessionDisconnected();
       }
     };
     _session!.onUpdateReceived = _jsBridge.processUpdate;
-    _jsBridge.onDocUpdateFunction = _session!.sendUpdate;
+    _sessionConnected();
   }
 
-  void insertElement(String parentID, String id, String nodeName, String name,
-      List<Tuple2<String, String>>? attributes) {
+  void _sessionConnected() {
+    _jsBridge.startObservingRemoteChanges();
+    _jsBridge.onLocalUpdate = _session!.sendUpdate;
+    _jsBridge.onRemoteUpdate = (textChanges, elementChanges) {
+      textChanges.forEach((tuple) => _mapping[tuple.item1]?.name = tuple.item2);
+      for (final tuple in elementChanges) {
+        final element = _mapping[tuple.item1];
+        if (element != null) {
+          final newElements =
+              element.update(tuple.item2, tuple.item3, tuple.item4);
+          newElements?.forEach((el) => _mapping[el.id] = el);
+        }
+        tuple.item4.forEach((id) => _mapping.remove(id));
+      }
+      notifyListeners();
+    };
+  }
+
+  void _sessionDisconnected() {
+    _jsBridge.onLocalUpdate = null;
+    _jsBridge.onRemoteUpdate = null;
+    _session = null;
+    notifyListeners();
+  }
+
+  void insertElement(UMLElement element, String parentID, String id,
+      String nodeName, String name, List<Tuple2<String, String>>? attributes) {
+    _mapping[id] = element;
     _jsBridge.insertElement(parentID, id, nodeName, name, attributes);
     notifyListeners();
   }
 
   void deleteElement(String id) {
+    _mapping.remove(id);
     _jsBridge.deleteElement(id);
     notifyListeners();
   }
@@ -134,4 +161,9 @@ class Model extends ChangeNotifier {
   }
 
   void didChange() => notifyListeners();
+
+  void _createMapping() {
+    _mapping = {};
+    umlModel.addToMapping(_mapping);
+  }
 }
