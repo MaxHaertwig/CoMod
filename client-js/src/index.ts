@@ -24,7 +24,7 @@ export function loadModel(uuid: string, base64Data: string, shouldSerialize: boo
   yjs.applyUpdate(activeDoc, Base64.toUint8Array(base64Data));
   activeDoc.on('update', (data: Uint8Array, origin: any) => {
     if (origin !== activeDoc) {
-      sendMessage('DocUpdate', `"${Base64.fromUint8Array(data)}"`);
+      sendMessage('LocalUpdate', `"${Base64.fromUint8Array(data)}"`);
     }
   });
   activeModel = activeDoc.getXmlFragment().get(0) as yjs.XmlElement;

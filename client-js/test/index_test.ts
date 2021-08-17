@@ -74,7 +74,7 @@ describe('client-js', () => {
     yjs.applyUpdate(serverDoc, Base64.toUint8Array(update));
     
     assert.strictEqual(person.getAttribute('a1'), 'localChange');
-    assertChannels(['DocUpdate', 'ModelSerialized', 'ModelSerialized']); // modification + sync
+    assertChannels(['LocalUpdate', 'ModelSerialized', 'ModelSerialized']); // modification + sync
   });
 
   it('processes updates', () => {
@@ -99,7 +99,7 @@ describe('client-js', () => {
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     const person = model.get(0) as yjs.XmlElement;
     assert.strictEqual(person.get(3).getAttribute('id'), 'A3');
-    assertChannels(['DocUpdate', 'ModelSerialized']);
+    assertChannels(['LocalUpdate', 'ModelSerialized']);
   });
 
   it('deletes elements', () => {
@@ -110,7 +110,7 @@ describe('client-js', () => {
 
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     assert.strictEqual(model.get(0).length, 2); // name + attribute
-    assertChannels(['DocUpdate', 'ModelSerialized']);
+    assertChannels(['LocalUpdate', 'ModelSerialized']);
   });
 
   it('updates text', () => {
@@ -123,7 +123,7 @@ describe('client-js', () => {
     const person = model.get(0) as yjs.XmlElement;
     const personName = person.get(1) as yjs.XmlElement;
     assert.strictEqual(personName.get(0).toString(), 'fullName');
-    assertChannels(['DocUpdate', 'ModelSerialized']);
+    assertChannels(['LocalUpdate', 'ModelSerialized']);
   });
 
   it('updates attributes', () => {
@@ -135,7 +135,7 @@ describe('client-js', () => {
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     const person = model.get(0) as yjs.XmlElement;
     assert.strictEqual(person.getAttribute('test'), 'a');
-    assertChannels(['DocUpdate', 'ModelSerialized']);
+    assertChannels(['LocalUpdate', 'ModelSerialized']);
   });
 
   it('observes remote changes', () => {
@@ -199,6 +199,6 @@ describe('client-js', () => {
     
     client.updateAttribute('P', 'key', 'value');
 
-    assertChannels(['DocUpdate', 'ModelSerialized']);
+    assertChannels(['LocalUpdate', 'ModelSerialized']);
   });
 });

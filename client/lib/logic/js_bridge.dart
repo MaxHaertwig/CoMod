@@ -7,13 +7,13 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
 
-typedef OnDocUpdateFunction = void Function(List<int>);
+typedef LocalUpdateFunction = void Function(List<int>);
 
 class JSBridge {
   static final JSBridge _shared = JSBridge._internal();
   static final _jsRuntime = getJavascriptRuntime();
 
-  OnDocUpdateFunction? onDocUpdateFunction;
+  LocalUpdateFunction? onLocalUpdate;
 
   final Future<void> _ready;
 
@@ -39,10 +39,10 @@ class JSBridge {
         'ModelSerialized',
         (args) =>
             ModelsManager.saveModel(args['uuid'], base64Decode(args['data'])));
-    _jsRuntime.onMessage('DocUpdate', (args) {
-      print('[js] DocUpdate: $args');
-      if (onDocUpdateFunction != null) {
-        onDocUpdateFunction!(base64Decode(args));
+    _jsRuntime.onMessage('LocalUpdate', (args) {
+      print('[js] LocalUpdate: $args');
+      if (onLocalUpdate != null) {
+        onLocalUpdate!(base64Decode(args));
       }
     });
   }
