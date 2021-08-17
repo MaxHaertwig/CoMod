@@ -42,7 +42,7 @@ void main() {
     expect(studentMajor.dataType, UMLDataType.string());
 
     final studentStudy =
-        student.operations.firstWhere((op) => op.name == 'study');
+        student.operations.values.firstWhere((op) => op.name == 'study');
     expect(studentStudy.visibility, UMLVisibility.protected);
     expect(studentStudy.returnType, UMLDataType.voidType());
     expect(studentStudy.parameters.map((p) => p.name).toList(),

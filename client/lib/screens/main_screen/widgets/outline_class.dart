@@ -39,7 +39,7 @@ class OutlineClass extends StatelessWidget {
                 if (umlClass.operations.isNotEmpty)
                   const Divider(color: Colors.grey),
                 if (umlClass.operations.isNotEmpty)
-                  ...umlClass.operations
+                  ...umlClass.operations.values
                       .map((operation) => Text(
                           operation.stringRepresentation)) // TODO: monospace
                       .toList(),

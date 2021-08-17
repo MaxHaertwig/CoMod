@@ -18,7 +18,7 @@ class UMLClass {
   String _name;
   int _x, _y;
   LinkedHashMap<String, UMLAttribute> _attributes;
-  List<UMLOperation> _operations;
+  LinkedHashMap<String, UMLOperation> _operations;
 
   UMLClass(
       {String? id,
@@ -33,7 +33,8 @@ class UMLClass {
         _y = y,
         _attributes =
             LinkedHashMap.fromIterable(attributes ?? [], key: (a) => a.id),
-        _operations = operations ?? [];
+        _operations =
+            LinkedHashMap.fromIterable(operations ?? [], key: (op) => op.id);
 
   static UMLClass fromXml(XmlElement element) {
     assert(element.name.toString() == 'class');
@@ -56,7 +57,7 @@ class UMLClass {
   set umlModel(UMLModel? umlModel) {
     _umlModel = umlModel;
     _attributes.values.forEach((attribute) => attribute.umlClass = this);
-    _operations.forEach((op) => op.umlClass = this);
+    _operations.values.forEach((op) => op.umlClass = this);
   }
 
   Model? get model => _umlModel?.model;
@@ -91,8 +92,8 @@ class UMLClass {
     model?.didChange();
   }
 
-  UnmodifiableListView<UMLOperation> get operations =>
-      UnmodifiableListView(_operations);
+  UnmodifiableMapView<String, UMLOperation> get operations =>
+      UnmodifiableMapView(_operations);
 
   bool get isEmpty =>
       _name.isEmpty && _attributes.isEmpty && _operations.isEmpty;
@@ -104,7 +105,8 @@ class UMLClass {
     final name = '<$_nameTag>' + _name + '</$_nameTag>';
     final attributes =
         _attributes.values.map((attr) => attr.xmlRepresentation).join();
-    final operations = _operations.map((op) => op.xmlRepresentation).join();
+    final operations =
+        _operations.values.map((op) => op.xmlRepresentation).join();
     return '<$xmlTag id="$id" x="$_x" y="$_y">' +
         name +
         attributes +
@@ -118,7 +120,7 @@ class UMLClass {
     final attributes =
         _attributes.values.map((a) => a.stringRepresentation).join(', ');
     final operations =
-        _operations.map((op) => op.stringRepresentation).join(', ');
+        _operations.values.map((op) => op.stringRepresentation).join(', ');
     return '$name[$attributes | $operations]';
   }
 }
