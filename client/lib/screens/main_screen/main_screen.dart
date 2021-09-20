@@ -97,9 +97,14 @@ class MainScreen extends StatelessWidget {
     );
     await _model.collaborate((error) => ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(error))));
-    Clipboard.setData(ClipboardData(text: _model.sessionLink));
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Link copied to clipboard')));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Connected to collaboration session'),
+      action: SnackBarAction(
+        label: 'Copy link',
+        onPressed: () =>
+            Clipboard.setData(ClipboardData(text: _model.sessionLink)),
+      ),
+    ));
     Navigator.pop(context);
   }
 }
