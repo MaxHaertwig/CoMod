@@ -16,12 +16,11 @@ export function newModel(uuid: string): void {
 }
 
 export function loadModel(uuid: string, base64Data: string, shouldSerialize: boolean): string {
-  if (activeDoc) {
-    activeDoc.destroy();
-  }
+  activeDoc?.destroy();
 
   activeDoc = new yjs.Doc({ guid: uuid });
   yjs.applyUpdate(activeDoc, Base64.toUint8Array(base64Data));
+  // TODO: don't listen to updates before a collaboration session has been started
   activeDoc.on('update', (data: Uint8Array, origin: any) => {
     if (origin !== activeDoc) {
       sendMessage('LocalUpdate', `"${Base64.fromUint8Array(data)}"`);
