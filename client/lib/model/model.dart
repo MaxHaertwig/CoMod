@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:client/logic/collaboration_session.dart';
 import 'package:client/logic/js_bridge.dart';
 import 'package:client/logic/models_manager.dart';
@@ -11,10 +12,10 @@ import 'package:tuple/tuple.dart';
 
 class Model extends ChangeNotifier {
   final String path;
-  late final UMLModel umlModel;
 
   final _jsBridge = JSBridge();
 
+  late final UMLModel _umlModel;
   late final Map<String, UMLElement> _mapping;
   String _name;
   bool _hasModel = false;
@@ -25,7 +26,6 @@ class Model extends ChangeNotifier {
   Model(this.path, this._name, {UMLModel? umlModel}) {
     if (umlModel != null) {
       this.umlModel = umlModel;
-      _createMapping();
     }
   }
 
@@ -39,14 +39,36 @@ class Model extends ChangeNotifier {
       ? 'collaboration://maxhaertwig.com/thesis/$uuid'
       : null;
 
+  UMLModel get umlModel => _umlModel;
+
+  set umlModel(UMLModel umlModel) {
+    _umlModel = umlModel;
+    _umlModel.model = this;
+    _mapping = {};
+    umlModel.addToMapping(_mapping);
+  }
+
   Future<void> load([String? inXml]) async {
     final xml = inXml ??
         await JSBridge().loadModel(uuid, await File(path).readAsBytes(), false);
     if (!_hasModel) {
       _hasModel = true;
       umlModel = UMLModel.fromXml(xml);
-      umlModel.model = this;
-      _createMapping();
+    }
+  }
+
+  Future<void> loadExample() async {
+    await JSBridge().loadModel(uuid, await File(path).readAsBytes(), false);
+    if (!_hasModel) {
+      _hasModel = true;
+      umlModel =
+          UMLModel.fromXml(await rootBundle.loadString('assets/example.xml'));
+      _umlModel.model = this;
+      for (final umlClass in _umlModel.classes.values) {
+        _umlModel.addClass(umlClass);
+        umlClass.attributes.values
+            .forEach((attr) => umlClass.addAttribute(attr));
+      }
     }
   }
 
@@ -59,7 +81,6 @@ class Model extends ChangeNotifier {
   Future<void> delete() async {
     assert(!_isDeleted);
     _isDeleted = true;
-    await File(path).delete();
     await ModelsManager.deleteModel(uuid);
   }
 
@@ -162,9 +183,4 @@ class Model extends ChangeNotifier {
   }
 
   void didChange() => notifyListeners();
-
-  void _createMapping() {
-    _mapping = {};
-    umlModel.addToMapping(_mapping);
-  }
 }

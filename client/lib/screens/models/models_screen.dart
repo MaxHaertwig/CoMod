@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:client/logic/collaboration_session.dart';
 import 'package:client/logic/js_bridge.dart';
 import 'package:client/logic/models_manager.dart';
 import 'package:client/model/model.dart';
+import 'package:client/model/uml/uml_model.dart';
 import 'package:client/screens/main_screen/main_screen.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
 import 'package:client/screens/models/widgets/join_collaboration_session_dialog.dart';
@@ -12,6 +14,7 @@ import 'package:client/screens/edit_model_screen.dart';
 import 'package:client/widgets/menu_item.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class ModelsScreen extends StatefulWidget {
   @override
@@ -49,8 +52,8 @@ class _ModelsScreenState extends State<ModelsScreen> {
                 ? NoDataView(
                     'No Models',
                     'It looks pretty empty here. Create a model to get started.',
-                    'Create Model',
-                    () => _newModel(context))
+                    ['Create Model', 'Load Example'],
+                    (index) => _noDataAction(context, index))
                 : ListView(
                     children: _models!
                         .map((model) => ModelRow(
@@ -72,6 +75,17 @@ class _ModelsScreenState extends State<ModelsScreen> {
               ),
       );
 
+  void _noDataAction(BuildContext context, int index) async {
+    switch (index) {
+      case 0:
+        _newModel(context);
+        break;
+      case 1:
+        _loadExample();
+        break;
+    }
+  }
+
   void _newModel(BuildContext context) async {
     final document = await _editModelMetadata(context, null);
     if (document != null) {
@@ -80,6 +94,12 @@ class _ModelsScreenState extends State<ModelsScreen> {
         _models?.sort((a, b) => a.name.compareTo(b.name));
       });
     }
+  }
+
+  void _loadExample() async {
+    final model = await ModelsManager.newModel('Example');
+    await model.loadExample();
+    setState(() => _models?.add(model));
   }
 
   // TODO: leave session when navigating back

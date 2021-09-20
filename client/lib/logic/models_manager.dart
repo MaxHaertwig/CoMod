@@ -35,11 +35,11 @@ class ModelsManager {
 
   static Future<Model> newModel(String name) async {
     final uuid = Uuid().v4();
-    JSBridge().newModel(uuid);
+    await JSBridge().newModel(uuid);
 
-    final document = Model(await path(uuid), name);
+    final model = Model(await path(uuid), name);
     await addModel(uuid, name);
-    return document;
+    return model;
   }
 
   static Future<void> addModel(String uuid, String name) async {
@@ -61,6 +61,16 @@ class ModelsManager {
   }
 
   static Future<void> deleteModel(String uuid) async {
+    try {
+      await File(await path(uuid)).delete();
+    } on OSError catch (e) {
+      if (e.errorCode == 2) {
+        // No such file or directory
+        print('Cannot delete non-existing file $path');
+      } else {
+        print(e);
+      }
+    }
     _models!.remove(uuid);
     await _saveModels();
   }

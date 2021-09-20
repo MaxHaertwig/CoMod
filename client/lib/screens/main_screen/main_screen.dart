@@ -35,9 +35,8 @@ class MainScreen extends StatelessWidget {
                 ? NoDataView(
                     'No classes',
                     'Your model doesn\'t have any classes yet. Press the button to create one.',
-                    'Create Class', () {
-                    _newClass(context);
-                  })
+                    ['Create Class'],
+                    (_) => _newClass(context))
                 : ListView(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     children: model.umlModel.classes.values

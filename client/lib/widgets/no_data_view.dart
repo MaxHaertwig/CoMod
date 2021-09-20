@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-typedef OnButtonPressedFunction = void Function();
+typedef ButtonPressedFunction = void Function(int);
 
 class NoDataView extends StatelessWidget {
   final String title;
   final String message;
-  final String buttonText;
-  final OnButtonPressedFunction onButtonPressed;
+  final List<String> buttonLabels;
+  final ButtonPressedFunction onButtonPressed;
 
-  NoDataView(this.title, this.message, this.buttonText, this.onButtonPressed);
+  NoDataView(this.title, this.message, this.buttonLabels, this.onButtonPressed);
 
   @override
   Widget build(BuildContext context) => Center(
@@ -34,12 +34,18 @@ class NoDataView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              child: Text(
-                buttonText,
-                style: const TextStyle(fontSize: 18),
-              ),
-              onPressed: onButtonPressed,
+            Column(
+              children: buttonLabels
+                  .asMap()
+                  .entries
+                  .map((entry) => ElevatedButton(
+                        child: Text(
+                          entry.value,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        onPressed: () => onButtonPressed(entry.key),
+                      ))
+                  .toList(),
             ),
           ],
         ),
