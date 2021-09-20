@@ -3,10 +3,11 @@ import 'dart:collection';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_element.dart';
+import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLModel {
+class UMLModel implements UMLElement {
   static const _xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>';
   static const _xmlTag = 'model';
   static const _uuidAttribute = 'uuid';
@@ -32,6 +33,8 @@ class UMLModel {
           .toList(),
     );
   }
+
+  String get id => uuid;
 
   Model? get model => _model;
 
@@ -62,6 +65,21 @@ class UMLModel {
         '</$_xmlTag>';
   }
 
-  void addToMapping(Map<String, UMLElement> mapping) =>
-      _classes.values.forEach((cls) => cls.addToMapping(mapping));
+  void addToMapping(Map<String, UMLElement> mapping) {
+    mapping[id] = this;
+    _classes.values.forEach((cls) => cls.addToMapping(mapping));
+  }
+
+  @override
+  List<UMLElement>? update(List<Tuple2<String, String>> attributes,
+      List<String> addedElements, List<String> deletedElements) {
+    final List<UMLElement> newElements = [];
+    for (final xml in addedElements) {
+      final umlClass = UMLClass.fromXml(xml);
+      _classes[umlClass.id] = umlClass;
+      newElements.add(umlClass);
+    }
+    deletedElements.forEach((id) => _classes.remove(id));
+    return newElements;
+  }
 }

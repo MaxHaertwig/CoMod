@@ -94,7 +94,11 @@ class Model extends ChangeNotifier {
     _session = CollaborationSession.joinWithModel(
       uuid,
       await _jsBridge.stateVector(),
-      onSyncModel: _jsBridge.sync,
+      onSyncModel: (serverStateVector, serverUpdate) {
+        final update = _jsBridge.sync(serverStateVector, serverUpdate);
+        notifyListeners();
+        return update;
+      },
       onUpdateReceived: _jsBridge.processUpdate,
       onStateChanged: (state) {
         switch (state) {

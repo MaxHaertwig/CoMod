@@ -169,6 +169,7 @@ class UMLClass implements NamedUMLElement {
     _operations.values.forEach((op) => op.addToMapping(mapping));
   }
 
+  @override
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
       List<String> addedElements, List<String> deletedElements) {
     for (final attribute in attributes) {

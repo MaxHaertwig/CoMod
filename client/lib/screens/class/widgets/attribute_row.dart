@@ -52,7 +52,6 @@ class _AttributeRowState extends State<AttributeRow> {
                 onChanged: (v) => attribute.visibility = v,
               ),
               Flexible(
-                // TODO: limit allowed characters
                 child: TextField(
                   autocorrect: false,
                   decoration: const InputDecoration(

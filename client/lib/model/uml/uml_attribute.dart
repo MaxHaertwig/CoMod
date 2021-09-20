@@ -108,6 +108,7 @@ class UMLAttribute implements NamedUMLElement {
       _visibility == other._visibility &&
       _dataType == other._dataType;
 
+  @override
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
       List<String> addedElements, List<String> deletedElements) {
     for (final tuple in attributes) {
