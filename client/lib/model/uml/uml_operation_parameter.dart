@@ -48,6 +48,16 @@ class UMLOperationParameter implements NamedUMLElement {
 
   UMLDataType get type => _type;
 
+  set type(UMLDataType type) {
+    if (type != _type) {
+      _type = type;
+      model?.updateAttribute(id, _typeAttribute, type.xmlRepresentation);
+    }
+  }
+
+  void addToModel() => model?.insertElement(this, _operation!.id, id, xmlTag,
+      name, [Tuple2(_typeAttribute, type.xmlRepresentation)]);
+
   String get stringRepresentation => '$_name: ${_type.stringRepresentation}';
 
   String get xmlRepresentation =>

@@ -68,6 +68,11 @@ class Model extends ChangeNotifier {
         _umlModel.addClass(umlClass);
         umlClass.attributes.values
             .forEach((attr) => umlClass.addAttribute(attr));
+        for (final operation in umlClass.operations.values) {
+          umlClass.addOperation(operation);
+          operation.parameters.values
+              .forEach((param) => operation.addParameter(param));
+        }
       }
     }
   }

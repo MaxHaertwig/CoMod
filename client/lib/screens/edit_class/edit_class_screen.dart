@@ -1,7 +1,9 @@
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_class.dart';
-import 'package:client/screens/edit_class/widgets/edit_attribute_row.dart';
+import 'package:client/model/uml/uml_operation.dart';
+import 'package:client/screens/edit_class/widgets/attribute_row.dart';
+import 'package:client/screens/edit_class/widgets/operation_row.dart';
 import 'package:client/screens/edit_class/widgets/named_text_field.dart';
 import 'package:client/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +60,7 @@ class EditClassScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   ..._umlClass.attributes.values
-                      .map((attribute) => EditAttributeRow(
+                      .map((attribute) => AttributeRow(
                             _umlClass,
                             attribute,
                             key: Key(attribute.id),
@@ -80,12 +82,17 @@ class EditClassScreen extends StatelessWidget {
                     'Operations',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  const SizedBox(height: 8),
+                  ..._umlClass.operations.values.map((operation) =>
+                      OperationRow(_umlClass, operation,
+                          key: Key(operation.id))),
                   TextButton(
                     child: const Text(
                       'Add operation',
                       textAlign: TextAlign.center,
                     ),
-                    onPressed: () {},
+                    onPressed: () => _editClass(
+                        context, (cls) => cls.addOperation(UMLOperation())),
                   ),
                 ],
               ),

@@ -11,22 +11,20 @@ import 'package:provider/provider.dart';
 
 typedef EditAttributeFunction = void Function(UMLAttribute);
 
-class EditAttributeRow extends StatefulWidget {
+class AttributeRow extends StatefulWidget {
   final UMLClass _umlClass;
   final UMLAttribute _attribute;
 
-  EditAttributeRow(this._umlClass, this._attribute, {Key? key})
-      : super(key: key);
+  AttributeRow(this._umlClass, this._attribute, {Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() =>
-      _EditAttributeRowState(_attribute.name);
+  State<StatefulWidget> createState() => _AttributeRowState(_attribute.name);
 }
 
-class _EditAttributeRowState extends State<EditAttributeRow> {
+class _AttributeRowState extends State<AttributeRow> {
   final _textEditingController = TextEditingController();
 
-  _EditAttributeRowState(String name) {
+  _AttributeRowState(String name) {
     _textEditingController.text = name;
   }
 
@@ -51,7 +49,6 @@ class _EditAttributeRowState extends State<EditAttributeRow> {
                 attribute.visibility,
                 onChanged: (v) => attribute.visibility = v,
               ),
-              const SizedBox(width: 8),
               Flexible(
                 // TODO: limit allowed characters
                 child: TextField(

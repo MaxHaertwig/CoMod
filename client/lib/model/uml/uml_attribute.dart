@@ -58,6 +58,7 @@ class UMLAttribute implements NamedUMLElement {
   }
 
   UMLVisibility get visibility => _visibility;
+
   set visibility(UMLVisibility visibility) {
     if (visibility != _visibility) {
       _visibility = visibility;

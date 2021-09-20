@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:client/logic/collaboration_session.dart';
 import 'package:client/logic/js_bridge.dart';
 import 'package:client/logic/models_manager.dart';
 import 'package:client/model/model.dart';
-import 'package:client/model/uml/uml_model.dart';
 import 'package:client/screens/main_screen/main_screen.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
 import 'package:client/screens/models/widgets/join_collaboration_session_dialog.dart';
@@ -14,7 +12,6 @@ import 'package:client/screens/edit_model_screen.dart';
 import 'package:client/widgets/menu_item.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
 class ModelsScreen extends StatefulWidget {
   @override

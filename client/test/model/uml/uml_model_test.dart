@@ -43,11 +43,11 @@ void main() {
         student.operations.values.firstWhere((op) => op.name == 'study');
     expect(studentStudy.visibility, UMLVisibility.protected);
     expect(studentStudy.returnType, UMLDataType.voidType());
-    expect(studentStudy.parameters.map((p) => p.name).toList(),
+    expect(studentStudy.parameters.values.map((p) => p.name).toList(),
         ['subject', 'hours']);
-    expect(studentStudy.parameters[0].type,
+    expect(studentStudy.parameters.values.first.type,
         UMLDataType(Left(UMLPrimitiveType.string)));
-    expect(studentStudy.parameters[1].type,
+    expect(studentStudy.parameters.values.skip(1).first.type,
         UMLDataType(Left(UMLPrimitiveType.integer)));
   });
 

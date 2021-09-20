@@ -100,6 +100,23 @@ class UMLClass implements NamedUMLElement {
   UnmodifiableMapView<String, UMLOperation> get operations =>
       UnmodifiableMapView(_operations);
 
+  void addOperation(UMLOperation operation) {
+    operation.umlClass = this;
+    _operations[operation.id] = operation;
+    operation.addToModel();
+  }
+
+  void removeOperation(UMLOperation operation) {
+    _operations.remove(operation.id);
+    model?.deleteElement(id);
+  }
+
+  void moveOperation(UMLOperation operation, MoveType moveType) {
+    // TODO: replicate in yjs
+    _operations.move(operation.id, moveType);
+    model?.didChange();
+  }
+
   bool get isEmpty =>
       _name.isEmpty && _attributes.isEmpty && _operations.isEmpty;
 
