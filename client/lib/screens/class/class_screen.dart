@@ -2,20 +2,20 @@ import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_operation.dart';
-import 'package:client/screens/edit_class/widgets/attribute_row.dart';
-import 'package:client/screens/edit_class/widgets/operation_row.dart';
-import 'package:client/screens/edit_class/widgets/named_text_field.dart';
+import 'package:client/screens/class/widgets/attribute_row.dart';
+import 'package:client/screens/class/widgets/operation_row.dart';
+import 'package:client/screens/class/widgets/named_text_field.dart';
 import 'package:client/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 typedef EditClassFunction = void Function(UMLClass);
 
-class EditClassScreen extends StatelessWidget {
+class ClassScreen extends StatelessWidget {
   final UMLClass _umlClass;
   final bool _isNewClass;
 
-  EditClassScreen(this._umlClass, this._isNewClass);
+  ClassScreen(this._umlClass, this._isNewClass);
 
   @override
   Widget build(BuildContext context) => Scaffold(

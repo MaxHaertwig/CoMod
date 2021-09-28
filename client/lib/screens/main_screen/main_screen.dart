@@ -1,6 +1,6 @@
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
-import 'package:client/screens/edit_class/edit_class_screen.dart';
+import 'package:client/screens/class/class_screen.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_menu_button.dart';
 import 'package:client/screens/main_screen/widgets/outline_class.dart';
@@ -66,7 +66,7 @@ class MainScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider.value(
           value: Provider.of<Model>(context, listen: false),
-          child: EditClassScreen(umlClass, isNewClass),
+          child: ClassScreen(umlClass, isNewClass),
         ),
       ),
     );
