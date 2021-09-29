@@ -43,6 +43,7 @@ class UMLOperation implements NamedUMLElement {
   static UMLOperation fromXmlElement(XmlElement element) {
     assert(element.name.toString() == 'operation');
     return UMLOperation(
+      id: element.getAttribute('id')!,
       name: element.children.first.text.trim(),
       visibility:
           UMLVisibilityExt.fromString(element.getAttribute('visibility')!),

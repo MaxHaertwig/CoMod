@@ -27,6 +27,7 @@ class UMLOperationParameter implements NamedUMLElement {
   static UMLOperationParameter fromXmlElement(XmlElement element) {
     assert(element.name.toString() == 'param');
     return UMLOperationParameter(
+      id: element.getAttribute('id')!,
       name: element.text.trim(),
       type: UMLDataType.fromString(element.getAttribute('type')!),
     );
@@ -67,6 +68,10 @@ class UMLOperationParameter implements NamedUMLElement {
 
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
       List<String> addedElements, List<String> deletedElements) {
-    // TODO: implement update
+    for (final tuple in attributes) {
+      if (tuple.item1 == _typeAttribute) {
+        _type = UMLDataType.fromString(tuple.item2);
+      }
+    }
   }
 }

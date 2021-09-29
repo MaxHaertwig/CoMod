@@ -44,6 +44,7 @@ class ClassScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // TODO: escape string
                   NamedTextField(
                     'Name',
                     initialValue: umlClass.name,
