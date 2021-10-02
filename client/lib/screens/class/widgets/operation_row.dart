@@ -1,4 +1,5 @@
 import 'package:client/extensions.dart';
+import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_operation.dart';
@@ -8,6 +9,7 @@ import 'package:client/screens/class/widgets/operation_parameter_row.dart';
 import 'package:client/screens/class/widgets/visibility_button.dart';
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'operation_action_button.dart';
@@ -63,6 +65,10 @@ class _OperationRowState extends State<OperationRow> {
                         hintText: 'Operation name',
                       ),
                       controller: _textEditingController,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(identifierCharactersRegex))
+                      ],
                       onChanged: (value) => _editOperation(context,
                           (operation) => operation.name = value.trim()),
                     ),

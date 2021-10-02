@@ -1,4 +1,6 @@
+import 'package:client/model/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 typedef OnChangedFunction = void Function(String);
@@ -41,6 +43,10 @@ class _NamedTextFieldState extends State<NamedTextField> {
             decoration:
                 InputDecoration(hintText: 'Enter ${widget.name.toLowerCase()}'),
             controller: _textEditingController,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(
+                  RegExp(identifierCharactersRegex))
+            ],
             onChanged: widget.onChanged,
           ),
         ],

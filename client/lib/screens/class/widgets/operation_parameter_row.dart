@@ -1,4 +1,5 @@
 import 'package:client/extensions.dart';
+import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_operation.dart';
@@ -6,6 +7,7 @@ import 'package:client/model/uml/uml_operation_parameter.dart';
 import 'package:client/screens/class/widgets/data_type_button.dart';
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'operation_action_button.dart';
@@ -63,6 +65,10 @@ class _OperationParameterRowState extends State<OperationParameterRow> {
                       hintText: 'Parameter name',
                     ),
                     controller: _textEditingController,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(identifierCharactersRegex))
+                    ],
                     onChanged: (value) => _editParameter(
                         context, (parameter) => parameter.name = value.trim()),
                   ),

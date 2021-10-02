@@ -1,4 +1,5 @@
 import 'package:client/extensions.dart';
+import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_class.dart';
@@ -7,6 +8,7 @@ import 'package:client/screens/class/widgets/data_type_button.dart';
 import 'package:client/screens/class/widgets/visibility_button.dart';
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 typedef EditAttributeFunction = void Function(UMLAttribute);
@@ -58,6 +60,10 @@ class _AttributeRowState extends State<AttributeRow> {
                     hintText: 'Attribute name',
                   ),
                   controller: _textEditingController,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(identifierCharactersRegex))
+                  ],
                   onChanged: (value) => _editAttribute(
                     context,
                     (attribute) => attribute.name = value.trim(),
