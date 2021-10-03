@@ -10,6 +10,7 @@ import 'package:xml/xml.dart';
 
 class UMLAttribute implements NamedUMLElement {
   static const xmlTag = 'attribute';
+  static const _idAttribute = 'id';
   static const _visibilityAttribute = 'visibility';
   static const _typeAttribute = 'type';
 
@@ -33,13 +34,13 @@ class UMLAttribute implements NamedUMLElement {
       fromXmlElement(XmlDocument.parse(xml).rootElement);
 
   static UMLAttribute fromXmlElement(XmlElement element) {
-    assert(element.name.toString() == 'attribute');
+    assert(element.name.toString() == xmlTag);
     return UMLAttribute(
-      id: element.getAttribute('id')!,
+      id: element.getAttribute(_idAttribute)!,
       name: element.text.trim(),
-      visibility:
-          UMLVisibilityExt.fromString(element.getAttribute('visibility')!),
-      dataType: UMLDataType.fromString(element.getAttribute('type')!),
+      visibility: UMLVisibilityExt.fromString(
+          element.getAttribute(_visibilityAttribute)!),
+      dataType: UMLDataType.fromString(element.getAttribute(_typeAttribute)!),
     );
   }
 
@@ -89,7 +90,9 @@ class UMLAttribute implements NamedUMLElement {
     final visibility =
         '$_visibilityAttribute="${_visibility.xmlRepresentation}"';
     final type = '$_typeAttribute="${_dataType.xmlRepresentation}"';
-    return '<$xmlTag id="$id" $visibility $type>' + _name + '</$xmlTag>';
+    return '<$xmlTag $_idAttribute="$id" $visibility $type>' +
+        _name +
+        '</$xmlTag>';
   }
 
   @override

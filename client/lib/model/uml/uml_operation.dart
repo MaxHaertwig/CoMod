@@ -14,6 +14,7 @@ import 'package:xml/xml.dart';
 class UMLOperation implements NamedUMLElement {
   static const xmlTag = 'operation';
   static const _nameTag = 'name';
+  static const _idAttribute = 'id';
   static const _visibilityAttribute = 'visibility';
   static const _returnTypeAttribute = 'returnType';
 
@@ -41,15 +42,16 @@ class UMLOperation implements NamedUMLElement {
       fromXmlElement(XmlDocument.parse(xml).rootElement);
 
   static UMLOperation fromXmlElement(XmlElement element) {
-    assert(element.name.toString() == 'operation');
+    assert(element.name.toString() == xmlTag);
     return UMLOperation(
-      id: element.getAttribute('id')!,
+      id: element.getAttribute(_idAttribute)!,
       name: element.children.first.text.trim(),
-      visibility:
-          UMLVisibilityExt.fromString(element.getAttribute('visibility')!),
-      returnType: UMLDataType.fromString(element.getAttribute('returnType')!),
+      visibility: UMLVisibilityExt.fromString(
+          element.getAttribute(_visibilityAttribute)!),
+      returnType:
+          UMLDataType.fromString(element.getAttribute(_returnTypeAttribute)!),
       parameters: element
-          .findElements('param')
+          .findElements(UMLOperationParameter.xmlTag)
           .map((el) => UMLOperationParameter.fromXmlElement(el))
           .toList(),
     );
@@ -133,7 +135,7 @@ class UMLOperation implements NamedUMLElement {
     final name = '<$_nameTag>' + _name + '</$_nameTag>';
     final params =
         _parameters.values.map((param) => param.xmlRepresentation).join();
-    return '<$xmlTag id="$id" $visibility $returnType>' +
+    return '<$xmlTag $_idAttribute="$id" $visibility $returnType>' +
         name +
         params +
         '</$xmlTag>';

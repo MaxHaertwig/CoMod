@@ -14,6 +14,9 @@ import 'package:xml/xml.dart';
 class UMLClass implements NamedUMLElement {
   static const xmlTag = 'class';
   static const _nameTag = 'name';
+  static const _idAttribute = 'id';
+  static const _xAttribute = 'x';
+  static const _yAttribute = 'y';
 
   UMLModel? _umlModel;
   final String id;
@@ -42,18 +45,18 @@ class UMLClass implements NamedUMLElement {
       fromXmlElement(XmlDocument.parse(xml).rootElement);
 
   static UMLClass fromXmlElement(XmlElement element) {
-    assert(element.name.toString() == 'class');
+    assert(element.name.toString() == xmlTag);
     return UMLClass(
       name: element.children.first.text.trim(),
-      id: element.getAttribute('id')!,
-      x: int.parse(element.getAttribute('x') ?? '0'),
-      y: int.parse(element.getAttribute('y') ?? '0'),
+      id: element.getAttribute(_idAttribute)!,
+      x: int.parse(element.getAttribute(_xAttribute) ?? '0'),
+      y: int.parse(element.getAttribute(_yAttribute) ?? '0'),
       attributes: element
-          .findElements('attribute')
+          .findElements(UMLAttribute.xmlTag)
           .map((child) => UMLAttribute.fromXmlElement(child))
           .toList(),
       operations: element
-          .findElements('operation')
+          .findElements(UMLOperation.xmlTag)
           .map((child) => UMLOperation.fromXmlElement(child))
           .toList(),
     );
@@ -129,7 +132,7 @@ class UMLClass implements NamedUMLElement {
         _attributes.values.map((attr) => attr.xmlRepresentation).join();
     final operations =
         _operations.values.map((op) => op.xmlRepresentation).join();
-    return '<$xmlTag id="$id" x="$_x" y="$_y">' +
+    return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y">' +
         name +
         attributes +
         operations +

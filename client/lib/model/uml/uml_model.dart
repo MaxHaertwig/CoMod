@@ -9,6 +9,7 @@ import 'package:xml/xml.dart';
 class UMLModel {
   static const _xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>';
   static const _xmlTag = 'model';
+  static const _uuidAttribute = 'uuid';
 
   Model? _model;
   final String uuid;
@@ -22,11 +23,11 @@ class UMLModel {
       fromXmlElement(XmlDocument.parse(xml).rootElement);
 
   static UMLModel fromXmlElement(XmlElement element) {
-    assert(element.name.toString() == 'model');
+    assert(element.name.toString() == _xmlTag);
     return UMLModel(
-      uuid: element.getAttribute('uuid')!,
+      uuid: element.getAttribute(_uuidAttribute)!,
       classes: element
-          .findElements('class')
+          .findElements(UMLClass.xmlTag)
           .map((child) => UMLClass.fromXmlElement(child))
           .toList(),
     );
@@ -56,7 +57,7 @@ class UMLModel {
   String get xmlRepresentation {
     final classes = _classes.values.map((cls) => cls.xmlRepresentation).join();
     return _xmlDeclaration +
-        '<$_xmlTag uuid="$uuid">' +
+        '<$_xmlTag $_uuidAttribute="$uuid">' +
         classes +
         '</$_xmlTag>';
   }

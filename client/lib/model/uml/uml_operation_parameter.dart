@@ -9,6 +9,7 @@ import 'package:xml/xml.dart';
 
 class UMLOperationParameter implements NamedUMLElement {
   static const xmlTag = 'param';
+  static const _idAttribute = 'id';
   static const _typeAttribute = 'type';
 
   UMLOperation? _operation;
@@ -25,11 +26,11 @@ class UMLOperationParameter implements NamedUMLElement {
       fromXmlElement(XmlDocument.parse(xml).rootElement);
 
   static UMLOperationParameter fromXmlElement(XmlElement element) {
-    assert(element.name.toString() == 'param');
+    assert(element.name.toString() == xmlTag);
     return UMLOperationParameter(
-      id: element.getAttribute('id')!,
+      id: element.getAttribute(_idAttribute)!,
       name: element.text.trim(),
-      type: UMLDataType.fromString(element.getAttribute('type')!),
+      type: UMLDataType.fromString(element.getAttribute(_typeAttribute)!),
     );
   }
 
@@ -62,7 +63,7 @@ class UMLOperationParameter implements NamedUMLElement {
   String get stringRepresentation => '$_name: ${_type.stringRepresentation}';
 
   String get xmlRepresentation =>
-      '<$xmlTag id="$id" $_typeAttribute="${_type.xmlRepresentation}">' +
+      '<$xmlTag $_idAttribute="$id" $_typeAttribute="${_type.xmlRepresentation}">' +
       _name +
       '</$xmlTag>';
 
