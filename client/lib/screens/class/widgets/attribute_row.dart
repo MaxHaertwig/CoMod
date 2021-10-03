@@ -55,18 +55,14 @@ class _AttributeRowState extends State<AttributeRow> {
                 child: TextField(
                   autocorrect: false,
                   decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Attribute name',
-                  ),
+                      border: InputBorder.none, hintText: 'Attribute name'),
                   controller: _textEditingController,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
                         RegExp(identifierCharactersRegex))
                   ],
                   onChanged: (value) => _editAttribute(
-                    context,
-                    (attribute) => attribute.name = value.trim(),
-                  ),
+                      context, (attribute) => attribute.name = value.trim()),
                 ),
               ),
               const SizedBox(width: 8),
@@ -75,9 +71,7 @@ class _AttributeRowState extends State<AttributeRow> {
               DataTypeButton(
                 attribute.dataType,
                 onChanged: (dt) => _editAttribute(
-                  context,
-                  (attribute) => attribute.dataType = dt,
-                ),
+                    context, (attribute) => attribute.dataType = dt),
               ),
               const SizedBox(width: 8),
               AttributeActionButton(
