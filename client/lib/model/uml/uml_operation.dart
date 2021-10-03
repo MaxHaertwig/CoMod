@@ -13,7 +13,6 @@ import 'package:xml/xml.dart';
 
 class UMLOperation implements NamedUMLElement {
   static const xmlTag = 'operation';
-  static const _nameTag = 'name';
   static const _idAttribute = 'id';
   static const _visibilityAttribute = 'visibility';
   static const _returnTypeAttribute = 'returnType';
@@ -132,7 +131,6 @@ class UMLOperation implements NamedUMLElement {
         '$_visibilityAttribute="${_visibility.xmlRepresentation}"';
     final returnType =
         '$_returnTypeAttribute="${_returnType.xmlRepresentation}"';
-    final name = '<$_nameTag>' + _name + '</$_nameTag>';
     final params =
         _parameters.values.map((param) => param.xmlRepresentation).join();
     return '<$xmlTag $_idAttribute="$id" $visibility $returnType>' +

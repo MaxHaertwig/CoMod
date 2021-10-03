@@ -13,7 +13,6 @@ import 'package:xml/xml.dart';
 
 class UMLClass implements NamedUMLElement {
   static const xmlTag = 'class';
-  static const _nameTag = 'name';
   static const _idAttribute = 'id';
   static const _xAttribute = 'x';
   static const _yAttribute = 'y';
@@ -127,7 +126,6 @@ class UMLClass implements NamedUMLElement {
       model?.insertElement(this, model!.uuid, id, xmlTag, name, null);
 
   String get xmlRepresentation {
-    final name = '<$_nameTag>' + _name + '</$_nameTag>';
     final attributes =
         _attributes.values.map((attr) => attr.xmlRepresentation).join();
     final operations =

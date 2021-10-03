@@ -110,15 +110,15 @@ void main() {
     final xml = '''<?xml version="1.0" encoding="UTF-8"?>
     <model uuid="M">
       <class id="P" x="0" y="0">
-        <name>Person</name>
+        Person
         <attribute id="PA1" visibility="public" type="string">name</attribute>
         <attribute id="PA2" visibility="private" type="integer">age</attribute>
       </class>
       <class id="S" x="0" y="100">
-        <name>Student</name>
+        Student
         <attribute id="SA1" visibility="public" type="string">major</attribute>
         <operation id="SO1" visibility="protected" returnType="void">
-          <name>study</name>
+          study
           <param id="SOP1" type="string">subject</param>
           <param id="SOP2" type="integer">hours</param>
         </operation>
