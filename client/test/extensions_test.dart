@@ -27,4 +27,19 @@ void main() {
       expect(list.values, test.item3);
     }
   });
+
+  test('Map moveTypes', () {
+    final tests = [
+      Tuple3([], 0, Set<MoveType>()),
+      Tuple3([0], 0, Set<MoveType>()),
+      Tuple3([0, 1], 0, {MoveType.moveDown}),
+      Tuple3([0, 1], 1, {MoveType.moveUp}),
+      Tuple3([0, 1, 2, 3], 1,
+          {MoveType.moveUp, MoveType.moveDown, MoveType.moveToBottom}),
+    ];
+    for (final test in tests) {
+      expect(LinkedHashMap.fromIterable(test.item1).moveTypes(test.item2),
+          test.item3);
+    }
+  });
 }

@@ -85,6 +85,7 @@ class _OperationParameterRowState extends State<OperationParameterRow> {
                 ),
                 const SizedBox(width: 8),
                 OperationActionButton(
+                    widget._operation.parameters.moveTypes(parameter.id),
                     (action) => _parameterAction(context, action)),
               ],
             ),

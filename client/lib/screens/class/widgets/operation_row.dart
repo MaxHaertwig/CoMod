@@ -50,15 +50,15 @@ class _OperationRowState extends State<OperationRow> {
                 .operations[widget._operation.id] ??
             widget._operation,
         shouldRebuild: (previous, next) => next != previous,
-        builder: (context, attribute, __) => Card(
+        builder: (context, operation, __) => Card(
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: Column(
             children: [
               Row(
                 children: [
                   VisibilityButton(
-                    attribute.visibility,
-                    onChanged: (v) => attribute.visibility = v,
+                    operation.visibility,
+                    onChanged: (v) => operation.visibility = v,
                   ),
                   Flexible(
                     child: TextField(
@@ -79,12 +79,13 @@ class _OperationRowState extends State<OperationRow> {
                   const Text(':'),
                   const SizedBox(width: 8),
                   DataTypeButton(
-                    attribute.returnType,
+                    operation.returnType,
                     onChanged: (dt) => _editOperation(
                         context, (operation) => operation.returnType = dt),
                   ),
                   const SizedBox(width: 8),
                   OperationActionButton(
+                      widget._umlClass.operations.moveTypes(operation.id),
                       (action) => _operationAction(context, action)),
                 ],
               ),

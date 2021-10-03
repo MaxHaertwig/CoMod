@@ -54,3 +54,27 @@ extension LinkedHashMapExtensions<K, V> on LinkedHashMap<K, V> {
     }
   }
 }
+
+extension MapExtensions<K, V> on Map<K, V> {
+  /// Returns the possible MoveTypes for the given key. Map MUST be ordered!
+  Set<MoveType> moveTypes(K key) {
+    if (!containsKey(key) || length == 1) {
+      return Set();
+    }
+    final types = Set<MoveType>();
+    final index = keys.takeWhile((k) => k != key).length;
+    if (index >= 2) {
+      types.add(MoveType.moveToTop);
+    }
+    if (index >= 1) {
+      types.add(MoveType.moveUp);
+    }
+    if (index < length - 1) {
+      types.add(MoveType.moveDown);
+    }
+    if (index < length - 2) {
+      types.add(MoveType.moveToBottom);
+    }
+    return types;
+  }
+}

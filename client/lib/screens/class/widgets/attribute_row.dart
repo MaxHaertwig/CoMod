@@ -78,6 +78,7 @@ class _AttributeRowState extends State<AttributeRow> {
               ),
               const SizedBox(width: 8),
               AttributeActionButton(
+                  widget._umlClass.attributes.moveTypes(attribute.id),
                   (action) => _attributeAction(context, action)),
             ],
           ),
