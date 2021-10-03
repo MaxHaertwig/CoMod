@@ -6,6 +6,8 @@ class ExpandedRow extends StatelessWidget {
   ExpandedRow({required this.children});
 
   @override
-  Widget build(BuildContext context) =>
-      Row(children: children.map((widget) => Expanded(child: widget)).toList());
+  Widget build(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children.map((widget) => Expanded(child: widget)).toList(),
+      );
 }
