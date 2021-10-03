@@ -19,8 +19,10 @@ typedef EditOperationFunction = void Function(UMLOperation);
 class OperationRow extends StatefulWidget {
   final UMLClass _umlClass;
   final UMLOperation _operation;
+  final FocusNode? focusNode;
 
-  OperationRow(this._umlClass, this._operation, {Key? key}) : super(key: key);
+  OperationRow(this._umlClass, this._operation, {Key? key, this.focusNode})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _OperationRowState(_operation.name);
@@ -28,6 +30,7 @@ class OperationRow extends StatefulWidget {
 
 class _OperationRowState extends State<OperationRow> {
   final _textEditingController = TextEditingController();
+  final _focusNodes = Map<String, FocusNode>();
 
   _OperationRowState(String name) {
     _textEditingController.text = name;
@@ -36,6 +39,7 @@ class _OperationRowState extends State<OperationRow> {
   @override
   void dispose() {
     _textEditingController.dispose();
+    _focusNodes.values.forEach((node) => node.dispose());
     super.dispose();
   }
 
@@ -60,10 +64,9 @@ class _OperationRowState extends State<OperationRow> {
                     child: TextField(
                       autocorrect: false,
                       decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Operation name',
-                      ),
+                          border: InputBorder.none, hintText: 'Operation name'),
                       controller: _textEditingController,
+                      focusNode: widget.focusNode,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
                             RegExp(identifierCharactersRegex))
@@ -91,7 +94,9 @@ class _OperationRowState extends State<OperationRow> {
                         widget._umlClass,
                         widget._operation,
                         parameter,
+                        _addParameter,
                         key: Key(parameter.id),
+                        focusNode: _focusNodes[parameter.id],
                       )),
             ],
           ),
@@ -105,11 +110,18 @@ class _OperationRowState extends State<OperationRow> {
     if (action.isLeft) {
       widget._umlClass.moveOperation(widget._operation, action.left);
     } else if (action.right == 0) {
-      // TODO: add at location
-      widget._operation.addParameter(UMLOperationParameter());
-      // TODO: set keyboard focus
+      _addParameter();
     } else {
       widget._umlClass.removeOperation(widget._operation);
     }
+  }
+
+  void _addParameter() {
+    // TODO: add at location
+    final newParameter = UMLOperationParameter();
+    widget._operation.addParameter(newParameter);
+    final focusNode = FocusNode();
+    _focusNodes[newParameter.id] = focusNode;
+    focusNode.requestFocus();
   }
 }

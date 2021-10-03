@@ -12,15 +12,19 @@ import 'package:provider/provider.dart';
 
 import 'operation_action_button.dart';
 
+typedef AddParameterFunction = void Function();
 typedef EditParameterFunction = void Function(UMLOperationParameter);
 
 class OperationParameterRow extends StatefulWidget {
   final UMLClass _umlClass;
   final UMLOperation _operation;
   final UMLOperationParameter _parameter;
+  final AddParameterFunction _addParameterFunction;
+  final FocusNode? focusNode;
 
   OperationParameterRow(this._umlClass, this._operation, this._parameter,
-      {Key? key})
+      this._addParameterFunction,
+      {Key? key, this.focusNode})
       : super(key: key);
 
   @override
@@ -60,10 +64,9 @@ class _OperationParameterRowState extends State<OperationParameterRow> {
                   child: TextField(
                     autocorrect: false,
                     decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Parameter name',
-                    ),
+                        border: InputBorder.none, hintText: 'Parameter name'),
                     controller: _textEditingController,
+                    focusNode: widget.focusNode,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
                           RegExp(identifierCharactersRegex))
@@ -94,9 +97,7 @@ class _OperationParameterRowState extends State<OperationParameterRow> {
     if (action.isLeft) {
       widget._operation.moveParameter(widget._parameter, action.left);
     } else if (action.right == 0) {
-      // TODO: add at location
-      widget._operation.addParameter(UMLOperationParameter());
-      // TODO: set keyboard focus
+      widget._addParameterFunction(); // TODO: index
     } else {
       widget._operation.removeParameter(widget._parameter);
     }

@@ -25,6 +25,7 @@ class ClassScreen extends StatefulWidget {
 
 class _ClassScreenState extends State<ClassScreen> {
   final _nameTextEditingController = TextEditingController();
+  final _focusNodes = Map<String, FocusNode>();
 
   _ClassScreenState(String name) {
     _nameTextEditingController.text = name;
@@ -33,6 +34,7 @@ class _ClassScreenState extends State<ClassScreen> {
   @override
   void dispose() {
     _nameTextEditingController.dispose();
+    _focusNodes.values.forEach((node) => node.dispose());
     super.dispose();
   }
 
@@ -117,28 +119,46 @@ class _ClassScreenState extends State<ClassScreen> {
                   const SizedBox(height: 8),
                   ...widget.umlClass.attributes.values
                       .map((attribute) => AttributeRow(
-                          widget.umlClass, attribute,
-                          key: Key(attribute.id)))
+                            widget.umlClass,
+                            attribute,
+                            key: Key(attribute.id),
+                            focusNode: _focusNodes[attribute.id],
+                          ))
                       .toList(),
                   TextButton(
                     child: const Text('Add attribute',
                         textAlign: TextAlign.center),
-                    // TODO: focus new text field
-                    onPressed: () => _editClass(
-                        context, (cls) => cls.addAttribute(UMLAttribute())),
+                    onPressed: () {
+                      final newAttribute = UMLAttribute();
+                      _editClass(
+                          context, (cls) => cls.addAttribute(newAttribute));
+                      final focusNode = FocusNode();
+                      _focusNodes[newAttribute.id] = focusNode;
+                      focusNode.requestFocus();
+                    },
                   ),
                   const SizedBox(height: 12),
                   const Text('Operations',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  ...widget.umlClass.operations.values.map((operation) =>
-                      OperationRow(widget.umlClass, operation,
-                          key: Key(operation.id))),
+                  ...widget.umlClass.operations.values
+                      .map((operation) => OperationRow(
+                            widget.umlClass,
+                            operation,
+                            key: Key(operation.id),
+                            focusNode: _focusNodes[operation.id],
+                          )),
                   TextButton(
                     child: const Text('Add operation',
                         textAlign: TextAlign.center),
-                    onPressed: () => _editClass(
-                        context, (cls) => cls.addOperation(UMLOperation())),
+                    onPressed: () {
+                      final newOperation = UMLOperation();
+                      _editClass(
+                          context, (cls) => cls.addOperation(newOperation));
+                      final focusNode = FocusNode();
+                      _focusNodes[newOperation.id] = focusNode;
+                      focusNode.requestFocus();
+                    },
                   ),
                 ],
               ),

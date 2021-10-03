@@ -16,8 +16,10 @@ typedef EditAttributeFunction = void Function(UMLAttribute);
 class AttributeRow extends StatefulWidget {
   final UMLClass _umlClass;
   final UMLAttribute _attribute;
+  final FocusNode? focusNode;
 
-  AttributeRow(this._umlClass, this._attribute, {Key? key}) : super(key: key);
+  AttributeRow(this._umlClass, this._attribute, {Key? key, this.focusNode})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AttributeRowState(_attribute.name);
@@ -57,6 +59,7 @@ class _AttributeRowState extends State<AttributeRow> {
                   decoration: const InputDecoration(
                       border: InputBorder.none, hintText: 'Attribute name'),
                   controller: _textEditingController,
+                  focusNode: widget.focusNode,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
                         RegExp(identifierCharactersRegex))
