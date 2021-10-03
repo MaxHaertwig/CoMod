@@ -17,12 +17,14 @@ class UMLClass implements NamedUMLElement {
   static const _xAttribute = 'x';
   static const _yAttribute = 'y';
   static const _isAbstractAttribute = 'isAbstract';
+  static const _extendsAttribute = 'extends';
 
   UMLModel? _umlModel;
   final String id;
   String _name;
   int _x, _y;
   bool _isAbstract;
+  String _extendsClass;
   LinkedHashMap<String, UMLAttribute> _attributes;
   LinkedHashMap<String, UMLOperation> _operations;
 
@@ -32,6 +34,7 @@ class UMLClass implements NamedUMLElement {
       x = 0,
       y = 0,
       isAbstract = false,
+      extendsClass = '',
       List<UMLAttribute>? attributes,
       List<UMLOperation>? operations})
       : id = id ?? Uuid().v4(),
@@ -39,6 +42,7 @@ class UMLClass implements NamedUMLElement {
         _x = x,
         _y = y,
         _isAbstract = isAbstract,
+        _extendsClass = extendsClass,
         _attributes =
             LinkedHashMap.fromIterable(attributes ?? [], key: (a) => a.id),
         _operations =
@@ -55,6 +59,7 @@ class UMLClass implements NamedUMLElement {
       x: int.parse(element.getAttribute(_xAttribute) ?? '0'),
       y: int.parse(element.getAttribute(_yAttribute) ?? '0'),
       isAbstract: (element.getAttribute(_isAbstractAttribute) ?? '') == 'true',
+      extendsClass: element.getAttribute(_extendsAttribute) ?? '',
       attributes: element
           .findElements(UMLAttribute.xmlTag)
           .map((child) => UMLAttribute.fromXmlElement(child))
@@ -92,6 +97,32 @@ class UMLClass implements NamedUMLElement {
       model?.updateAttribute(
           id, _isAbstractAttribute, _isAbstract ? 'true' : 'false');
     }
+  }
+
+  String get extendsClass => _extendsClass;
+
+  set extendsClass(String newValue) {
+    if (newValue != _extendsClass) {
+      _extendsClass = newValue;
+      model?.updateAttribute(id, _extendsAttribute, newValue);
+    }
+  }
+
+  bool hasInheritanceCycle() {
+    if (extendsClass == '') return false;
+
+    final seen = {id};
+    var cls = _umlModel!.classes[extendsClass];
+    while (cls != null) {
+      if (seen.contains(cls.id)) {
+        return true;
+      }
+      seen.add(cls.id);
+      if (cls.extendsClass == '') break;
+      cls = _umlModel!.classes[cls.extendsClass];
+    }
+
+    return false;
   }
 
   UnmodifiableMapView<String, UMLAttribute> get attributes =>
@@ -146,7 +177,7 @@ class UMLClass implements NamedUMLElement {
         _attributes.values.map((attr) => attr.xmlRepresentation).join();
     final operations =
         _operations.values.map((op) => op.xmlRepresentation).join();
-    return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y" $_isAbstractAttribute="$isAbstract">' +
+    return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y" $_isAbstractAttribute="$isAbstract" $_extendsAttribute="$_extendsClass">' +
         name +
         attributes +
         operations +
@@ -173,8 +204,13 @@ class UMLClass implements NamedUMLElement {
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
       List<String> addedElements, List<String> deletedElements) {
     for (final attribute in attributes) {
-      if (attribute.item1 == _isAbstractAttribute) {
-        _isAbstract = attribute.item2 == 'true';
+      switch (attribute.item1) {
+        case _isAbstractAttribute:
+          _isAbstract = attribute.item2 == 'true';
+          break;
+        case _extendsAttribute:
+          _extendsClass = attribute.item2;
+          break;
       }
     }
 

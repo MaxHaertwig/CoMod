@@ -19,6 +19,7 @@ void main() {
 
     final person = model.classes.values.firstWhere((c) => c.name == 'Person');
     expect(person.isAbstract, false);
+    expect(person.extendsClass, '');
     expect(
         person.attributes.values.map((a) => a.name).toList(), ['Name', 'Age']);
 
@@ -34,6 +35,7 @@ void main() {
 
     final student = model.classes.values.firstWhere((c) => c.name == 'Student');
     expect(student.isAbstract, false);
+    expect(student.extendsClass, person.id);
     expect(student.attributes.values.map((a) => a.name).toList(), ['Major']);
 
     final studentMajor =
@@ -54,31 +56,33 @@ void main() {
   });
 
   test('UMLModel xmlRepresentation', () {
+    final person = UMLClass(
+      id: 'P',
+      name: 'Person',
+      attributes: [
+        UMLAttribute(
+          id: 'PA1',
+          name: 'name',
+          visibility: UMLVisibility.public,
+          dataType: UMLDataType.string(),
+        ),
+        UMLAttribute(
+          id: 'PA2',
+          name: 'age',
+          visibility: UMLVisibility.private,
+          dataType: UMLDataType.integer(),
+        ),
+      ],
+    );
     final umlModel = UMLModel(
       uuid: 'M',
       classes: [
-        UMLClass(
-          id: 'P',
-          name: 'Person',
-          attributes: [
-            UMLAttribute(
-              id: 'PA1',
-              name: 'name',
-              visibility: UMLVisibility.public,
-              dataType: UMLDataType.string(),
-            ),
-            UMLAttribute(
-              id: 'PA2',
-              name: 'age',
-              visibility: UMLVisibility.private,
-              dataType: UMLDataType.integer(),
-            ),
-          ],
-        ),
+        person,
         UMLClass(
           id: 'S',
           name: 'Student',
           y: 100,
+          extendsClass: person.id,
           attributes: [
             UMLAttribute(
               id: 'SA1',
@@ -111,12 +115,12 @@ void main() {
     );
     final xml = '''<?xml version="1.0" encoding="UTF-8"?>
     <model uuid="M">
-      <class id="P" x="0" y="0" isAbstract="false">
+      <class id="P" x="0" y="0" isAbstract="false" extends="">
         Person
         <attribute id="PA1" visibility="public" type="string">name</attribute>
         <attribute id="PA2" visibility="private" type="integer">age</attribute>
       </class>
-      <class id="S" x="0" y="100" isAbstract="false">
+      <class id="S" x="0" y="100" isAbstract="false" extends="P">
         Student
         <attribute id="SA1" visibility="public" type="string">major</attribute>
         <operation id="SO1" visibility="protected" returnType="void">
