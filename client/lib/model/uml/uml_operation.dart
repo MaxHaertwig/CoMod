@@ -104,7 +104,7 @@ class UMLOperation implements NamedUMLElement {
 
   void removeParameter(UMLOperationParameter parameter) {
     _parameters.remove(parameter.id);
-    model?.deleteElement(id);
+    model?.deleteElement(parameter.id);
   }
 
   void moveParameter(UMLOperationParameter parameter, MoveType moveType) {

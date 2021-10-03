@@ -105,7 +105,7 @@ class UMLClass implements NamedUMLElement {
 
   void removeAttribute(UMLAttribute attribute) {
     _attributes.remove(attribute.id);
-    model?.deleteElement(id);
+    model?.deleteElement(attribute.id);
   }
 
   void moveAttribute(UMLAttribute attribute, MoveType moveType) {
@@ -125,7 +125,7 @@ class UMLClass implements NamedUMLElement {
 
   void removeOperation(UMLOperation operation) {
     _operations.remove(operation.id);
-    model?.deleteElement(id);
+    model?.deleteElement(operation.id);
   }
 
   void moveOperation(UMLOperation operation, MoveType moveType) {
