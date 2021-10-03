@@ -57,7 +57,6 @@ class _OperationParameterRowState extends State<OperationParameterRow> {
                 const Text('∙', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(width: 8),
                 Flexible(
-                  // TODO: limit allowed characters
                   child: TextField(
                     autocorrect: false,
                     decoration: const InputDecoration(

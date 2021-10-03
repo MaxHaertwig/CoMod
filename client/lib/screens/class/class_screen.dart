@@ -5,6 +5,7 @@ import 'package:client/model/uml/uml_operation.dart';
 import 'package:client/screens/class/widgets/attribute_row.dart';
 import 'package:client/screens/class/widgets/operation_row.dart';
 import 'package:client/screens/class/widgets/named_text_field.dart';
+import 'package:client/widgets/expanded_row.dart';
 import 'package:client/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,54 +45,73 @@ class ClassScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // TODO: escape string
                   NamedTextField(
                     'Name',
                     initialValue: umlClass.name,
                     autofocus: _isNewClass,
-                    onChanged: (value) => _editClass(
-                      context,
-                      (cls) => cls.name = value.trim(),
-                    ),
+                    onChanged: (value) =>
+                        _editClass(context, (cls) => cls.name = value.trim()),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Attributes',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ExpandedRow(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Extends',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          PopupMenuButton(
+                            child: Container(
+                              height: 48,
+                              alignment: Alignment.centerLeft,
+                              child: Text('None',
+                                  style: const TextStyle(color: Colors.blue)),
+                            ),
+                            itemBuilder: (_) => ['None'] // TODO: classes
+                                .map((value) => PopupMenuItem(
+                                    value: value, child: Text(value)))
+                                .toList(),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Abstract',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Switch(
+                              value: umlClass.isAbstract,
+                              onChanged: (value) =>
+                                  umlClass.isAbstract = value),
+                        ],
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 24),
+                  const Text('Attributes',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   ..._umlClass.attributes.values
-                      .map((attribute) => AttributeRow(
-                            _umlClass,
-                            attribute,
-                            key: Key(attribute.id),
-                          ))
+                      .map((attribute) => AttributeRow(_umlClass, attribute,
+                          key: Key(attribute.id)))
                       .toList(),
                   TextButton(
-                    child: const Text(
-                      'Add attribute',
-                      textAlign: TextAlign.center,
-                    ),
+                    child: const Text('Add attribute',
+                        textAlign: TextAlign.center),
                     // TODO: focus new text field
                     onPressed: () => _editClass(
-                      context,
-                      (cls) => cls.addAttribute(UMLAttribute()),
-                    ),
+                        context, (cls) => cls.addAttribute(UMLAttribute())),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Operations',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  const Text('Operations',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   ..._umlClass.operations.values.map((operation) =>
                       OperationRow(_umlClass, operation,
                           key: Key(operation.id))),
                   TextButton(
-                    child: const Text(
-                      'Add operation',
-                      textAlign: TextAlign.center,
-                    ),
+                    child: const Text('Add operation',
+                        textAlign: TextAlign.center),
                     onPressed: () => _editClass(
                         context, (cls) => cls.addOperation(UMLOperation())),
                   ),

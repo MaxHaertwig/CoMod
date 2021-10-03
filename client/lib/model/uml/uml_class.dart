@@ -16,11 +16,13 @@ class UMLClass implements NamedUMLElement {
   static const _idAttribute = 'id';
   static const _xAttribute = 'x';
   static const _yAttribute = 'y';
+  static const _isAbstractAttribute = 'isAbstract';
 
   UMLModel? _umlModel;
   final String id;
   String _name;
   int _x, _y;
+  bool _isAbstract;
   LinkedHashMap<String, UMLAttribute> _attributes;
   LinkedHashMap<String, UMLOperation> _operations;
 
@@ -29,12 +31,14 @@ class UMLClass implements NamedUMLElement {
       name = '',
       x = 0,
       y = 0,
+      isAbstract = false,
       List<UMLAttribute>? attributes,
       List<UMLOperation>? operations})
       : id = id ?? Uuid().v4(),
         _name = name,
         _x = x,
         _y = y,
+        _isAbstract = isAbstract,
         _attributes =
             LinkedHashMap.fromIterable(attributes ?? [], key: (a) => a.id),
         _operations =
@@ -50,6 +54,7 @@ class UMLClass implements NamedUMLElement {
       id: element.getAttribute(_idAttribute)!,
       x: int.parse(element.getAttribute(_xAttribute) ?? '0'),
       y: int.parse(element.getAttribute(_yAttribute) ?? '0'),
+      isAbstract: (element.getAttribute(_isAbstractAttribute) ?? '') == 'true',
       attributes: element
           .findElements(UMLAttribute.xmlTag)
           .map((child) => UMLAttribute.fromXmlElement(child))
@@ -76,6 +81,16 @@ class UMLClass implements NamedUMLElement {
       final oldName = _name;
       _name = newName;
       model?.updateText(id, oldName, newName);
+    }
+  }
+
+  bool get isAbstract => _isAbstract;
+
+  set isAbstract(bool newValue) {
+    if (newValue != _isAbstract) {
+      _isAbstract = newValue;
+      model?.updateAttribute(
+          id, _isAbstractAttribute, _isAbstract ? 'true' : 'false');
     }
   }
 
@@ -126,11 +141,12 @@ class UMLClass implements NamedUMLElement {
       model?.insertElement(this, model!.uuid, id, xmlTag, name, null);
 
   String get xmlRepresentation {
+    final isAbstract = _isAbstract ? 'true' : 'false';
     final attributes =
         _attributes.values.map((attr) => attr.xmlRepresentation).join();
     final operations =
         _operations.values.map((op) => op.xmlRepresentation).join();
-    return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y">' +
+    return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y" $_isAbstractAttribute="$isAbstract">' +
         name +
         attributes +
         operations +
@@ -155,16 +171,24 @@ class UMLClass implements NamedUMLElement {
 
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
       List<String> addedElements, List<String> deletedElements) {
+    for (final attribute in attributes) {
+      if (attribute.item1 == _isAbstractAttribute) {
+        _isAbstract = attribute.item2 == 'true';
+      }
+    }
+
     final List<UMLElement> newElements = [];
     for (final xml in addedElements) {
       final attribute = UMLAttribute.fromXml(xml);
       _attributes[attribute.id] = attribute;
       newElements.add(attribute);
     }
+
     deletedElements.forEach((id) {
       _attributes.remove(id);
       _operations.remove(id);
     });
+
     return newElements;
   }
 }
