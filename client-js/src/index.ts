@@ -136,11 +136,17 @@ export function startObservingRemoteChanges(): void {
         ]);
       } else if (event instanceof yjs.YXmlEvent) {
         const element = event.target as yjs.XmlElement;
+
+        const addedElements = Array.from(event.changes.added.values()).map(item => item.content.getContent()[0]);
+        const deletedElements = Array.from(event.changes.deleted.values()).map(item => item.content.getContent()[0]);
+
+        deletedElements.forEach(e => mapping.delete(e.getAttribute('id')));
+        addedElements.forEach(e => mapping.set(e.getAttribute('id'), e));
         elementChanges.push([
           element.getAttribute(element.nodeName === 'model' ? 'uuid' : 'id'),
           Array.from(event.attributesChanged.values()).map(key => [key, element.getAttribute(key)]),
           Array.from(event.changes.added.values()).map(item => item.content.getContent()[0].toJSON()),
-          Array.from(event.changes.deleted.values()).map(item => item.content.getContent()[0]._map.get('id').content.getContent()[0]) // workaround, getAttribute('id') returns undefined, because the type is deleted
+          deletedElements.map(item => item._map.get('id').content.getContent()[0]) // workaround, getAttribute('id') returns undefined, because the type is deleted
         ]);
       }
     }
