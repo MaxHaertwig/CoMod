@@ -108,9 +108,8 @@ class UMLOperation implements NamedUMLElement {
   }
 
   void moveParameter(UMLOperationParameter parameter, MoveType moveType) {
-    // TODO: replicate in yjs
     _parameters.move(parameter.id, moveType);
-    model?.didChange();
+    model?.moveElement(parameter.id, moveType);
   }
 
   void addToModel() =>
@@ -146,7 +145,7 @@ class UMLOperation implements NamedUMLElement {
 
   @override
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
-      List<String> addedElements, List<String> deletedElements) {
+      List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
     for (final tuple in attributes) {
       switch (tuple.item1) {
         case _visibilityAttribute:
@@ -158,15 +157,14 @@ class UMLOperation implements NamedUMLElement {
       }
     }
 
+    deletedElements.forEach((id) => _parameters.remove(id));
+
     final List<UMLElement> newElements = [];
-    for (final xml in addedElements) {
-      final parameter = UMLOperationParameter.fromXml(xml);
+    for (final tuple in addedElements) {
+      final parameter = UMLOperationParameter.fromXml(tuple.item1);
       _parameters[parameter.id] = parameter;
       newElements.add(parameter);
     }
-
-    deletedElements.forEach((id) => _parameters.remove(id));
-
     return newElements;
   }
 }

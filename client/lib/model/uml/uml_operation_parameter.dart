@@ -69,7 +69,7 @@ class UMLOperationParameter implements NamedUMLElement {
 
   @override
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
-      List<String> addedElements, List<String> deletedElements) {
+      List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
     for (final tuple in attributes) {
       if (tuple.item1 == _typeAttribute) {
         _type = UMLDataType.fromString(tuple.item2);

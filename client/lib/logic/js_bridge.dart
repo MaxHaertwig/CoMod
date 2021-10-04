@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:client/extensions.dart';
 import 'package:client/logic/models_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -8,8 +9,8 @@ import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
 
 typedef TextChange = Tuple2<String, String>;
-typedef ElementChange
-    = Tuple4<String, List<Tuple2<String, String>>, List<String>, List<String>>;
+typedef ElementChange = Tuple4<String, List<Tuple2<String, String>>,
+    List<Tuple2<String, int>>, List<String>>;
 
 typedef LocalUpdateFunction = void Function(List<int>);
 typedef RemoteUpdateFunction = void Function(
@@ -65,7 +66,10 @@ class JSBridge {
                       .map<Tuple2<String, String>>(
                           (c) => Tuple2(c[0] as String, c[1] as String))
                       .toList() as List<Tuple2<String, String>>,
-                  ec[2].cast<String>() as List<String>,
+                  ec[2]
+                      .map<Tuple2<String, int>>(
+                          (c) => Tuple2(c[0] as String, c[1] as int))
+                      .toList() as List<Tuple2<String, int>>,
                   ec[3].cast<String>() as List<String>,
                 ))
             .toList() as List<ElementChange>;
@@ -126,6 +130,9 @@ class JSBridge {
 
   void updateAttribute(String id, String attribute, String value) =>
       _evaluate('client.updateAttribute("$id", "$attribute", "$value");');
+
+  void moveElement(String id, MoveType moveType) =>
+      _evaluate('client.moveElement("$id", ${moveType.index});');
 
   void startObservingRemoteChanges() =>
       _evaluate('client.startObservingRemoteChanges();');

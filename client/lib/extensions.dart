@@ -10,6 +10,18 @@ extension IterableExtensions<T> on Iterable<T> {
 enum MoveType { moveToTop, moveUp, moveDown, moveToBottom }
 
 extension LinkedHashMapExtensions<K, V> on LinkedHashMap<K, V> {
+  void insertAt(K key, V value, int index) {
+    if (index >= length) {
+      this[key] = value;
+      return;
+    }
+
+    final trailingEntries = entries.skip(index).toList();
+    trailingEntries.forEach((e) => remove(e.key));
+    this[key] = value;
+    trailingEntries.forEach((e) => this[e.key] = e.value);
+  }
+
   void move(K key, MoveType moveType) {
     if (length <= 1 || !containsKey(key)) {
       return;

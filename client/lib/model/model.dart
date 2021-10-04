@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:client/extensions.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:client/logic/collaboration_session.dart';
 import 'package:client/logic/js_bridge.dart';
@@ -189,6 +190,11 @@ class Model extends ChangeNotifier {
 
   void updateAttribute(String id, String attribute, String value) {
     _jsBridge.updateAttribute(id, attribute, value);
+    notifyListeners();
+  }
+
+  void moveElement(String id, MoveType moveType) {
+    _jsBridge.moveElement(id, moveType);
     notifyListeners();
   }
 

@@ -140,9 +140,8 @@ class UMLClass implements NamedUMLElement {
   }
 
   void moveAttribute(UMLAttribute attribute, MoveType moveType) {
-    // TODO: replicate in yjs
     _attributes.move(attribute.id, moveType);
-    model?.didChange();
+    model?.moveElement(attribute.id, moveType);
   }
 
   UnmodifiableMapView<String, UMLOperation> get operations =>
@@ -160,9 +159,8 @@ class UMLClass implements NamedUMLElement {
   }
 
   void moveOperation(UMLOperation operation, MoveType moveType) {
-    // TODO: replicate in yjs
     _operations.move(operation.id, moveType);
-    model?.didChange();
+    model?.moveElement(operation.id, moveType);
   }
 
   bool get isEmpty =>
@@ -202,7 +200,7 @@ class UMLClass implements NamedUMLElement {
 
   @override
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
-      List<String> addedElements, List<String> deletedElements) {
+      List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
     for (final attribute in attributes) {
       switch (attribute.item1) {
         case _isAbstractAttribute:
@@ -214,18 +212,25 @@ class UMLClass implements NamedUMLElement {
       }
     }
 
-    final List<UMLElement> newElements = [];
-    for (final xml in addedElements) {
-      final attribute = UMLAttribute.fromXml(xml);
-      _attributes[attribute.id] = attribute;
-      newElements.add(attribute);
+    for (final id in deletedElements) {
+      if (_attributes.remove(id) == null) {
+        _operations.remove(id);
+      }
     }
 
-    deletedElements.forEach((id) {
-      _attributes.remove(id);
-      _operations.remove(id);
-    });
-
+    final List<UMLElement> newElements = [];
+    for (final tuple in addedElements
+      ..sort((a, b) => a.item2.compareTo(b.item2))) {
+      if (tuple.item1.startsWith('<' + UMLAttribute.xmlTag)) {
+        final attribute = UMLAttribute.fromXml(tuple.item1);
+        _attributes.insertAt(attribute.id, attribute, tuple.item2);
+        newElements.add(attribute);
+      } else {
+        final operation = UMLOperation.fromXml(tuple.item1);
+        _operations.insertAt(operation.id, operation, tuple.item2);
+        newElements.add(operation);
+      }
+    }
     return newElements;
   }
 }

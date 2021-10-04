@@ -110,7 +110,7 @@ class UMLAttribute implements NamedUMLElement {
 
   @override
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
-      List<String> addedElements, List<String> deletedElements) {
+      List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
     for (final tuple in attributes) {
       switch (tuple.item1) {
         case _visibilityAttribute:

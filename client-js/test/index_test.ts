@@ -138,6 +138,18 @@ describe('client-js', () => {
     assertChannels(['LocalUpdate', 'ModelSerialized']);
   });
 
+  it('moves elements', () => {
+    const localDoc = createSampleYDoc();
+    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(localDoc)), false);
+
+    client.moveElement('PA2', client.MoveType.Up);
+
+    const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
+    const person = model.get(0) as yjs.XmlElement;
+    assert.strictEqual(person.get(1).getAttribute('id'), 'PA2');
+    assertChannels(['LocalUpdate', 'ModelSerialized']);
+  });
+
   it('observes remote changes', () => {
     const yDoc = createSampleYDoc();
     client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(yDoc)), false);
@@ -186,8 +198,8 @@ describe('client-js', () => {
     assert.strictEqual(personElementChanges[0], 'P');
     assert.deepEqual(personElementChanges[1], [['key1', 'value1'], ['key2', 'value2']]);
     assert.deepEqual(personElementChanges[2], [
-      '<attribute id="PA3" type="string" visibility="protected">address</attribute>',
-      '<attribute id="PA4" type="string" visibility="private">ssn</attribute>'
+      ['<attribute id="PA3" type="string" visibility="protected">address</attribute>', 1],
+      ['<attribute id="PA4" type="string" visibility="private">ssn</attribute>', 2]
     ]);
     assert.deepEqual(personElementChanges[3], ['PA2']);
   });
@@ -200,5 +212,28 @@ describe('client-js', () => {
     client.updateAttribute('P', 'key', 'value');
 
     assertChannels(['LocalUpdate', 'ModelSerialized']);
+  });
+
+  it('does not duplicate concurrently moved elements', () => {
+    const yDoc = createSampleYDoc();
+    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(yDoc)), false);
+    client.startObservingRemoteChanges();
+
+    client.moveElement('PA2', client.MoveType.Up);
+
+    const serverDoc = new yjs.Doc();
+    yjs.applyUpdate(serverDoc, yjs.encodeStateAsUpdate(yDoc));
+    const serverPerson = (serverDoc.getXmlFragment().get(0) as yjs.XmlElement).get(0) as yjs.XmlElement;
+    const serverPersonAge = serverPerson.get(2).clone() as yjs.XmlElement;
+    serverDoc.transact(() => {
+      serverPerson.delete(2);
+      serverPerson.insert(1, [serverPersonAge]);
+    });
+
+    yjs.applyUpdate(client.activeDoc, yjs.encodeStateAsUpdate(serverDoc, yjs.encodeStateVector(yDoc)));
+
+    const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
+    const localPerson = model.get(0) as yjs.XmlElement;
+    assert.strictEqual(localPerson.toArray().length, 3);
   });
 });

@@ -1,4 +1,3 @@
-import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_class.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:test/test.dart';

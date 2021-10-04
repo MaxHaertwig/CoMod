@@ -111,6 +111,37 @@ export function updateAttribute(id: string, attribute: string, value: string): v
   serializeModel();
 }
 
+export enum MoveType {
+  ToTop = 0, Up, Down, ToBottom
+}
+
+
+export function moveElement(id: string, moveType: MoveType): void {
+  const element = mapping.get(id)!;
+  const clone = element.clone() as yjs.XmlElement;
+  mapping.set(id, clone);
+  const parent = element.parent! as yjs.XmlFragment;
+  const index = parent.toArray().indexOf(element);
+  activeDoc.transact(() => {
+    parent.delete(index);
+    switch (moveType) {
+    case MoveType.ToTop:
+      parent.insert(parent.get(0) instanceof yjs.XmlText ? 1 : 0, [clone]);
+      break;
+    case MoveType.Up:
+      parent.insert(Math.max(index - 1, parent.get(0) instanceof yjs.XmlText ? 1 : 0), [clone]);
+      break;
+    case MoveType.Down:
+      parent.insert(index + 1, [clone]);
+      break;
+    case MoveType.ToBottom:
+      parent.push([clone]);
+      break;
+    }
+  });
+  serializeModel();
+}
+
 let observationFunction: (arg0: yjs.YEvent[], arg1: yjs.Transaction) => void;
 
 export function startObservingRemoteChanges(): void {
@@ -122,12 +153,12 @@ export function startObservingRemoteChanges(): void {
     //   [
     //     'id',                                   // ID
     //     [['attr1', 'val1'], ['attr2', 'val2']], // attributes
-    //     ['<param>...</param>'],                 // added elements
+    //     [['<param>...</param>', 2]],            // added elements (xml, index)
     //     ['id1']                                 // deleted element IDs  
     //   ]
     // ]
-    const elementChanges: [string, [string, string][], string[], string[]][] = [];
     const textChanges: [string, string][] = [];
+    const elementChanges: [string, [string, string][], [string, number][], string[]][] = [];
     for (const event of events) {
       if (event instanceof yjs.YTextEvent) {
         textChanges.push([
@@ -137,15 +168,44 @@ export function startObservingRemoteChanges(): void {
       } else if (event instanceof yjs.YXmlEvent) {
         const element = event.target as yjs.XmlElement;
 
+        // Remove duplicate elements (as a result of concurrent moves)
+        if (event.changes.added.size) {
+          const seen = new Set();
+          const indicesToDelete: number[] = [];
+          for (let i = element.length - 1; i >= 0; i--) {
+            const item = element.get(i) as yjs.XmlElement;
+            if (item instanceof yjs.XmlElement) {
+              const id = item.getAttribute('id');
+              if (seen.has(id)) {
+                indicesToDelete.push(i);
+              } else {
+                seen.add(id);
+              }
+            }
+          }
+          if (indicesToDelete.length) {
+            activeDoc.transact(() => {
+              indicesToDelete.forEach(i => element.delete(i));
+            });
+            serializeModel();
+          }
+        }
+
         const addedElements = Array.from(event.changes.added.values()).map(item => item.content.getContent()[0]);
         const deletedElements = Array.from(event.changes.deleted.values()).map(item => item.content.getContent()[0]);
 
         deletedElements.forEach(e => mapping.delete(e.getAttribute('id')));
         addedElements.forEach(e => mapping.set(e.getAttribute('id'), e));
+
+        const elementArray = element.toArray();
+        const firstChildIsText = element.get(0) instanceof yjs.XmlText;
         elementChanges.push([
           element.getAttribute(element.nodeName === 'model' ? 'uuid' : 'id'),
           Array.from(event.attributesChanged.values()).map(key => [key, element.getAttribute(key)]),
-          Array.from(event.changes.added.values()).map(item => item.content.getContent()[0].toJSON()),
+          addedElements.map(item => {
+            const index = elementArray.indexOf(item);
+            return [item.toJSON(), firstChildIsText ? index - 1 : index];
+          }),
           deletedElements.map(item => item._map.get('id').content.getContent()[0]) // workaround, getAttribute('id') returns undefined, because the type is deleted
         ]);
       }

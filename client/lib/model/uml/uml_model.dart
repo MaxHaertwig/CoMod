@@ -72,14 +72,15 @@ class UMLModel implements UMLElement {
 
   @override
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
-      List<String> addedElements, List<String> deletedElements) {
+      List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
+    deletedElements.forEach((id) => _classes.remove(id));
+
     final List<UMLElement> newElements = [];
-    for (final xml in addedElements) {
-      final umlClass = UMLClass.fromXml(xml);
+    for (final tuple in addedElements) {
+      final umlClass = UMLClass.fromXml(tuple.item1);
       _classes[umlClass.id] = umlClass;
       newElements.add(umlClass);
     }
-    deletedElements.forEach((id) => _classes.remove(id));
     return newElements;
   }
 }
