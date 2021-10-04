@@ -1,10 +1,10 @@
 import 'package:client/model/model.dart';
-import 'package:client/model/uml/uml_class.dart';
-import 'package:client/screens/class/class_screen.dart';
+import 'package:client/model/uml/uml_type.dart';
+import 'package:client/screens/class/type_screen.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_menu_button.dart';
 import 'package:client/screens/main_screen/widgets/inheritance_indicator.dart';
-import 'package:client/screens/main_screen/widgets/outline_class.dart';
+import 'package:client/screens/main_screen/widgets/type_card.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,15 +32,15 @@ class MainScreen extends StatelessWidget {
                 ),
               ],
             ),
-            body: model.umlModel.classes.isEmpty
+            body: model.umlModel.types.isEmpty
                 ? NoDataView(
-                    'No classes',
-                    'Your model doesn\'t have any classes yet. Press the button to create one.',
-                    ['Create Class'],
-                    (_) => _newClass(context))
+                    'No types',
+                    'Your model doesn\'t have any types yet. Press the button to create one.',
+                    ['Create Type'],
+                    (_) => _newType(context))
                 : ListView(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    children: model.umlModel.classes.values
+                    children: model.umlModel.types.values
                         .where((cls) => !cls.isEmpty)
                         .map((cls) => Container(
                               margin: const EdgeInsets.symmetric(
@@ -48,39 +48,39 @@ class MainScreen extends StatelessWidget {
                               child: Column(
                                 children: [
                                   if (cls.extendsClass != '' &&
-                                      model.umlModel.classes
+                                      model.umlModel.types
                                           .containsKey(cls.extendsClass))
                                     InheritanceIndicator(model
-                                        .umlModel.classes[cls.extendsClass]!),
+                                        .umlModel.types[cls.extendsClass]!),
                                   GestureDetector(
-                                    child: OutlineClass(cls),
-                                    onTap: () => _editClass(context, cls),
+                                    child: TypeCard(cls),
+                                    onTap: () => _editType(context, cls),
                                   ),
                                 ],
                               ),
                             ))
                         .toList(),
                   ),
-            floatingActionButton: model.umlModel.classes.isEmpty
+            floatingActionButton: model.umlModel.types.isEmpty
                 ? null
                 : FloatingActionButton(
                     child: const Icon(Icons.add),
-                    onPressed: () => _newClass(context),
+                    onPressed: () => _newType(context),
                   ),
           ),
         ),
       );
 
-  void _newClass(BuildContext context) => _editClass(context, UMLClass(), true);
+  void _newType(BuildContext context) => _editType(context, UMLType(), true);
 
-  void _editClass(BuildContext context, UMLClass umlClass,
-      [bool isNewClass = false]) {
+  void _editType(BuildContext context, UMLType umlType,
+      [bool isNewType = false]) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider.value(
           value: Provider.of<Model>(context, listen: false),
-          child: ClassScreen(umlClass, isNewClass),
+          child: TypeScreen(umlType, isNewType),
         ),
       ),
     );

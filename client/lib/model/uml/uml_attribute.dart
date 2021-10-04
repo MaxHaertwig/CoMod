@@ -1,5 +1,5 @@
 import 'package:client/model/model.dart';
-import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_visibility.dart';
@@ -14,7 +14,7 @@ class UMLAttribute implements NamedUMLElement {
   static const _visibilityAttribute = 'visibility';
   static const _typeAttribute = 'type';
 
-  UMLClass? _umlClass;
+  UMLType? _umlType;
   final String id;
   String _name;
   UMLVisibility _visibility;
@@ -44,9 +44,9 @@ class UMLAttribute implements NamedUMLElement {
     );
   }
 
-  set umlClass(UMLClass umlClass) => _umlClass = umlClass;
+  set umlType(UMLType umlType) => _umlType = umlType;
 
-  Model? get model => _umlClass?.model;
+  Model? get model => _umlType?.model;
 
   String get name => _name;
 
@@ -78,7 +78,7 @@ class UMLAttribute implements NamedUMLElement {
   }
 
   void addToModel() =>
-      model?.insertElement(this, _umlClass!.id, 1, xmlTag, name, [
+      model?.insertElement(this, _umlType!.id, 1, xmlTag, name, [
         Tuple2(_visibilityAttribute, visibility.xmlRepresentation),
         Tuple2(_typeAttribute, dataType.xmlRepresentation)
       ]);

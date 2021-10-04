@@ -3,7 +3,7 @@
   <xs:element name="model">
     <xs:complexType>
       <xs:choice maxOccurs="unbounded">
-        <xs:element name="class">
+        <xs:element name="type">
           <xs:complexType mixed="true">
             <xs:sequence>
               <xs:element name="attributes">
@@ -52,7 +52,7 @@
             <xs:attribute name="id" type="uuid" use="required" />
             <xs:attribute name="x" type="xs:integer" use="required" />
             <xs:attribute name="y" type="xs:integer" use="required" />
-            <xs:attribute name="isAbstract" type="xs:boolean" />
+            <xs:attribute name="type" type="type" />
             <xs:attribute name="extends" type="xs:string" />
           </xs:complexType>
         </xs:element>
@@ -77,6 +77,13 @@
   <xs:simpleType name="uuid">
     <xs:restriction base="xs:string">
       <xs:pattern value="([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})|(\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="class" />
+      <xs:enumeration value="abstractClass" />
+      <xs:enumeration value="interface" />
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="visibility">

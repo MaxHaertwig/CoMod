@@ -1,10 +1,11 @@
-import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_type.dart';
+import 'package:client/model/uml/uml_type_type.dart';
 import 'package:flutter/material.dart';
 
 class InheritanceIndicator extends StatelessWidget {
-  final UMLClass umlClass;
+  final UMLType umlType;
 
-  InheritanceIndicator(this.umlClass);
+  InheritanceIndicator(this.umlType);
 
   @override
   Widget build(BuildContext context) => Column(
@@ -14,9 +15,9 @@ class InheritanceIndicator extends StatelessWidget {
             elevation: 2,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(umlClass.name,
+              child: Text(umlType.name,
                   style: TextStyle(
-                      fontStyle: umlClass.isAbstract
+                      fontStyle: umlType.type == UMLTypeType.abstractClass
                           ? FontStyle.italic
                           : FontStyle.normal)),
             ),

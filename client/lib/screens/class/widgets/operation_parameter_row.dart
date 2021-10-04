@@ -1,7 +1,7 @@
 import 'package:client/extensions.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
-import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:client/model/uml/uml_operation_parameter.dart';
 import 'package:client/screens/class/widgets/data_type_button.dart';
@@ -16,13 +16,13 @@ typedef AddParameterFunction = void Function();
 typedef EditParameterFunction = void Function(UMLOperationParameter);
 
 class OperationParameterRow extends StatefulWidget {
-  final UMLClass _umlClass;
+  final UMLType _umlType;
   final UMLOperation _operation;
   final UMLOperationParameter _parameter;
   final AddParameterFunction _addParameterFunction;
   final FocusNode? focusNode;
 
-  OperationParameterRow(this._umlClass, this._operation, this._parameter,
+  OperationParameterRow(this._umlType, this._operation, this._parameter,
       this._addParameterFunction,
       {Key? key, this.focusNode})
       : super(key: key);
@@ -48,7 +48,7 @@ class _OperationParameterRowState extends State<OperationParameterRow> {
   @override
   Widget build(BuildContext context) => Selector<Model, UMLOperationParameter>(
       selector: (_, model) =>
-          ((model.umlModel.classes[widget._umlClass.id] ?? widget._umlClass)
+          ((model.umlModel.types[widget._umlType.id] ?? widget._umlType)
                       .operations[widget._operation.id] ??
                   widget._operation)
               .parameters[widget._parameter.id] ??

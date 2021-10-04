@@ -2,7 +2,7 @@ import 'package:client/extensions.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
-import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_type.dart';
 import 'package:client/screens/class/widgets/attribute_action_button.dart';
 import 'package:client/screens/class/widgets/data_type_button.dart';
 import 'package:client/screens/class/widgets/visibility_button.dart';
@@ -14,11 +14,11 @@ import 'package:provider/provider.dart';
 typedef EditAttributeFunction = void Function(UMLAttribute);
 
 class AttributeRow extends StatefulWidget {
-  final UMLClass _umlClass;
+  final UMLType _umlType;
   final UMLAttribute _attribute;
   final FocusNode? focusNode;
 
-  AttributeRow(this._umlClass, this._attribute, {Key? key, this.focusNode})
+  AttributeRow(this._umlType, this._attribute, {Key? key, this.focusNode})
       : super(key: key);
 
   @override
@@ -41,7 +41,7 @@ class _AttributeRowState extends State<AttributeRow> {
   @override
   Widget build(BuildContext context) => Selector<Model, UMLAttribute>(
         selector: (_, model) =>
-            (model.umlModel.classes[widget._umlClass.id] ?? widget._umlClass)
+            (model.umlModel.types[widget._umlType.id] ?? widget._umlType)
                 .attributes[widget._attribute.id] ??
             widget._attribute,
         shouldRebuild: (previous, next) => next != previous,
@@ -78,7 +78,7 @@ class _AttributeRowState extends State<AttributeRow> {
               ),
               const SizedBox(width: 8),
               AttributeActionButton(
-                  widget._umlClass.attributes.moveTypes(attribute.id),
+                  widget._umlType.attributes.moveTypes(attribute.id),
                   (action) => _attributeAction(context, action)),
             ],
           ),
@@ -90,9 +90,9 @@ class _AttributeRowState extends State<AttributeRow> {
 
   void _attributeAction(BuildContext context, Either<MoveType, int> action) {
     if (action.isLeft) {
-      widget._umlClass.moveAttribute(widget._attribute, action.left);
+      widget._umlType.moveAttribute(widget._attribute, action.left);
     } else {
-      widget._umlClass.removeAttribute(widget._attribute);
+      widget._umlType.removeAttribute(widget._attribute);
     }
   }
 }

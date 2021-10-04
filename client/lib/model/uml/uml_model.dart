@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:client/model/model.dart';
-import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_element.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
@@ -14,11 +14,11 @@ class UMLModel implements UMLElement {
 
   Model? _model;
   final String uuid;
-  Map<String, UMLClass> _classes;
+  Map<String, UMLType> _types;
 
-  UMLModel({String? uuid, List<UMLClass>? classes})
+  UMLModel({String? uuid, List<UMLType>? types})
       : uuid = uuid ?? Uuid().v4(),
-        _classes = {for (var cls in classes ?? []) cls.id: cls};
+        _types = {for (var cls in types ?? []) cls.id: cls};
 
   static UMLModel fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);
@@ -27,9 +27,9 @@ class UMLModel implements UMLElement {
     assert(element.name.toString() == _xmlTag);
     return UMLModel(
       uuid: element.getAttribute(_uuidAttribute)!,
-      classes: element
-          .findElements(UMLClass.xmlTag)
-          .map((child) => UMLClass.fromXmlElement(child))
+      types: element
+          .findElements(UMLType.xmlTag)
+          .map((child) => UMLType.fromXmlElement(child))
           .toList(),
     );
   }
@@ -40,46 +40,45 @@ class UMLModel implements UMLElement {
 
   set model(Model? model) {
     _model = model;
-    _classes.values.forEach((cls) => cls.umlModel = this);
+    _types.values.forEach((cls) => cls.umlModel = this);
   }
 
-  UnmodifiableMapView<String, UMLClass> get classes =>
-      UnmodifiableMapView(_classes);
+  UnmodifiableMapView<String, UMLType> get types => UnmodifiableMapView(_types);
 
-  void addClass(UMLClass umlClass) {
-    umlClass.umlModel = this;
-    _classes[umlClass.id] = umlClass;
-    umlClass.addToModel();
+  void addType(UMLType umlType) {
+    umlType.umlModel = this;
+    _types[umlType.id] = umlType;
+    umlType.addToModel();
   }
 
-  void removeClass(UMLClass umlClass) {
-    _classes.remove(umlClass.id);
-    _model?.deleteElement(umlClass.id);
+  void removeType(UMLType umlType) {
+    _types.remove(umlType.id);
+    _model?.deleteElement(umlType.id);
   }
 
   String get xmlRepresentation {
-    final classes = _classes.values.map((cls) => cls.xmlRepresentation).join();
+    final types = _types.values.map((cls) => cls.xmlRepresentation).join();
     return _xmlDeclaration +
         '<$_xmlTag $_uuidAttribute="$uuid">' +
-        classes +
+        types +
         '</$_xmlTag>';
   }
 
   void addToMapping(Map<String, UMLElement> mapping) {
     mapping[id] = this;
-    _classes.values.forEach((cls) => cls.addToMapping(mapping));
+    _types.values.forEach((cls) => cls.addToMapping(mapping));
   }
 
   @override
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
       List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
-    deletedElements.forEach((id) => _classes.remove(id));
+    deletedElements.forEach((id) => _types.remove(id));
 
     final List<UMLElement> newElements = [];
     for (final tuple in addedElements) {
-      final umlClass = UMLClass.fromXml(tuple.item1);
-      _classes[umlClass.id] = umlClass;
-      newElements.add(umlClass);
+      final umlType = UMLType.fromXml(tuple.item1);
+      _types[umlType.id] = umlType;
+      newElements.add(umlType);
     }
     return newElements;
   }

@@ -6,37 +6,38 @@ import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_operation.dart';
+import 'package:client/model/uml/uml_type_type.dart';
 import 'package:collection/collection.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLClass implements NamedUMLElement {
-  static const xmlTag = 'class';
+class UMLType implements NamedUMLElement {
+  static const xmlTag = 'type';
   static const _attributesTag = 'attributes';
   static const _operationsTag = 'operations';
 
   static const _idAttribute = 'id';
   static const _xAttribute = 'x';
   static const _yAttribute = 'y';
-  static const _isAbstractAttribute = 'isAbstract';
+  static const _typeAttribute = 'type';
   static const _extendsAttribute = 'extends';
 
   UMLModel? _umlModel;
   final String id;
   String _name;
   int _x, _y;
-  bool _isAbstract;
+  UMLTypeType _type;
   String _extendsClass;
   LinkedHashMap<String, UMLAttribute> _attributes;
   LinkedHashMap<String, UMLOperation> _operations;
 
-  UMLClass(
+  UMLType(
       {String? id,
       name = '',
       x = 0,
       y = 0,
-      isAbstract = false,
+      type = UMLTypeType.classType,
       extendsClass = '',
       List<UMLAttribute>? attributes,
       List<UMLOperation>? operations})
@@ -44,26 +45,26 @@ class UMLClass implements NamedUMLElement {
         _name = name,
         _x = x,
         _y = y,
-        _isAbstract = isAbstract,
+        _type = type,
         _extendsClass = extendsClass,
         _attributes =
             LinkedHashMap.fromIterable(attributes ?? [], key: (a) => a.id),
         _operations =
             LinkedHashMap.fromIterable(operations ?? [], key: (op) => op.id);
 
-  static UMLClass fromXml(String xml) =>
+  static UMLType fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);
 
-  static UMLClass fromXmlElement(XmlElement element) {
+  static UMLType fromXmlElement(XmlElement element) {
     assert(element.name.toString() == xmlTag);
-    return UMLClass(
+    return UMLType(
       name: element.firstChild is XmlText
           ? (element.firstChild as XmlText).text.trim()
           : '',
       id: element.getAttribute(_idAttribute)!,
       x: int.parse(element.getAttribute(_xAttribute) ?? '0'),
       y: int.parse(element.getAttribute(_yAttribute) ?? '0'),
-      isAbstract: (element.getAttribute(_isAbstractAttribute) ?? '') == 'true',
+      type: UMLTypeTypeExt.fromString(element.getAttribute(_typeAttribute)!),
       extendsClass: element.getAttribute(_extendsAttribute) ?? '',
       attributes: element
           .getElement(_attributesTag)!
@@ -80,8 +81,8 @@ class UMLClass implements NamedUMLElement {
 
   set umlModel(UMLModel? umlModel) {
     _umlModel = umlModel;
-    _attributes.values.forEach((attribute) => attribute.umlClass = this);
-    _operations.values.forEach((op) => op.umlClass = this);
+    _attributes.values.forEach((attribute) => attribute.umlType = this);
+    _operations.values.forEach((op) => op.umlType = this);
   }
 
   Model? get model => _umlModel?.model;
@@ -96,13 +97,12 @@ class UMLClass implements NamedUMLElement {
     }
   }
 
-  bool get isAbstract => _isAbstract;
+  UMLTypeType get type => _type;
 
-  set isAbstract(bool newValue) {
-    if (newValue != _isAbstract) {
-      _isAbstract = newValue;
-      model?.updateAttribute(
-          id, _isAbstractAttribute, _isAbstract ? 'true' : 'false');
+  set type(UMLTypeType newType) {
+    if (newType != _type) {
+      _type = newType;
+      model?.updateAttribute(id, _typeAttribute, _type.xmlRepresentation);
     }
   }
 
@@ -119,14 +119,14 @@ class UMLClass implements NamedUMLElement {
     if (extendsClass == '') return false;
 
     final seen = {id};
-    var cls = _umlModel!.classes[extendsClass];
+    var cls = _umlModel!.types[extendsClass];
     while (cls != null) {
       if (seen.contains(cls.id)) {
         return true;
       }
       seen.add(cls.id);
       if (cls.extendsClass == '') break;
-      cls = _umlModel!.classes[cls.extendsClass];
+      cls = _umlModel!.types[cls.extendsClass];
     }
 
     return false;
@@ -136,7 +136,7 @@ class UMLClass implements NamedUMLElement {
       UnmodifiableMapView(_attributes);
 
   void addAttribute(UMLAttribute attribute) {
-    attribute.umlClass = this;
+    attribute.umlType = this;
     _attributes[attribute.id] = attribute;
     attribute.addToModel();
   }
@@ -155,7 +155,7 @@ class UMLClass implements NamedUMLElement {
       UnmodifiableMapView(_operations);
 
   void addOperation(UMLOperation operation) {
-    operation.umlClass = this;
+    operation.umlType = this;
     _operations[operation.id] = operation;
     operation.addToModel();
   }
@@ -177,12 +177,11 @@ class UMLClass implements NamedUMLElement {
       null, [_attributesTag, _operationsTag]);
 
   String get xmlRepresentation {
-    final isAbstract = _isAbstract ? 'true' : 'false';
     final attributes =
         _attributes.values.map((attr) => attr.xmlRepresentation).join();
     final operations =
         _operations.values.map((op) => op.xmlRepresentation).join();
-    return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y" $_isAbstractAttribute="$isAbstract" $_extendsAttribute="$_extendsClass">' +
+    return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y" $_typeAttribute="${_type.xmlRepresentation}" $_extendsAttribute="$_extendsClass">' +
         name +
         '<$_attributesTag>$attributes</$_attributesTag>' +
         '<$_operationsTag>$operations</$_operationsTag>' +
@@ -210,8 +209,8 @@ class UMLClass implements NamedUMLElement {
       List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
     for (final attribute in attributes) {
       switch (attribute.item1) {
-        case _isAbstractAttribute:
-          _isAbstract = attribute.item2 == 'true';
+        case _typeAttribute:
+          _type = UMLTypeTypeExt.fromString(attribute.item2);
           break;
         case _extendsAttribute:
           _extendsClass = attribute.item2;

@@ -65,12 +65,11 @@ class Model extends ChangeNotifier {
       umlModel =
           UMLModel.fromXml(await rootBundle.loadString('assets/example.xml'));
       _umlModel.model = this;
-      for (final umlClass in _umlModel.classes.values) {
-        _umlModel.addClass(umlClass);
-        umlClass.attributes.values
-            .forEach((attr) => umlClass.addAttribute(attr));
-        for (final operation in umlClass.operations.values) {
-          umlClass.addOperation(operation);
+      for (final umlType in _umlModel.types.values) {
+        _umlModel.addType(umlType);
+        umlType.attributes.values.forEach((attr) => umlType.addAttribute(attr));
+        for (final operation in umlType.operations.values) {
+          umlType.addOperation(operation);
           operation.parameters.values
               .forEach((param) => operation.addParameter(param));
         }

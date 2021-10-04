@@ -1,7 +1,7 @@
 import 'package:client/extensions.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
-import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:client/model/uml/uml_operation_parameter.dart';
 import 'package:client/screens/class/widgets/data_type_button.dart';
@@ -17,11 +17,11 @@ import 'operation_action_button.dart';
 typedef EditOperationFunction = void Function(UMLOperation);
 
 class OperationRow extends StatefulWidget {
-  final UMLClass _umlClass;
+  final UMLType _umlType;
   final UMLOperation _operation;
   final FocusNode? focusNode;
 
-  OperationRow(this._umlClass, this._operation, {Key? key, this.focusNode})
+  OperationRow(this._umlType, this._operation, {Key? key, this.focusNode})
       : super(key: key);
 
   @override
@@ -46,7 +46,7 @@ class _OperationRowState extends State<OperationRow> {
   @override
   Widget build(BuildContext context) => Selector<Model, UMLOperation>(
         selector: (_, model) =>
-            (model.umlModel.classes[widget._umlClass.id] ?? widget._umlClass)
+            (model.umlModel.types[widget._umlType.id] ?? widget._umlType)
                 .operations[widget._operation.id] ??
             widget._operation,
         shouldRebuild: (previous, next) => next != previous,
@@ -85,14 +85,14 @@ class _OperationRowState extends State<OperationRow> {
                   ),
                   const SizedBox(width: 8),
                   OperationActionButton(
-                      widget._umlClass.operations.moveTypes(operation.id),
+                      widget._umlType.operations.moveTypes(operation.id),
                       (action) => _operationAction(context, action)),
                 ],
               ),
               if (widget._operation.parameters.isNotEmpty) Divider(height: 0),
               ...widget._operation.parameters.values
                   .map((parameter) => OperationParameterRow(
-                        widget._umlClass,
+                        widget._umlType,
                         widget._operation,
                         parameter,
                         _addParameter,
@@ -109,11 +109,11 @@ class _OperationRowState extends State<OperationRow> {
 
   void _operationAction(BuildContext context, Either<MoveType, int> action) {
     if (action.isLeft) {
-      widget._umlClass.moveOperation(widget._operation, action.left);
+      widget._umlType.moveOperation(widget._operation, action.left);
     } else if (action.right == 0) {
       _addParameter();
     } else {
-      widget._umlClass.removeOperation(widget._operation);
+      widget._umlType.removeOperation(widget._operation);
     }
   }
 

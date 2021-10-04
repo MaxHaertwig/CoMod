@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:client/model/uml/uml_attribute.dart';
-import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:client/model/uml/uml_operation_parameter.dart';
+import 'package:client/model/uml/uml_type_type.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:either_dart/either.dart';
 import 'package:test/test.dart';
@@ -14,11 +15,11 @@ void main() {
   test('UMLModel should load model from XML file.', () async {
     final xmlString = await File('test_resources/valid.xml').readAsString();
     final model = UMLModel.fromXml(xmlString);
-    expect(model.classes.values.map((c) => c.name).toSet(),
+    expect(model.types.values.map((c) => c.name).toSet(),
         {'Person', 'Student', 'Book'});
 
-    final person = model.classes.values.firstWhere((c) => c.name == 'Person');
-    expect(person.isAbstract, false);
+    final person = model.types.values.firstWhere((c) => c.name == 'Person');
+    expect(person.type, UMLTypeType.abstractClass);
     expect(person.extendsClass, '');
     expect(
         person.attributes.values.map((a) => a.name).toList(), ['Name', 'Age']);
@@ -33,8 +34,8 @@ void main() {
     expect(personAge.visibility, UMLVisibility.private);
     expect(personAge.dataType, UMLDataType.integer());
 
-    final student = model.classes.values.firstWhere((c) => c.name == 'Student');
-    expect(student.isAbstract, false);
+    final student = model.types.values.firstWhere((c) => c.name == 'Student');
+    expect(student.type, UMLTypeType.classType);
     expect(student.extendsClass, person.id);
     expect(student.attributes.values.map((a) => a.name).toList(), ['Major']);
 
@@ -56,7 +57,7 @@ void main() {
   });
 
   test('UMLModel xmlRepresentation', () {
-    final person = UMLClass(
+    final person = UMLType(
       id: 'P',
       name: 'Person',
       attributes: [
@@ -76,9 +77,9 @@ void main() {
     );
     final umlModel = UMLModel(
       uuid: 'M',
-      classes: [
+      types: [
         person,
-        UMLClass(
+        UMLType(
           id: 'S',
           name: 'Student',
           y: 100,
@@ -115,15 +116,15 @@ void main() {
     );
     final xml = '''<?xml version="1.0" encoding="UTF-8"?>
     <model uuid="M">
-      <class id="P" x="0" y="0" isAbstract="false" extends="">
+      <type id="P" x="0" y="0" type="class" extends="">
         Person
         <attributes>
           <attribute id="PA1" visibility="public" type="string">name</attribute>
           <attribute id="PA2" visibility="private" type="integer">age</attribute>
         </attributes>
         <operations></operations>
-      </class>
-      <class id="S" x="0" y="100" isAbstract="false" extends="P">
+      </type>
+      <type id="S" x="0" y="100" type="class" extends="P">
         Student
         <attributes>
           <attribute id="SA1" visibility="public" type="string">major</attribute>
@@ -135,7 +136,7 @@ void main() {
             <param id="SOP2" type="integer">hours</param>
           </operation>
         </operations>
-      </class>
+      </type>
     </model>
     '''
         .split('\n')
@@ -146,26 +147,26 @@ void main() {
 
   test('UMLModel should load partially empty model', () {
     final xml = '''<model uuid="M">
-      <class id="Empty" x="0" y="0" isAbstract="false" extends="">
+      <type id="Empty" x="0" y="0" type="class" extends="">
         <attributes />
         <operations />
-      </class>
-      <class id="EmptyAttributeAndOperation" x="0" y="0" isAbstract="false" extends="">
+      </type>
+      <type id="EmptyAttributeAndOperation" x="0" y="0" type="class" extends="">
         <attributes>
           <attribute id="AA" visibility="public" type="string"></attribute>
         </attributes>
         <operations>
           <operation id="BO" visibility="protected" returnType="void"></operation>
         </operations>
-      </class>
-      <class id="EmptyOperationParameter" x="0" y="0" isAbstract="false" extends="">
+      </type>
+      <type id="EmptyOperationParameter" x="0" y="0" type="class" extends="">
         <attributes />
         <operations>
           <operation id="BO" visibility="protected" returnType="void">
             <param id="BOP" type="string"></param>
           </operation>
         </operations>
-      </class>
+      </type>
     </model>''';
     UMLModel.fromXml(xml);
   });

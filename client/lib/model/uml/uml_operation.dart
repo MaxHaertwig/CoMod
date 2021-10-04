@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:client/extensions.dart';
 import 'package:client/model/model.dart';
-import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_operation_parameter.dart';
@@ -17,7 +17,7 @@ class UMLOperation implements NamedUMLElement {
   static const _visibilityAttribute = 'visibility';
   static const _returnTypeAttribute = 'returnType';
 
-  UMLClass? _umlClass;
+  UMLType? _umlType;
   final String id;
   String _name;
   UMLVisibility _visibility;
@@ -58,12 +58,12 @@ class UMLOperation implements NamedUMLElement {
     );
   }
 
-  set umlClass(UMLClass umlClass) {
-    _umlClass = umlClass;
+  set umlType(UMLType umlType) {
+    _umlType = umlType;
     _parameters.values.forEach((param) => param.operation = this);
   }
 
-  Model? get model => _umlClass?.model;
+  Model? get model => _umlType?.model;
 
   String get name => _name;
 
@@ -115,7 +115,7 @@ class UMLOperation implements NamedUMLElement {
   }
 
   void addToModel() =>
-      model?.insertElement(this, _umlClass!.id, 2, xmlTag, name, [
+      model?.insertElement(this, _umlType!.id, 2, xmlTag, name, [
         Tuple2(_visibilityAttribute, visibility.xmlRepresentation),
         Tuple2(_returnTypeAttribute, returnType.xmlRepresentation)
       ]);

@@ -1,9 +1,10 @@
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
-import 'package:client/model/uml/uml_class.dart';
+import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_operation.dart';
+import 'package:client/model/uml/uml_type_type.dart';
 import 'package:client/screens/class/widgets/attribute_row.dart';
 import 'package:client/screens/class/widgets/operation_row.dart';
 import 'package:client/widgets/expanded_row.dart';
@@ -12,23 +13,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-typedef EditClassFunction = void Function(UMLClass);
+typedef EditTypeFunction = void Function(UMLType);
 
-class ClassScreen extends StatefulWidget {
-  final UMLClass umlClass;
-  final bool isNewClass;
+class TypeScreen extends StatefulWidget {
+  final UMLType umlType;
+  final bool isNewType;
 
-  ClassScreen(this.umlClass, this.isNewClass);
+  TypeScreen(this.umlType, this.isNewType);
 
   @override
-  State<StatefulWidget> createState() => _ClassScreenState(umlClass.name);
+  State<StatefulWidget> createState() => _TypeScreenState(umlType.name);
 }
 
-class _ClassScreenState extends State<ClassScreen> {
+class _TypeScreenState extends State<TypeScreen> {
   final _nameTextEditingController = TextEditingController();
   final _focusNodes = Map<String, FocusNode>();
 
-  _ClassScreenState(String name) {
+  _TypeScreenState(String name) {
     _nameTextEditingController.text = name;
   }
 
@@ -42,25 +43,25 @@ class _ClassScreenState extends State<ClassScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('Edit class'),
+          title: const Text('Edit Type'),
           actions: [
             PopupMenuButton(
               icon: const Icon(Icons.delete),
-              tooltip: 'Delete class',
+              tooltip: 'Delete type',
               itemBuilder: (_) => [
-                MenuItem(Icons.delete, 'Delete class', 0, isDestructive: true),
+                MenuItem(Icons.delete, 'Delete type', 0, isDestructive: true),
               ],
-              onSelected: (_) => _deleteClass(context),
+              onSelected: (_) => _deleteType(context),
             ),
           ],
         ),
         body: Selector<Model, UMLModel>(
             selector: (_, model) => model.umlModel,
             shouldRebuild: (_, __) =>
-                true, // Flutter doesn't pick up the changes in class.attributes and class.operations, because lists/maps aren't immutable. Possible workarounds: whenever something inside the class changes: 1. add an incrementing counter, 2. create a new list, 3. invent some kind of box/container for the list. Returning true for now, because at most one EditClassScreem can be on screen at the same time.
+                true, // Flutter doesn't pick up the changes in type.attributes and type.operations, because lists/maps aren't immutable. Possible workarounds: whenever something inside the type changes: 1. add an incrementing counter, 2. create a new list, 3. invent some kind of box/container for the list. Returning true for now, because at most one EditClassScreem can be on screen at the same time.
             builder: (_, umlModel, __) {
-              final umlClass =
-                  umlModel.classes[widget.umlClass.id] ?? widget.umlClass;
+              final umlType =
+                  umlModel.types[widget.umlType.id] ?? widget.umlType;
               return SingleChildScrollView(
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
@@ -72,14 +73,14 @@ class _ClassScreenState extends State<ClassScreen> {
                       Text('Name',
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                       TextField(
-                        autofocus: widget.isNewClass,
+                        autofocus: widget.isNewType,
                         decoration: InputDecoration(hintText: 'Enter name'),
                         controller: _nameTextEditingController,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(identifierCharactersRegex))
                         ],
-                        onChanged: (value) => _editClass(
+                        onChanged: (value) => _editType(
                             context, (cls) => cls.name = value.trim()),
                       ),
                       const SizedBox(height: 24),
@@ -97,16 +98,14 @@ class _ClassScreenState extends State<ClassScreen> {
                                   height: 48,
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                      umlClass.extendsClass == ''
+                                      umlType.extendsClass == ''
                                           ? 'None'
-                                          : umlModel
-                                                  .classes[
-                                                      umlClass.extendsClass]
+                                          : umlModel.types[umlType.extendsClass]
                                                   ?.name ??
                                               'None',
                                       style: TextStyle(
                                           color: Colors.blue,
-                                          fontStyle: umlClass.extendsClass == ''
+                                          fontStyle: umlType.extendsClass == ''
                                               ? FontStyle.italic
                                               : FontStyle.normal)),
                                 ),
@@ -118,8 +117,8 @@ class _ClassScreenState extends State<ClassScreen> {
                                               style: TextStyle(
                                                   fontStyle: FontStyle.italic)))
                                     ] +
-                                    (umlModel.classes.values
-                                            .where((cls) => cls != umlClass)
+                                    (umlModel.types.values
+                                            .where((cls) => cls != umlType)
                                             .toList()
                                           ..sort((a, b) =>
                                               a.name.compareTo(b.name)))
@@ -127,10 +126,10 @@ class _ClassScreenState extends State<ClassScreen> {
                                             value: cls.id,
                                             child: Text(cls.name)))
                                         .toList(),
-                                onSelected: (String value) => _editClass(
+                                onSelected: (String value) => _editType(
                                     context, (cls) => cls.extendsClass = value),
                               ),
-                              if (umlClass.hasInheritanceCycle())
+                              if (umlType.hasInheritanceCycle())
                                 const Text('Inheritance cycle!',
                                     style: TextStyle(color: Colors.red)),
                             ],
@@ -142,9 +141,11 @@ class _ClassScreenState extends State<ClassScreen> {
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
                               Switch(
-                                  value: umlClass.isAbstract,
-                                  onChanged: (value) =>
-                                      umlClass.isAbstract = value),
+                                  value:
+                                      umlType.type == UMLTypeType.abstractClass,
+                                  onChanged: (value) => umlType.type = value
+                                      ? UMLTypeType.abstractClass
+                                      : UMLTypeType.classType),
                             ],
                           ),
                         ],
@@ -153,9 +154,9 @@ class _ClassScreenState extends State<ClassScreen> {
                       const Text('Attributes',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      ...widget.umlClass.attributes.values
+                      ...widget.umlType.attributes.values
                           .map((attribute) => AttributeRow(
-                                widget.umlClass,
+                                widget.umlType,
                                 attribute,
                                 key: Key(attribute.id),
                                 focusNode: _focusNodes[attribute.id],
@@ -166,7 +167,7 @@ class _ClassScreenState extends State<ClassScreen> {
                             textAlign: TextAlign.center),
                         onPressed: () {
                           final newAttribute = UMLAttribute();
-                          _editClass(
+                          _editType(
                               context, (cls) => cls.addAttribute(newAttribute));
                           final focusNode = FocusNode();
                           _focusNodes[newAttribute.id] = focusNode;
@@ -177,9 +178,9 @@ class _ClassScreenState extends State<ClassScreen> {
                       const Text('Operations',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      ...widget.umlClass.operations.values
+                      ...widget.umlType.operations.values
                           .map((operation) => OperationRow(
-                                widget.umlClass,
+                                widget.umlType,
                                 operation,
                                 key: Key(operation.id),
                                 focusNode: _focusNodes[operation.id],
@@ -189,7 +190,7 @@ class _ClassScreenState extends State<ClassScreen> {
                             textAlign: TextAlign.center),
                         onPressed: () {
                           final newOperation = UMLOperation();
-                          _editClass(
+                          _editType(
                               context, (cls) => cls.addOperation(newOperation));
                           final focusNode = FocusNode();
                           _focusNodes[newOperation.id] = focusNode;
@@ -203,23 +204,23 @@ class _ClassScreenState extends State<ClassScreen> {
             }),
       );
 
-  void _editClass(BuildContext context, EditClassFunction f) {
-    final wasEmpty = widget.umlClass.isEmpty;
-    f(widget.umlClass);
+  void _editType(BuildContext context, EditTypeFunction f) {
+    final wasEmpty = widget.umlType.isEmpty;
+    f(widget.umlType);
     final model = Provider.of<Model>(context, listen: false);
-    if (widget.umlClass.isEmpty != wasEmpty) {
+    if (widget.umlType.isEmpty != wasEmpty) {
       if (wasEmpty) {
-        model.umlModel.addClass(widget.umlClass);
+        model.umlModel.addType(widget.umlType);
       } else {
-        model.umlModel.removeClass(widget.umlClass);
+        model.umlModel.removeType(widget.umlType);
       }
     }
   }
 
-  void _deleteClass(BuildContext context) {
-    if (!widget.umlClass.isEmpty) {
+  void _deleteType(BuildContext context) {
+    if (!widget.umlType.isEmpty) {
       final model = Provider.of<Model>(context, listen: false);
-      model.umlModel.removeClass(widget.umlClass);
+      model.umlModel.removeType(widget.umlType);
     }
     Navigator.pop(context);
   }
