@@ -53,7 +53,7 @@ class UMLModel implements UMLElement {
 
   void removeType(UMLType umlType) {
     _types.remove(umlType.id);
-    _model?.deleteElement(umlType.id);
+    _model?.deleteElements([umlType.id]);
   }
 
   String get xmlRepresentation {

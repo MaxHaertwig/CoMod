@@ -91,12 +91,20 @@ export function insertElement(parentID: string, parentTagIndex: number, id: stri
   serializeModel();
 }
 
-export function deleteElement(id: string): void {
+export function deleteElements(ids: string[]): void {
+  if (ids.length === 1) {
+    deleteElement(ids[0]);
+  } else {
+    activeDoc.transact(() => ids.forEach(id => deleteElement(id)));
+  }
+  serializeModel();
+}
+
+function deleteElement(id: string) {
   const element = mapping.get(id)!;
   const parent = element.parent! as yjs.XmlFragment;
   parent.delete(parent.toArray().indexOf(element));
   mapping.delete(id);
-  serializeModel();
 }
 
 // TODO: apply delta

@@ -131,7 +131,8 @@ class JSBridge {
         'client.insertElement("$parentID", $parentTagIndex, "$id", "$nodeName", "$name", $attributesString, $tagsString);');
   }
 
-  void deleteElement(String id) => _evaluate('client.deleteElement("$id");');
+  void deleteElements(List<String> ids) => _evaluate(
+      'client.deleteElements([${ids.map((id) => '"$id"').join(', ')}]);');
 
   // TODO: apply delta
   void updateText(String id, String oldText, String newText) =>

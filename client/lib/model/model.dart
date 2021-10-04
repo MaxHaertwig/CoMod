@@ -177,9 +177,9 @@ class Model extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteElement(String id) {
-    _mapping.remove(id);
-    _jsBridge.deleteElement(id);
+  void deleteElements(List<String> ids) {
+    ids.forEach((id) => _mapping.remove(id));
+    _jsBridge.deleteElements(ids);
     notifyListeners();
   }
 

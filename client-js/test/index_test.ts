@@ -106,7 +106,7 @@ describe('client-js', () => {
     const localDoc = createSampleYDoc();
     client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(localDoc)), false);
 
-    client.deleteElement('PA2');
+    client.deleteElements(['PA2']);
 
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     assert.strictEqual((model.get(0) as yjs.XmlElement).get(1).length, 1);

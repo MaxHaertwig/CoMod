@@ -143,7 +143,7 @@ class UMLType implements NamedUMLElement {
 
   void removeAttribute(UMLAttribute attribute) {
     _attributes.remove(attribute.id);
-    model?.deleteElement(attribute.id);
+    model?.deleteElements([attribute.id]);
   }
 
   void moveAttribute(UMLAttribute attribute, MoveType moveType) {
@@ -162,7 +162,7 @@ class UMLType implements NamedUMLElement {
 
   void removeOperation(UMLOperation operation) {
     _operations.remove(operation.id);
-    model?.deleteElement(operation.id);
+    model?.deleteElements([operation.id]);
   }
 
   void moveOperation(UMLOperation operation, MoveType moveType) {
