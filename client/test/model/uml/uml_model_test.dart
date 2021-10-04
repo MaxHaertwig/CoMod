@@ -117,17 +117,24 @@ void main() {
     <model uuid="M">
       <class id="P" x="0" y="0" isAbstract="false" extends="">
         Person
-        <attribute id="PA1" visibility="public" type="string">name</attribute>
-        <attribute id="PA2" visibility="private" type="integer">age</attribute>
+        <attributes>
+          <attribute id="PA1" visibility="public" type="string">name</attribute>
+          <attribute id="PA2" visibility="private" type="integer">age</attribute>
+        </attributes>
+        <operations></operations>
       </class>
       <class id="S" x="0" y="100" isAbstract="false" extends="P">
         Student
-        <attribute id="SA1" visibility="public" type="string">major</attribute>
-        <operation id="SO1" visibility="protected" returnType="void">
-          study
-          <param id="SOP1" type="string">subject</param>
-          <param id="SOP2" type="integer">hours</param>
-        </operation>
+        <attributes>
+          <attribute id="SA1" visibility="public" type="string">major</attribute>
+        </attributes>
+        <operations>
+          <operation id="SO1" visibility="protected" returnType="void">
+            study
+            <param id="SOP1" type="string">subject</param>
+            <param id="SOP2" type="integer">hours</param>
+          </operation>
+        </operations>
       </class>
     </model>
     '''
@@ -135,5 +142,31 @@ void main() {
         .map((line) => line.trim())
         .join();
     expect(umlModel.xmlRepresentation, xml);
+  });
+
+  test('UMLModel should load partially empty model', () {
+    final xml = '''<model uuid="M">
+      <class id="Empty" x="0" y="0" isAbstract="false" extends="">
+        <attributes />
+        <operations />
+      </class>
+      <class id="EmptyAttributeAndOperation" x="0" y="0" isAbstract="false" extends="">
+        <attributes>
+          <attribute id="AA" visibility="public" type="string"></attribute>
+        </attributes>
+        <operations>
+          <operation id="BO" visibility="protected" returnType="void"></operation>
+        </operations>
+      </class>
+      <class id="EmptyOperationParameter" x="0" y="0" isAbstract="false" extends="">
+        <attributes />
+        <operations>
+          <operation id="BO" visibility="protected" returnType="void">
+            <param id="BOP" type="string"></param>
+          </operation>
+        </operations>
+      </class>
+    </model>''';
+    UMLModel.fromXml(xml);
   });
 }

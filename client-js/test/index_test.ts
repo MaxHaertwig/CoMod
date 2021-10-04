@@ -94,7 +94,7 @@ describe('client-js', () => {
   it('inserts elements', () => {
     client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(createSampleYDoc())), false);
 
-    client.insertElement('P', 'A3', 'attribute', 'address', [['visibility', 'protected'], ['type', 'string']]);
+    client.insertElement('P', -1, 'A3', 'attribute', 'address', [['visibility', 'protected'], ['type', 'string']], ['tag']);
 
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     const person = model.get(0) as yjs.XmlElement;
@@ -109,7 +109,7 @@ describe('client-js', () => {
     client.deleteElement('PA2');
 
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
-    assert.strictEqual(model.get(0).length, 2); // name + attribute
+    assert.strictEqual((model.get(0) as yjs.XmlElement).get(1).length, 1);
     assertChannels(['LocalUpdate', 'ModelSerialized']);
   });
 
@@ -121,7 +121,7 @@ describe('client-js', () => {
 
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     const person = model.get(0) as yjs.XmlElement;
-    const personName = person.get(1) as yjs.XmlElement;
+    const personName = (person.get(1) as yjs.XmlElement).get(0) as yjs.XmlElement;
     assert.strictEqual(personName.get(0).toString(), 'fullName');
     assertChannels(['LocalUpdate', 'ModelSerialized']);
   });
@@ -146,7 +146,7 @@ describe('client-js', () => {
 
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     const person = model.get(0) as yjs.XmlElement;
-    assert.strictEqual(person.get(1).getAttribute('id'), 'PA2');
+    assert.strictEqual((person.get(1) as yjs.XmlElement).get(0).getAttribute('id'), 'PA2');
     assertChannels(['LocalUpdate', 'ModelSerialized']);
   });
 
@@ -158,9 +158,10 @@ describe('client-js', () => {
     const serverDoc = new yjs.Doc();
     yjs.applyUpdate(serverDoc, yjs.encodeStateAsUpdate(yDoc));
     const person = (serverDoc.getXmlFragment().get(0) as yjs.XmlElement).get(0) as yjs.XmlElement;
+    const personAttributes = person.get(1) as yjs.XmlElement;
 
     // Modify name element
-    const personNameText = (person.get(1) as yjs.XmlElement).get(0) as yjs.XmlText;
+    const personNameText = (personAttributes.get(0) as yjs.XmlElement).get(0) as yjs.XmlText;
     personNameText.delete(0, 1); // name -> ame
     personNameText.insert(0, 'fullN'); // ame -> fullName
 
@@ -174,17 +175,17 @@ describe('client-js', () => {
     address.setAttribute('visibility', 'protected');
     address.setAttribute('type', 'string');
     address.push([new yjs.XmlText('address')]);
-    person.push([address]);
+    personAttributes.push([address]);
 
-    const ssn = new yjs.XmlElement('attribute');
-    ssn.setAttribute('id', 'PA4');
-    ssn.setAttribute('visibility', 'private');
-    ssn.setAttribute('type', 'string');
-    ssn.push([new yjs.XmlText('ssn')]);
-    person.push([ssn]);
+    const op = new yjs.XmlElement('operation');
+    op.setAttribute('id', 'PO1');
+    op.setAttribute('visibility', 'private');
+    op.setAttribute('returnType', 'string');
+    op.push([new yjs.XmlText('op')]);
+    (person.get(2) as yjs.XmlElement).push([op]);
 
     // Remove age element
-    person.delete(2);
+    personAttributes.delete(1);
     
     yjs.applyUpdate(client.activeDoc, yjs.encodeStateAsUpdate(serverDoc, yjs.encodeStateVector(yDoc)));
 
@@ -199,7 +200,7 @@ describe('client-js', () => {
     assert.deepEqual(personElementChanges[1], [['key1', 'value1'], ['key2', 'value2']]);
     assert.deepEqual(personElementChanges[2], [
       ['<attribute id="PA3" type="string" visibility="protected">address</attribute>', 1],
-      ['<attribute id="PA4" type="string" visibility="private">ssn</attribute>', 2]
+      ['<operation id="PO1" returnType="string" visibility="private">op</operation>', 0]
     ]);
     assert.deepEqual(personElementChanges[3], ['PA2']);
   });
@@ -224,10 +225,11 @@ describe('client-js', () => {
     const serverDoc = new yjs.Doc();
     yjs.applyUpdate(serverDoc, yjs.encodeStateAsUpdate(yDoc));
     const serverPerson = (serverDoc.getXmlFragment().get(0) as yjs.XmlElement).get(0) as yjs.XmlElement;
-    const serverPersonAge = serverPerson.get(2).clone() as yjs.XmlElement;
+    const serverPersonAttributes = serverPerson.get(1) as yjs.XmlElement;
+    const serverPersonAge = serverPersonAttributes.get(1).clone() as yjs.XmlElement;
     serverDoc.transact(() => {
-      serverPerson.delete(2);
-      serverPerson.insert(1, [serverPersonAge]);
+      serverPersonAttributes.delete(1);
+      serverPersonAttributes.insert(0, [serverPersonAge]);
     });
 
     yjs.applyUpdate(client.activeDoc, yjs.encodeStateAsUpdate(serverDoc, yjs.encodeStateVector(yDoc)));

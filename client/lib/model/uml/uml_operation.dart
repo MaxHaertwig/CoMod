@@ -44,7 +44,9 @@ class UMLOperation implements NamedUMLElement {
     assert(element.name.toString() == xmlTag);
     return UMLOperation(
       id: element.getAttribute(_idAttribute)!,
-      name: element.children.first.text.trim(),
+      name: element.firstChild is XmlText
+          ? (element.firstChild as XmlText).text.trim()
+          : '',
       visibility: UMLVisibilityExt.fromString(
           element.getAttribute(_visibilityAttribute)!),
       returnType:
@@ -113,7 +115,7 @@ class UMLOperation implements NamedUMLElement {
   }
 
   void addToModel() =>
-      model?.insertElement(this, _umlClass!.id, id, xmlTag, name, [
+      model?.insertElement(this, _umlClass!.id, 2, xmlTag, name, [
         Tuple2(_visibilityAttribute, visibility.xmlRepresentation),
         Tuple2(_returnTypeAttribute, returnType.xmlRepresentation)
       ]);

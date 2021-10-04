@@ -13,6 +13,9 @@ import 'package:xml/xml.dart';
 
 class UMLClass implements NamedUMLElement {
   static const xmlTag = 'class';
+  static const _attributesTag = 'attributes';
+  static const _operationsTag = 'operations';
+
   static const _idAttribute = 'id';
   static const _xAttribute = 'x';
   static const _yAttribute = 'y';
@@ -54,17 +57,21 @@ class UMLClass implements NamedUMLElement {
   static UMLClass fromXmlElement(XmlElement element) {
     assert(element.name.toString() == xmlTag);
     return UMLClass(
-      name: element.children.first.text.trim(),
+      name: element.firstChild is XmlText
+          ? (element.firstChild as XmlText).text.trim()
+          : '',
       id: element.getAttribute(_idAttribute)!,
       x: int.parse(element.getAttribute(_xAttribute) ?? '0'),
       y: int.parse(element.getAttribute(_yAttribute) ?? '0'),
       isAbstract: (element.getAttribute(_isAbstractAttribute) ?? '') == 'true',
       extendsClass: element.getAttribute(_extendsAttribute) ?? '',
       attributes: element
+          .getElement(_attributesTag)!
           .findElements(UMLAttribute.xmlTag)
           .map((child) => UMLAttribute.fromXmlElement(child))
           .toList(),
       operations: element
+          .getElement(_operationsTag)!
           .findElements(UMLOperation.xmlTag)
           .map((child) => UMLOperation.fromXmlElement(child))
           .toList(),
@@ -166,8 +173,8 @@ class UMLClass implements NamedUMLElement {
   bool get isEmpty =>
       _name.isEmpty && _attributes.isEmpty && _operations.isEmpty;
 
-  void addToModel() =>
-      model?.insertElement(this, model!.uuid, id, xmlTag, name, null);
+  void addToModel() => model?.insertElement(this, model!.uuid, -1, xmlTag, name,
+      null, [_attributesTag, _operationsTag]);
 
   String get xmlRepresentation {
     final isAbstract = _isAbstract ? 'true' : 'false';
@@ -177,8 +184,8 @@ class UMLClass implements NamedUMLElement {
         _operations.values.map((op) => op.xmlRepresentation).join();
     return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y" $_isAbstractAttribute="$isAbstract" $_extendsAttribute="$_extendsClass">' +
         name +
-        attributes +
-        operations +
+        '<$_attributesTag>$attributes</$_attributesTag>' +
+        '<$_operationsTag>$operations</$_operationsTag>' +
         '</$xmlTag>';
   }
 

@@ -9,7 +9,7 @@ export function createSampleYDoc(): yjs.Doc {
   
   const person = new yjs.XmlElement('class');
   person.setAttribute('id', 'P');
-  person.push([new yjs.XmlText('Person')]);
+  person.push([new yjs.XmlText('Person'), new yjs.XmlElement('attributes'), new yjs.XmlElement('operations')]);
   model.push([person]);
     
   const name = new yjs.XmlElement('attribute');
@@ -17,14 +17,33 @@ export function createSampleYDoc(): yjs.Doc {
   name.setAttribute('visibility', 'public');
   name.setAttribute('type', 'string');
   name.push([new yjs.XmlText('name')]);
-  person.push([name]);
+  (person.get(1) as yjs.XmlElement).push([name]);
   
   const age = new yjs.XmlElement('attribute');
   age.setAttribute('id', 'PA2');
   age.setAttribute('visibility', 'private');
   age.setAttribute('type', 'integer');
   age.push([new yjs.XmlText('age')]);
-  person.push([age]);
+  (person.get(1) as yjs.XmlElement).push([age]);
+
+  const study = new yjs.XmlElement('operation');
+  study.setAttribute('id', 'PO1');
+  study.setAttribute('visibility', 'protected');
+  study.setAttribute('returnType', 'void');
+  study.push([new yjs.XmlText('study')]);
+  (person.get(2) as yjs.XmlElement).push([study]);
+
+  const studyParam1 = new yjs.XmlElement('param');
+  studyParam1.setAttribute('id', 'PO1P1');
+  studyParam1.setAttribute('type', 'string');
+  studyParam1.push([new yjs.XmlText('subject')]);
+  study.push([studyParam1]);
+
+  const studyParam2 = new yjs.XmlElement('param');
+  studyParam2.setAttribute('id', 'PO1P2');
+  studyParam2.setAttribute('type', 'integer');
+  studyParam2.push([new yjs.XmlText('hours')]);
+  study.push([studyParam2]);
   
   return yDoc;
 }

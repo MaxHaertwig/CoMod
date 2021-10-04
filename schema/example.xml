@@ -2,21 +2,31 @@
 <model version="1.0" uuid="6c84fb90-12c4-11e1-840d-7b25c5ee775a" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema.xsd">
   <class id="598e6db1-db45-4f98-ab18-0d79174a0d41" x="0" y="0" isAbstract="false" extends="">
     Person
-    <attribute id="cb404145-3dea-4b17-afcf-80fb22d6a6c0" visibility="public" type="string">name</attribute>
-    <attribute id="658253d3-8baa-4b06-88ef-24105fe0b75d" visibility="private" type="integer">age</attribute>
+    <attributes>
+      <attribute id="cb404145-3dea-4b17-afcf-80fb22d6a6c0" visibility="public" type="string">name</attribute>
+      <attribute id="658253d3-8baa-4b06-88ef-24105fe0b75d" visibility="private" type="integer">age</attribute>
+    </attributes>
+    <operations />
   </class>
   <class id="68bbd3a7-3bc9-4c09-885e-b278446fbd25" x="0" y="100" isAbstract="false" extends="598e6db1-db45-4f98-ab18-0d79174a0d41">
     Student
-    <attribute id="8f760a6b-0d96-4e90-8e93-15313c5b8130" visibility="public" type="string">major</attribute>
-    <operation id="5593fe1e-a706-4e33-80c3-aa56820c8966" visibility="protected" returnType="void">
-      study
-      <param id="cba6e344-73ac-4b68-9864-d4069fbba128" type="string">subject</param>
-      <param id="cc7674c7-00a0-436d-96ce-7578b1d7b9d4" type="integer">hours</param>
-    </operation>
+    <attributes>
+      <attribute id="8f760a6b-0d96-4e90-8e93-15313c5b8130" visibility="public" type="string">major</attribute>
+    </attributes>
+    <operations>
+      <operation id="5593fe1e-a706-4e33-80c3-aa56820c8966" visibility="protected" returnType="void">
+        study
+        <param id="cba6e344-73ac-4b68-9864-d4069fbba128" type="string">subject</param>
+        <param id="cc7674c7-00a0-436d-96ce-7578b1d7b9d4" type="integer">hours</param>
+      </operation>
+    </operations>
   </class>
   <class id="027e019a-11dc-4fbb-bce8-03b3dc73de9d" x="100" y="100" isAbstract="false" extends="">
     Book
-    <attribute id="18510667-7b71-4fc3-8cc0-389b2d0d9d82" visibility="public" type="string">name</attribute>
+    <attributes>
+      <attribute id="18510667-7b71-4fc3-8cc0-389b2d0d9d82" visibility="public" type="string">name</attribute>
+    </attributes>
+    <operations />
   </class>
   <relationship from="68bbd3a7-3bc9-4c09-885e-b278446fbd25" to="027e019a-11dc-4fbb-bce8-03b3dc73de9d" fromMulti="1" toMulti="0..*" type="aggregation">has</relationship>
 </model>

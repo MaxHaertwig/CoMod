@@ -113,13 +113,22 @@ class JSBridge {
   void processUpdate(List<int> data) =>
       _evaluate('client.processUpdate("${base64Encode(data)}");');
 
-  void insertElement(String parentID, String id, String nodeName, String name,
-      List<Tuple2<String, String>>? attributes) {
+  void insertElement(
+      String parentID,
+      int parentTagIndex,
+      String id,
+      String nodeName,
+      String name,
+      List<Tuple2<String, String>>? attributes,
+      List<String>? tags) {
     final attributesString = attributes != null
-        ? ', [${attributes.map((tuple) => '["${tuple.item1}", "${tuple.item2}"]').join(',')}]'
-        : '';
+        ? '[${attributes.map((tuple) => '["${tuple.item1}", "${tuple.item2}"]').join(', ')}]'
+        : 'undefined';
+    final tagsString = tags != null
+        ? '[${tags.map((tag) => '"$tag"').join(', ')}]'
+        : 'undefined';
     _evaluate(
-        'client.insertElement("$parentID", "$id", "$nodeName", "$name"$attributesString);');
+        'client.insertElement("$parentID", $parentTagIndex, "$id", "$nodeName", "$name", $attributesString, $tagsString);');
   }
 
   void deleteElement(String id) => _evaluate('client.deleteElement("$id");');

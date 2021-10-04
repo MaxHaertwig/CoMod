@@ -43,10 +43,10 @@ function addToMapping(element: yjs.XmlElement) {
   const id = element.getAttribute('id');
   if (id) {
     mapping.set(id, element);
-    element.toArray()
-      .filter(element => element instanceof yjs.XmlElement)
-      .forEach(element => addToMapping(element as yjs.XmlElement));
   }
+  element.toArray()
+    .filter(element => element instanceof yjs.XmlElement)
+    .forEach(element => addToMapping(element as yjs.XmlElement));
 }
 
 export function stateVector(): string {
@@ -68,7 +68,7 @@ export function processUpdate(data: string): void {
   serializeModel();
 }
 
-export function insertElement(parentID: string, id: string, nodeName: string, name: string, attributes?: [string, string][]): void {
+export function insertElement(parentID: string, parentTagIndex: number, id: string, nodeName: string, name: string, attributes?: [string, string][], tags?: string[]): void {
   const element = new yjs.XmlElement(nodeName);
   element.setAttribute('id', id);
   if (attributes) {
@@ -77,9 +77,16 @@ export function insertElement(parentID: string, id: string, nodeName: string, na
     }
   }
   element.push([new yjs.XmlText(name)]);
+  if (tags) {
+    element.push(tags.map(tag => new yjs.XmlElement(tag)));
+  }
 
   mapping.set(id, element);
-  mapping.get(parentID)!.push([element]);
+  if (parentTagIndex < 0) {
+    mapping.get(parentID)!.push([element]);
+  } else {
+    (mapping.get(parentID)!.get(parentTagIndex) as yjs.XmlElement).push([element]);
+  }
 
   serializeModel();
 }
@@ -158,7 +165,7 @@ export function startObservingRemoteChanges(): void {
     //   ]
     // ]
     const textChanges: [string, string][] = [];
-    const elementChanges: [string, [string, string][], [string, number][], string[]][] = [];
+    const elementChanges = new Map<string, [[string, string][], [string, number][], string[]]>();
     for (const event of events) {
       if (event instanceof yjs.YTextEvent) {
         textChanges.push([
@@ -199,18 +206,23 @@ export function startObservingRemoteChanges(): void {
 
         const elementArray = element.toArray();
         const firstChildIsText = element.get(0) instanceof yjs.XmlText;
-        elementChanges.push([
-          element.getAttribute(element.nodeName === 'model' ? 'uuid' : 'id'),
-          Array.from(event.attributesChanged.values()).map(key => [key, element.getAttribute(key)]),
-          addedElements.map(item => {
-            const index = elementArray.indexOf(item);
-            return [item.toJSON(), firstChildIsText ? index - 1 : index];
-          }),
-          deletedElements.map(item => item._map.get('id').content.getContent()[0]) // workaround, getAttribute('id') returns undefined, because the type is deleted
-        ]);
+        const id = element.getAttribute(element.nodeName === 'model' ? 'uuid' : 'id') ?? (element.parent as yjs.XmlElement).getAttribute('id');
+        if (!elementChanges.has(id)) {
+          elementChanges.set(id, [[], [], []]);
+        }
+        const array = elementChanges.get(id)!;
+        array[0].push(...Array.from(event.attributesChanged.values()).map(key => [key, element.getAttribute(key)]) as [string, string][]);
+        array[1].push(...addedElements.map(item => {
+          const index = elementArray.indexOf(item);
+          return [item.toJSON(), firstChildIsText ? index - 1 : index];
+        }) as [string, number][]);
+        array[2].push(...deletedElements.map(item => item._map.get('id').content.getContent()[0])); // workaround, getAttribute('id') returns undefined, because the type is deleted
       }
     }
-    sendMessage('RemoteUpdate', JSON.stringify({ text: textChanges, elements: elementChanges }));
+    sendMessage('RemoteUpdate', JSON.stringify({
+      text: textChanges,
+      elements: Array.from(elementChanges.entries()).map(([id, array]) => [id, ...array])
+    }));
   };
   activeModel.observeDeep(observationFunction);
 }

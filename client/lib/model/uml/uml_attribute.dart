@@ -78,7 +78,7 @@ class UMLAttribute implements NamedUMLElement {
   }
 
   void addToModel() =>
-      model?.insertElement(this, _umlClass!.id, id, xmlTag, name, [
+      model?.insertElement(this, _umlClass!.id, 1, xmlTag, name, [
         Tuple2(_visibilityAttribute, visibility.xmlRepresentation),
         Tuple2(_typeAttribute, dataType.xmlRepresentation)
       ]);

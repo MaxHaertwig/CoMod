@@ -2,21 +2,31 @@
 <model uuid="6c84fb90-12c4-11e1-840d-7b25c5ee775a">
   <class id="P" x="0" y="0" isAbstract="false" extends="">
     Person
-    <attribute id="PA1" visibility="public" type="string">Name</attribute>
-    <attribute id="PA2" visibility="private" type="integer">Age</attribute>
+    <attributes>
+      <attribute id="PA1" visibility="public" type="string">Name</attribute>
+      <attribute id="PA2" visibility="private" type="integer">Age</attribute>
+    </attributes>
+    <operations />
   </class>
   <class id="S" x="0" y="100" isAbstract="false" extends="P">
     Student
-    <attribute id="SA1" visibility="public" type="string">Major</attribute>
-    <operation id="SO1" visibility="protected" returnType="void">
-      study
-      <param id="SO1P1" type="string">subject</param>
-      <param id="SO1P2" type="integer">hours</param>
-    </operation>
+    <attributes>
+      <attribute id="SA1" visibility="public" type="string">Major</attribute>
+    </attributes>
+    <operations>
+      <operation id="SO1" visibility="protected" returnType="void">
+        study
+        <param id="SO1P1" type="string">subject</param>
+        <param id="SO1P2" type="integer">hours</param>
+      </operation>
+    </operations>
   </class>
   <class id="B" x="100" y="100" isAbstract="false" extends="">
     Book
-    <attribute id="BA1" visibility="public" type="string">title</attribute>
+    <attributes>
+      <attribute id="BA1" visibility="public" type="string">title</attribute>
+    </attributes>
+    <operations />
   </class>
   <relationship from="68bbd3a7-3bc9-4c09-885e-b278446fbd25" to="027e019a-11dc-4fbb-bce8-03b3dc73de9d" fromMulti="1" toMulti="0..*" type="aggregation">has</relationship>
 </model>

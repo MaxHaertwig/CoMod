@@ -169,10 +169,12 @@ class Model extends ChangeNotifier {
     notifyListeners();
   }
 
-  void insertElement(UMLElement element, String parentID, String id,
-      String nodeName, String name, List<Tuple2<String, String>>? attributes) {
-    _mapping[id] = element;
-    _jsBridge.insertElement(parentID, id, nodeName, name, attributes);
+  void insertElement(UMLElement element, String parentID, int parentTagIndex,
+      String nodeName, String name, List<Tuple2<String, String>>? attributes,
+      [List<String>? tags]) {
+    _mapping[element.id] = element;
+    _jsBridge.insertElement(
+        parentID, parentTagIndex, element.id, nodeName, name, attributes, tags);
     notifyListeners();
   }
 

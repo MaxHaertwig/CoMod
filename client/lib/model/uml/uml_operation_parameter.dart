@@ -57,7 +57,7 @@ class UMLOperationParameter implements NamedUMLElement {
     }
   }
 
-  void addToModel() => model?.insertElement(this, _operation!.id, id, xmlTag,
+  void addToModel() => model?.insertElement(this, _operation!.id, -1, xmlTag,
       name, [Tuple2(_typeAttribute, type.xmlRepresentation)]);
 
   String get stringRepresentation => '$_name: ${_type.stringRepresentation}';
