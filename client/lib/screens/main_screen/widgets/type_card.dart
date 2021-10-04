@@ -21,14 +21,23 @@ class TypeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
-                  child: Text(
-                    umlType.name,
-                    style: TextStyle(
-                      fontStyle: umlType.type == UMLTypeType.abstractClass
-                          ? FontStyle.italic
-                          : FontStyle.normal,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Column(
+                    children: [
+                      if (_umlType.type == UMLTypeType.interface)
+                        const Text('<<interface>>',
+                            style: TextStyle(fontSize: 12)),
+                      if (_umlType.type == UMLTypeType.interface)
+                        SizedBox(height: 2),
+                      Text(
+                        umlType.name,
+                        style: TextStyle(
+                          fontStyle: umlType.type == UMLTypeType.abstractClass
+                              ? FontStyle.italic
+                              : FontStyle.normal,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    ],
                   ),
                 ),
                 const Divider(color: Colors.grey),

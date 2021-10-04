@@ -4,6 +4,7 @@ import 'package:client/screens/class/type_screen.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_menu_button.dart';
 import 'package:client/screens/main_screen/widgets/inheritance_indicator.dart';
+import 'package:client/screens/main_screen/widgets/inheritance_indicators.dart';
 import 'package:client/screens/main_screen/widgets/type_card.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
@@ -47,15 +48,15 @@ class MainScreen extends StatelessWidget {
                                   horizontal: 20, vertical: 12),
                               child: Column(
                                 children: [
-                                  // if (type.supertypes.isNotEmpty)
-                                  //   InheritanceIndicators(
-                                  //       type,
-                                  //       type.supertypes
-                                  //           .map((id) =>
-                                  //               model.umlModel.types[id])
-                                  //           .where((st) => st != null)
-                                  //           .map((st) => st!)
-                                  //           .toList()),
+                                  if (type.supertypes.isNotEmpty)
+                                    InheritanceIndicators(
+                                        type,
+                                        type.supertypes
+                                            .map((id) =>
+                                                model.umlModel.types[id])
+                                            .where((st) => st != null)
+                                            .map((st) => st!)
+                                            .toList()),
                                   GestureDetector(
                                     child: TypeCard(type),
                                     onTap: () => _editType(context, type),

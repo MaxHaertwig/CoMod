@@ -3,9 +3,12 @@ import 'package:client/model/uml/uml_type_type.dart';
 import 'package:flutter/material.dart';
 
 class InheritanceIndicator extends StatelessWidget {
-  final UMLType umlType;
+  final UMLType _umlType;
+  final InheritanceType _inheritanceType;
 
-  InheritanceIndicator(this.umlType);
+  InheritanceIndicator(UMLType umlType, InheritanceType inheritanceType)
+      : _umlType = umlType,
+        _inheritanceType = inheritanceType;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -15,19 +18,26 @@ class InheritanceIndicator extends StatelessWidget {
             elevation: 2,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(umlType.name,
+              child: Text(_umlType.name,
                   style: TextStyle(
-                      fontStyle: umlType.type == UMLTypeType.abstractClass
+                      fontStyle: _umlType.type == UMLTypeType.abstractClass
                           ? FontStyle.italic
                           : FontStyle.normal)),
             ),
           ),
-          CustomPaint(size: Size(18, 24), painter: _InheritancePainter()),
+          CustomPaint(
+              size: Size(16, 24),
+              painter: _InheritancePainter(_inheritanceType)),
         ],
       );
 }
 
 class _InheritancePainter extends CustomPainter {
+  final InheritanceType _inheritanceType;
+
+  _InheritancePainter(InheritanceType inheritanceType)
+      : _inheritanceType = inheritanceType;
+
   @override
   void paint(Canvas canvas, Size size) {
     final middle = size.width / 2;
@@ -39,8 +49,16 @@ class _InheritancePainter extends CustomPainter {
       ..close();
     canvas.drawPath(path, Paint()..color = Colors.white);
     canvas.drawPath(path, Paint()..style = PaintingStyle.stroke);
-    canvas.drawLine(
-        Offset(middle, offset), Offset(middle, size.height), Paint());
+    if (_inheritanceType == InheritanceType.generalization) {
+      canvas.drawLine(
+          Offset(middle, offset), Offset(middle, size.height), Paint());
+    } else {
+      final third = (size.height - offset) / 3;
+      canvas.drawLine(
+          Offset(middle, offset), Offset(middle, offset + third), Paint());
+      canvas.drawLine(Offset(middle, offset + 2 * third),
+          Offset(middle, size.height), Paint());
+    }
   }
 
   @override
