@@ -13,7 +13,7 @@ class OutlineClass extends StatelessWidget {
         selector: (_, model) =>
             model.umlModel.classes[_umlClass.id] ?? _umlClass,
         builder: (_, umlClass, __) => Card(
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          margin: const EdgeInsets.all(0),
           elevation: 2,
           child: Container(
             padding: const EdgeInsets.all(15),

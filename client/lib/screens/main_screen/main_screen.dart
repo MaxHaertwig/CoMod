@@ -3,6 +3,7 @@ import 'package:client/model/uml/uml_class.dart';
 import 'package:client/screens/class/class_screen.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_menu_button.dart';
+import 'package:client/screens/main_screen/widgets/inheritance_indicator.dart';
 import 'package:client/screens/main_screen/widgets/outline_class.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
@@ -41,9 +42,22 @@ class MainScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     children: model.umlModel.classes.values
                         .where((cls) => !cls.isEmpty)
-                        .map((cls) => GestureDetector(
-                              child: OutlineClass(cls),
-                              onTap: () => _editClass(context, cls),
+                        .map((cls) => Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                              child: Column(
+                                children: [
+                                  if (cls.extendsClass != '' &&
+                                      model.umlModel.classes
+                                          .containsKey(cls.extendsClass))
+                                    InheritanceIndicator(model
+                                        .umlModel.classes[cls.extendsClass]!),
+                                  GestureDetector(
+                                    child: OutlineClass(cls),
+                                    onTap: () => _editClass(context, cls),
+                                  ),
+                                ],
+                              ),
                             ))
                         .toList(),
                   ),
