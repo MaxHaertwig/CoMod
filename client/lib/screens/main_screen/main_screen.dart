@@ -41,20 +41,24 @@ class MainScreen extends StatelessWidget {
                 : ListView(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     children: model.umlModel.types.values
-                        .where((cls) => !cls.isEmpty)
-                        .map((cls) => Container(
+                        .where((type) => !type.isEmpty)
+                        .map((type) => Container(
                               margin: const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 12),
                               child: Column(
                                 children: [
-                                  if (cls.extendsClass != '' &&
-                                      model.umlModel.types
-                                          .containsKey(cls.extendsClass))
-                                    InheritanceIndicator(model
-                                        .umlModel.types[cls.extendsClass]!),
+                                  // if (type.supertypes.isNotEmpty)
+                                  //   InheritanceIndicators(
+                                  //       type,
+                                  //       type.supertypes
+                                  //           .map((id) =>
+                                  //               model.umlModel.types[id])
+                                  //           .where((st) => st != null)
+                                  //           .map((st) => st!)
+                                  //           .toList()),
                                   GestureDetector(
-                                    child: TypeCard(cls),
-                                    onTap: () => _editType(context, cls),
+                                    child: TypeCard(type),
+                                    onTap: () => _editType(context, type),
                                   ),
                                 ],
                               ),

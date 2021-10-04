@@ -115,7 +115,7 @@ class UMLOperation implements NamedUMLElement {
   }
 
   void addToModel() =>
-      model?.insertElement(this, _umlType!.id, 2, xmlTag, name, [
+      model?.insertElement(this, _umlType!.id, 3, xmlTag, name, [
         Tuple2(_visibilityAttribute, visibility.xmlRepresentation),
         Tuple2(_returnTypeAttribute, returnType.xmlRepresentation)
       ]);

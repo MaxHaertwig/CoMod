@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model uuid="6c84fb90-12c4-11e1-840d-7b25c5ee775a">
-  <type id="P" x="0" y="0" type="abstractClass" extends="">
+  <type id="P" x="0" y="0" type="abstractClass">
     Person
+    <supertypes />
     <attributes>
       <attribute id="PA1" visibility="public" type="string">Name</attribute>
       <attribute id="PA2" visibility="private" type="integer">Age</attribute>
     </attributes>
     <operations />
   </type>
-  <type id="S" x="0" y="100" type="class" extends="P">
+  <type id="S" x="0" y="100" type="class">
     Student
+    <supertypes>
+      <supertype id="ST" superID="P" />
+    </supertypes>
     <attributes>
       <attribute id="SA1" visibility="public" type="string">Major</attribute>
     </attributes>
@@ -21,8 +25,9 @@
       </operation>
     </operations>
   </type>
-  <type id="B" x="100" y="100" type="class" extends="">
+  <type id="B" x="100" y="100" type="class">
     Book
+    <supertypes />
     <attributes>
       <attribute id="BA1" visibility="public" type="string">title</attribute>
     </attributes>

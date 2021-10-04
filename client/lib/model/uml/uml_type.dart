@@ -6,14 +6,19 @@ import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_operation.dart';
+import 'package:client/model/uml/uml_supertype.dart';
 import 'package:client/model/uml/uml_type_type.dart';
 import 'package:collection/collection.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
+enum InheritanceType { generalization, realization }
+
 class UMLType implements NamedUMLElement {
   static const xmlTag = 'type';
+
+  static const _supertypesTag = 'supertypes';
   static const _attributesTag = 'attributes';
   static const _operationsTag = 'operations';
 
@@ -21,14 +26,14 @@ class UMLType implements NamedUMLElement {
   static const _xAttribute = 'x';
   static const _yAttribute = 'y';
   static const _typeAttribute = 'type';
-  static const _extendsAttribute = 'extends';
 
   UMLModel? _umlModel;
   final String id;
   String _name;
   int _x, _y;
   UMLTypeType _type;
-  String _extendsClass;
+  Map<String, List<String>> _supertypes =
+      {}; // superID -> ids (a supertype might be present multiple times due to concurrent edits)
   LinkedHashMap<String, UMLAttribute> _attributes;
   LinkedHashMap<String, UMLOperation> _operations;
 
@@ -38,7 +43,7 @@ class UMLType implements NamedUMLElement {
       x = 0,
       y = 0,
       type = UMLTypeType.classType,
-      extendsClass = '',
+      Map<String, List<String>>? supertypes,
       List<UMLAttribute>? attributes,
       List<UMLOperation>? operations})
       : id = id ?? Uuid().v4(),
@@ -46,7 +51,7 @@ class UMLType implements NamedUMLElement {
         _x = x,
         _y = y,
         _type = type,
-        _extendsClass = extendsClass,
+        _supertypes = supertypes ?? {},
         _attributes =
             LinkedHashMap.fromIterable(attributes ?? [], key: (a) => a.id),
         _operations =
@@ -57,6 +62,16 @@ class UMLType implements NamedUMLElement {
 
   static UMLType fromXmlElement(XmlElement element) {
     assert(element.name.toString() == xmlTag);
+    final supertypes = Map<String, List<String>>();
+    for (final supertypeElement
+        in element.getElement(_supertypesTag)!.findElements('supertype')) {
+      final supertype = UMLSupertype.fromXmlElement(supertypeElement);
+      if (supertypes.containsKey(supertype.superID)) {
+        supertypes[supertype.superID]!.add(supertype.id);
+      } else {
+        supertypes[supertype.superID] = [supertype.id];
+      }
+    }
     return UMLType(
       name: element.firstChild is XmlText
           ? (element.firstChild as XmlText).text.trim()
@@ -65,7 +80,7 @@ class UMLType implements NamedUMLElement {
       x: int.parse(element.getAttribute(_xAttribute) ?? '0'),
       y: int.parse(element.getAttribute(_yAttribute) ?? '0'),
       type: UMLTypeTypeExt.fromString(element.getAttribute(_typeAttribute)!),
-      extendsClass: element.getAttribute(_extendsAttribute) ?? '',
+      supertypes: supertypes,
       attributes: element
           .getElement(_attributesTag)!
           .findElements(UMLAttribute.xmlTag)
@@ -106,27 +121,45 @@ class UMLType implements NamedUMLElement {
     }
   }
 
-  String get extendsClass => _extendsClass;
+  List<String> get supertypes => _supertypes.keys.toList();
 
-  set extendsClass(String newValue) {
-    if (newValue != _extendsClass) {
-      _extendsClass = newValue;
-      model?.updateAttribute(id, _extendsAttribute, newValue);
+  void addSupertype(String superID) {
+    if (!_supertypes.containsKey(superID)) {
+      _supertypes[superID] = [Uuid().v4()];
+      UMLSupertype(superID: superID).addToModel();
     }
   }
 
-  bool hasInheritanceCycle() {
-    if (extendsClass == '') return false;
+  void removeSupertype(String superID) {
+    final ids = _supertypes.remove(superID);
+    if (ids != null) {
+      model?.deleteElements(ids);
+    }
+  }
 
-    final seen = {id};
-    var cls = _umlModel!.types[extendsClass];
-    while (cls != null) {
-      if (seen.contains(cls.id)) {
+  InheritanceType? inheritanceRelationTo(UMLType supertype) {
+    if (_supertypes.keys.contains(supertype.id) &&
+        !(type == UMLTypeType.interface &&
+            supertype.type != UMLTypeType.interface)) {
+      return (type == UMLTypeType.interface) ==
+              (supertype.type == UMLTypeType.interface)
+          ? InheritanceType.generalization
+          : InheritanceType.realization;
+    }
+    return null;
+  }
+
+  bool hasInheritanceCycle() {
+    final queue = supertypes;
+    while (queue.isNotEmpty) {
+      final last = queue.removeLast();
+      if (last == id) {
         return true;
       }
-      seen.add(cls.id);
-      if (cls.extendsClass == '') break;
-      cls = _umlModel!.types[cls.extendsClass];
+      final type = _umlModel!.types[last];
+      if (type != null) {
+        queue.addAll(type.supertypes);
+      }
     }
 
     return false;
@@ -173,16 +206,27 @@ class UMLType implements NamedUMLElement {
   bool get isEmpty =>
       _name.isEmpty && _attributes.isEmpty && _operations.isEmpty;
 
-  void addToModel() => model?.insertElement(this, model!.uuid, -1, xmlTag, name,
-      null, [_attributesTag, _operationsTag]);
+  void addToModel() => model?.insertElement(
+      this,
+      model!.uuid,
+      -1,
+      xmlTag,
+      name,
+      [Tuple2(_typeAttribute, _type.xmlRepresentation)],
+      [_supertypesTag, _attributesTag, _operationsTag]);
 
   String get xmlRepresentation {
+    final supertypes = _supertypes.entries
+        .expand((entry) => entry.value.map(
+            (id) => UMLSupertype(id: id, superID: entry.key).xmlRepresentation))
+        .join('');
     final attributes =
         _attributes.values.map((attr) => attr.xmlRepresentation).join();
     final operations =
         _operations.values.map((op) => op.xmlRepresentation).join();
-    return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y" $_typeAttribute="${_type.xmlRepresentation}" $_extendsAttribute="$_extendsClass">' +
+    return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y" $_typeAttribute="${_type.xmlRepresentation}">' +
         name +
+        '<$_supertypesTag>$supertypes</$_supertypesTag>' +
         '<$_attributesTag>$attributes</$_attributesTag>' +
         '<$_operationsTag>$operations</$_operationsTag>' +
         '</$xmlTag>';
@@ -207,14 +251,9 @@ class UMLType implements NamedUMLElement {
   @override
   List<UMLElement>? update(List<Tuple2<String, String>> attributes,
       List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
-    for (final attribute in attributes) {
-      switch (attribute.item1) {
-        case _typeAttribute:
-          _type = UMLTypeTypeExt.fromString(attribute.item2);
-          break;
-        case _extendsAttribute:
-          _extendsClass = attribute.item2;
-          break;
+    for (final tuple in attributes) {
+      if (tuple.item1 == _typeAttribute) {
+        _type = UMLTypeTypeExt.fromString(tuple.item2);
       }
     }
 

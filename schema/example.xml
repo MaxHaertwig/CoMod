@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model version="1.0" uuid="6c84fb90-12c4-11e1-840d-7b25c5ee775a" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema.xsd">
-  <type id="598e6db1-db45-4f98-ab18-0d79174a0d41" x="0" y="0" type="abstractClass" extends="">
+  <type id="38733a12-531a-43bc-8f4f-cdb08738f353" x="0" y="0" type="interface">
+    Being
+    <supertypes />
+    <attributes>
+      <attribute id="0ca44364-da9a-4247-b23c-bbb3852458eb" visibility="public" type="string">name</attribute>
+    </attributes>
+    <operations />
+  </type>
+  <type id="598e6db1-db45-4f98-ab18-0d79174a0d41" x="0" y="0" type="abstractClass">
     Person
+    <supertypes>
+      <supertype id="130d33b4-50e6-409d-9508-ce8ed47ce87d" superID="38733a12-531a-43bc-8f4f-cdb08738f353" />
+    </supertypes>
     <attributes>
       <attribute id="cb404145-3dea-4b17-afcf-80fb22d6a6c0" visibility="public" type="string">name</attribute>
       <attribute id="658253d3-8baa-4b06-88ef-24105fe0b75d" visibility="private" type="integer">age</attribute>
     </attributes>
     <operations />
   </type>
-  <type id="68bbd3a7-3bc9-4c09-885e-b278446fbd25" x="0" y="100" type="class" extends="598e6db1-db45-4f98-ab18-0d79174a0d41">
+  <type id="68bbd3a7-3bc9-4c09-885e-b278446fbd25" x="0" y="100" type="class">
     Student
+    <supertypes>
+      <supertype id="5ae68c21-7bc9-4c7d-b442-1f6786d857fd" superID="598e6db1-db45-4f98-ab18-0d79174a0d41" />
+    </supertypes>
     <attributes>
       <attribute id="8f760a6b-0d96-4e90-8e93-15313c5b8130" visibility="public" type="string">major</attribute>
     </attributes>
@@ -21,8 +35,9 @@
       </operation>
     </operations>
   </type>
-  <type id="027e019a-11dc-4fbb-bce8-03b3dc73de9d" x="100" y="100" type="class" extends="">
+  <type id="027e019a-11dc-4fbb-bce8-03b3dc73de9d" x="100" y="100" type="class">
     Book
+    <supertypes />
     <attributes>
       <attribute id="18510667-7b71-4fc3-8cc0-389b2d0d9d82" visibility="public" type="string">name</attribute>
     </attributes>

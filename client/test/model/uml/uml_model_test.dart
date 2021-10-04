@@ -20,7 +20,7 @@ void main() {
 
     final person = model.types.values.firstWhere((c) => c.name == 'Person');
     expect(person.type, UMLTypeType.abstractClass);
-    expect(person.extendsClass, '');
+    expect(person.supertypes.length, 0);
     expect(
         person.attributes.values.map((a) => a.name).toList(), ['Name', 'Age']);
 
@@ -36,7 +36,7 @@ void main() {
 
     final student = model.types.values.firstWhere((c) => c.name == 'Student');
     expect(student.type, UMLTypeType.classType);
-    expect(student.extendsClass, person.id);
+    expect(student.supertypes, [person.id]);
     expect(student.attributes.values.map((a) => a.name).toList(), ['Major']);
 
     final studentMajor =
@@ -83,7 +83,9 @@ void main() {
           id: 'S',
           name: 'Student',
           y: 100,
-          extendsClass: person.id,
+          supertypes: Map.fromEntries([
+            MapEntry(person.id, ['ST'])
+          ]),
           attributes: [
             UMLAttribute(
               id: 'SA1',
@@ -116,16 +118,20 @@ void main() {
     );
     final xml = '''<?xml version="1.0" encoding="UTF-8"?>
     <model uuid="M">
-      <type id="P" x="0" y="0" type="class" extends="">
+      <type id="P" x="0" y="0" type="class">
         Person
+        <supertypes></supertypes>
         <attributes>
           <attribute id="PA1" visibility="public" type="string">name</attribute>
           <attribute id="PA2" visibility="private" type="integer">age</attribute>
         </attributes>
         <operations></operations>
       </type>
-      <type id="S" x="0" y="100" type="class" extends="P">
+      <type id="S" x="0" y="100" type="class">
         Student
+        <supertypes>
+          <supertype id="ST" superID="P" />
+        </supertypes>
         <attributes>
           <attribute id="SA1" visibility="public" type="string">major</attribute>
         </attributes>
@@ -148,10 +154,12 @@ void main() {
   test('UMLModel should load partially empty model', () {
     final xml = '''<model uuid="M">
       <type id="Empty" x="0" y="0" type="class" extends="">
+        <supertypes />
         <attributes />
         <operations />
       </type>
       <type id="EmptyAttributeAndOperation" x="0" y="0" type="class" extends="">
+        <supertypes />
         <attributes>
           <attribute id="AA" visibility="public" type="string"></attribute>
         </attributes>
@@ -160,6 +168,7 @@ void main() {
         </operations>
       </type>
       <type id="EmptyOperationParameter" x="0" y="0" type="class" extends="">
+        <supertypes />
         <attributes />
         <operations>
           <operation id="BO" visibility="protected" returnType="void">

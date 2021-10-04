@@ -97,17 +97,17 @@ class _TypeScreenState extends State<TypeScreen> {
                                 child: Container(
                                   height: 48,
                                   alignment: Alignment.centerLeft,
-                                  child: Text(
-                                      umlType.extendsClass == ''
-                                          ? 'None'
-                                          : umlModel.types[umlType.extendsClass]
-                                                  ?.name ??
-                                              'None',
-                                      style: TextStyle(
-                                          color: Colors.blue,
-                                          fontStyle: umlType.extendsClass == ''
-                                              ? FontStyle.italic
-                                              : FontStyle.normal)),
+                                  child: Text('None'),
+                                  // umlType.extendsClass == ''
+                                  //     ? 'None'
+                                  //     : umlModel.types[umlType.extendsClass]
+                                  //             ?.name ??
+                                  //         'None',
+                                  // style: TextStyle(
+                                  //     color: Colors.blue,
+                                  //     fontStyle: umlType.extendsClass == ''
+                                  //         ? FontStyle.italic
+                                  //         : FontStyle.normal)),
                                 ),
                                 itemBuilder: (_) =>
                                     [
@@ -126,8 +126,7 @@ class _TypeScreenState extends State<TypeScreen> {
                                             value: cls.id,
                                             child: Text(cls.name)))
                                         .toList(),
-                                onSelected: (String value) => _editType(
-                                    context, (cls) => cls.extendsClass = value),
+                                onSelected: (String value) {},
                               ),
                               if (umlType.hasInheritanceCycle())
                                 const Text('Inheritance cycle!',
