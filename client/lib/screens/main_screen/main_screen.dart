@@ -3,7 +3,6 @@ import 'package:client/model/uml/uml_type.dart';
 import 'package:client/screens/class/type_screen.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_menu_button.dart';
-import 'package:client/screens/main_screen/widgets/inheritance_indicator.dart';
 import 'package:client/screens/main_screen/widgets/inheritance_indicators.dart';
 import 'package:client/screens/main_screen/widgets/type_card.dart';
 import 'package:client/widgets/no_data_view.dart';
@@ -50,13 +49,14 @@ class MainScreen extends StatelessWidget {
                                 children: [
                                   if (type.supertypes.isNotEmpty)
                                     InheritanceIndicators(
-                                        type,
-                                        type.supertypes
-                                            .map((id) =>
-                                                model.umlModel.types[id])
-                                            .where((st) => st != null)
-                                            .map((st) => st!)
-                                            .toList()),
+                                      type,
+                                      type.supertypes
+                                          .map((id) => model.umlModel.types[id])
+                                          .where((st) => st != null)
+                                          .map((st) => st!)
+                                          .toList(),
+                                      (type) => _editType(context, type),
+                                    ),
                                   GestureDetector(
                                     child: TypeCard(type),
                                     onTap: () => _editType(context, type),

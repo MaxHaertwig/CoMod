@@ -2,28 +2,37 @@ import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_type_type.dart';
 import 'package:flutter/material.dart';
 
+typedef OnTapFunction = void Function();
+
 class InheritanceIndicator extends StatelessWidget {
   final UMLType _umlType;
   final InheritanceType _inheritanceType;
+  final OnTapFunction _onTap;
 
-  InheritanceIndicator(UMLType umlType, InheritanceType inheritanceType)
+  InheritanceIndicator(
+      UMLType umlType, InheritanceType inheritanceType, OnTapFunction onTap)
       : _umlType = umlType,
-        _inheritanceType = inheritanceType;
+        _inheritanceType = inheritanceType,
+        _onTap = onTap;
 
   @override
   Widget build(BuildContext context) => Column(
         children: [
-          Card(
-            margin: EdgeInsets.only(top: 0, bottom: 2),
-            elevation: 2,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(_umlType.name,
-                  style: TextStyle(
-                      fontStyle: _umlType.type == UMLTypeType.abstractClass
-                          ? FontStyle.italic
-                          : FontStyle.normal)),
+          GestureDetector(
+            child: Card(
+              margin: EdgeInsets.only(top: 0, bottom: 2),
+              elevation: 2,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Text(_umlType.name,
+                    style: TextStyle(
+                        fontStyle: _umlType.type == UMLTypeType.abstractClass
+                            ? FontStyle.italic
+                            : FontStyle.normal)),
+              ),
             ),
+            onTap: _onTap,
           ),
           CustomPaint(
               size: Size(16, 24),
