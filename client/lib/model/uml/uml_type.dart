@@ -131,11 +131,12 @@ class UMLType implements NamedUMLElement {
     }
   }
 
-  void removeSupertype(String superID) {
+  List<String>? removeSupertype(String superID, [onlyReturn = false]) {
     final ids = _supertypes.remove(superID);
-    if (ids != null) {
+    if (ids != null && !onlyReturn) {
       model?.deleteElements(ids);
     }
+    return ids;
   }
 
   InheritanceType? inheritanceRelationTo(UMLType supertype) {
