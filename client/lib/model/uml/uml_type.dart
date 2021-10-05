@@ -125,8 +125,9 @@ class UMLType implements NamedUMLElement {
 
   void addSupertype(String superID, [bool force = false]) {
     if (!_supertypes.containsKey(superID) || force) {
-      _supertypes[superID] = [Uuid().v4()];
-      (UMLSupertype(superID: superID)..umlType = this).addToModel();
+      final supertype = UMLSupertype(superID: superID)..umlType = this;
+      _supertypes[superID] = [supertype.id];
+      supertype.addToModel();
     }
   }
 
@@ -287,14 +288,33 @@ class UMLType implements NamedUMLElement {
 
     for (final id in deletedElements) {
       if (_attributes.remove(id) == null) {
-        _operations.remove(id);
+        if (_operations.remove(id) == null) {
+          // TODO: optimize
+          for (final entry in _supertypes.entries) {
+            if (entry.value.remove(id)) {
+              if (entry.value.isEmpty) {
+                _supertypes.remove(entry.key);
+              }
+              break;
+            }
+          }
+        }
       }
     }
 
     final List<UMLElement> newElements = [];
     for (final tuple in addedElements
       ..sort((a, b) => a.item2.compareTo(b.item2))) {
-      if (tuple.item1.startsWith('<' + UMLAttribute.xmlTag)) {
+      if (tuple.item1.startsWith('<' + UMLSupertype.xmlTag)) {
+        final supertype = UMLSupertype.fromXml(tuple.item1);
+        final list = _supertypes[supertype.superID];
+        if (list != null) {
+          list.add(supertype.id);
+        } else {
+          _supertypes[supertype.superID] = [supertype.id];
+        }
+        newElements.add(supertype);
+      } else if (tuple.item1.startsWith('<' + UMLAttribute.xmlTag)) {
         final attribute = UMLAttribute.fromXml(tuple.item1);
         _attributes.insertAt(attribute.id, attribute, tuple.item2);
         newElements.add(attribute);
