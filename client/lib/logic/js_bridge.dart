@@ -8,9 +8,13 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
 
-typedef TextChange = Tuple2<String, String>;
-typedef ElementChange = Tuple4<String, List<Tuple2<String, String>>,
-    List<Tuple2<String, int>>, List<Tuple2<String, String>>>;
+typedef TextChange = Tuple2<String, String>; // (id, newText)
+typedef ElementChange = Tuple4<
+    String, // id
+    List<Tuple2<String, String>>, // Updated attributes (attribute, newValue)
+    List<Tuple2<String, int>>, // Inserted elements (xml, index)
+    List<Tuple2<String, String>> // Deleted elements (id, tag)
+    >;
 
 typedef LocalUpdateFunction = void Function(List<int>);
 typedef RemoteUpdateFunction = void Function(
