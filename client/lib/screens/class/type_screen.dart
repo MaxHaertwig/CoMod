@@ -85,66 +85,67 @@ class _TypeScreenState extends State<TypeScreen> {
                       ),
                       const SizedBox(height: 24),
                       ExpandedRow(
+                        flex: [1, 2],
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Extends',
+                              const Text('Type',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
                               PopupMenuButton(
-                                tooltip: 'Extends',
+                                tooltip: 'Type',
                                 child: Container(
-                                  height: 48,
+                                  height: 44,
                                   alignment: Alignment.centerLeft,
-                                  child: Text('None'),
-                                  // umlType.extendsClass == ''
-                                  //     ? 'None'
-                                  //     : umlModel.types[umlType.extendsClass]
-                                  //             ?.name ??
-                                  //         'None',
-                                  // style: TextStyle(
-                                  //     color: Colors.blue,
-                                  //     fontStyle: umlType.extendsClass == ''
-                                  //         ? FontStyle.italic
-                                  //         : FontStyle.normal)),
+                                  child: Text(umlType.type.stringRepresentation,
+                                      style: TextStyle(color: Colors.blue)),
                                 ),
-                                itemBuilder: (_) =>
-                                    [
-                                      const PopupMenuItem(
-                                          value: '',
-                                          child: Text('None',
-                                              style: TextStyle(
-                                                  fontStyle: FontStyle.italic)))
-                                    ] +
-                                    (umlModel.types.values
-                                            .where((cls) => cls != umlType)
-                                            .toList()
-                                          ..sort((a, b) =>
-                                              a.name.compareTo(b.name)))
-                                        .map((cls) => PopupMenuItem(
-                                            value: cls.id,
-                                            child: Text(cls.name)))
-                                        .toList(),
-                                onSelected: (String value) {},
+                                itemBuilder: (_) => UMLTypeType.values
+                                    .map((type) => PopupMenuItem(
+                                        value: type,
+                                        child: Text(type.stringRepresentation)))
+                                    .toList(),
+                                onSelected: (UMLTypeType type) =>
+                                    umlType.type = type,
                               ),
-                              if (umlType.hasInheritanceCycle())
-                                const Text('Inheritance cycle!',
-                                    style: TextStyle(color: Colors.red)),
                             ],
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Abstract',
+                              const Text('Supertypes',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
-                              Switch(
-                                  value:
-                                      umlType.type == UMLTypeType.abstractClass,
-                                  onChanged: (value) => umlType.type = value
-                                      ? UMLTypeType.abstractClass
-                                      : UMLTypeType.classType),
+                              PopupMenuButton(
+                                tooltip: 'Supertypes',
+                                child: Container(
+                                  height: 44,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                      umlType.supertypes.isEmpty
+                                          ? 'None'
+                                          : umlType
+                                              .supertypesLabel, // May overflow
+                                      style: TextStyle(color: Colors.blue)),
+                                ),
+                                itemBuilder: (_) => umlModel.types.values
+                                    .where((type) => type != umlType)
+                                    .map((type) => CheckedPopupMenuItem(
+                                        value: type, child: Text(type.name)))
+                                    .toList(),
+                                onSelected: (UMLType supertype) {
+                                  if (umlType.supertypes
+                                      .contains(supertype.id)) {
+                                    umlType.removeSupertype(supertype.id);
+                                  } else {
+                                    umlType.addSupertype(supertype.id);
+                                  }
+                                },
+                              ),
+                              if (umlType.hasInheritanceCycle())
+                                const Text('Inheritance cycle!',
+                                    style: TextStyle(color: Colors.red)),
                             ],
                           ),
                         ],
