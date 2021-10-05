@@ -4,9 +4,10 @@ import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_operation.dart';
-import 'package:client/model/uml/uml_type_type.dart';
 import 'package:client/screens/class/widgets/attribute_row.dart';
 import 'package:client/screens/class/widgets/operation_row.dart';
+import 'package:client/screens/class/widgets/supertypes_button.dart';
+import 'package:client/screens/class/widgets/type_type_button.dart';
 import 'package:client/widgets/expanded_row.dart';
 import 'package:client/widgets/menu_item.dart';
 import 'package:flutter/material.dart';
@@ -93,22 +94,7 @@ class _TypeScreenState extends State<TypeScreen> {
                               const Text('Type',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
-                              PopupMenuButton(
-                                tooltip: 'Type',
-                                child: Container(
-                                  height: 44,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(umlType.type.stringRepresentation,
-                                      style: TextStyle(color: Colors.blue)),
-                                ),
-                                itemBuilder: (_) => UMLTypeType.values
-                                    .map((type) => PopupMenuItem(
-                                        value: type,
-                                        child: Text(type.stringRepresentation)))
-                                    .toList(),
-                                onSelected: (UMLTypeType type) =>
-                                    umlType.type = type,
-                              ),
+                              TypeTypeButton(umlType),
                             ],
                           ),
                           Column(
@@ -117,32 +103,7 @@ class _TypeScreenState extends State<TypeScreen> {
                               const Text('Supertypes',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
-                              PopupMenuButton(
-                                tooltip: 'Supertypes',
-                                child: Container(
-                                  height: 44,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                      umlType.supertypes.isEmpty
-                                          ? 'None'
-                                          : umlType
-                                              .supertypesLabel, // May overflow
-                                      style: TextStyle(color: Colors.blue)),
-                                ),
-                                itemBuilder: (_) => umlModel.types.values
-                                    .where((type) => type != umlType)
-                                    .map((type) => CheckedPopupMenuItem(
-                                        value: type, child: Text(type.name)))
-                                    .toList(),
-                                onSelected: (UMLType supertype) {
-                                  if (umlType.supertypes
-                                      .contains(supertype.id)) {
-                                    umlType.removeSupertype(supertype.id);
-                                  } else {
-                                    umlType.addSupertype(supertype.id);
-                                  }
-                                },
-                              ),
+                              SupertypesButton(umlType, umlModel),
                               if (umlType.hasInheritanceCycle())
                                 const Text('Inheritance cycle!',
                                     style: TextStyle(color: Colors.red)),
