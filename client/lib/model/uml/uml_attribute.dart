@@ -8,7 +8,7 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLAttribute implements NamedUMLElement {
+class UMLAttribute extends NamedUMLElement {
   static const xmlTag = 'attribute';
   static const _idAttribute = 'id';
   static const _visibilityAttribute = 'visibility';
@@ -16,17 +16,16 @@ class UMLAttribute implements NamedUMLElement {
 
   UMLType? _umlType;
   final String id;
-  String _name;
+  String name;
   UMLVisibility _visibility;
   UMLDataType _dataType;
 
   UMLAttribute(
       {String? id,
-      String name = '',
+      this.name = '',
       UMLVisibility visibility = UMLVisibility.public,
       UMLDataType? dataType})
       : id = id ?? Uuid().v4(),
-        _name = name,
         _visibility = visibility,
         _dataType = dataType ?? UMLDataType.string();
 
@@ -47,16 +46,6 @@ class UMLAttribute implements NamedUMLElement {
   set umlType(UMLType umlType) => _umlType = umlType;
 
   Model? get model => _umlType?.model;
-
-  String get name => _name;
-
-  set name(String name) {
-    if (name != _name) {
-      final oldName = _name;
-      _name = name;
-      model?.updateText(id, oldName, name);
-    }
-  }
 
   UMLVisibility get visibility => _visibility;
 
@@ -84,14 +73,14 @@ class UMLAttribute implements NamedUMLElement {
       ]);
 
   String get stringRepresentation =>
-      '${_visibility.symbol} ${_name.isEmpty ? '<name>' : _name}: ${_dataType.stringRepresentation}';
+      '${_visibility.symbol} ${name.isEmpty ? '<name>' : name}: ${_dataType.stringRepresentation}';
 
   String get xmlRepresentation {
     final visibility =
         '$_visibilityAttribute="${_visibility.xmlRepresentation}"';
     final type = '$_typeAttribute="${_dataType.xmlRepresentation}"';
     return '<$xmlTag $_idAttribute="$id" $visibility $type>' +
-        _name +
+        name +
         '</$xmlTag>';
   }
 
@@ -99,12 +88,12 @@ class UMLAttribute implements NamedUMLElement {
   String toString() => stringRepresentation;
 
   @override
-  int get hashCode => hash3(_name, _visibility, _dataType);
+  int get hashCode => hash3(name, _visibility, _dataType);
 
   @override
   bool operator ==(other) =>
       other is UMLAttribute &&
-      _name == other._name &&
+      name == other.name &&
       _visibility == other._visibility &&
       _dataType == other._dataType;
 

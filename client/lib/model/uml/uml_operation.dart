@@ -11,7 +11,7 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLOperation implements NamedUMLElement {
+class UMLOperation extends NamedUMLElement {
   static const xmlTag = 'operation';
   static const _idAttribute = 'id';
   static const _visibilityAttribute = 'visibility';
@@ -19,19 +19,18 @@ class UMLOperation implements NamedUMLElement {
 
   UMLType? _umlType;
   final String id;
-  String _name;
+  String name;
   UMLVisibility _visibility;
   UMLDataType _returnType;
   LinkedHashMap<String, UMLOperationParameter> _parameters;
 
   UMLOperation(
       {String? id,
-      name = '',
+      this.name = '',
       visibility = UMLVisibility.public,
       UMLDataType? returnType,
       List<UMLOperationParameter>? parameters})
       : id = id ?? Uuid().v4(),
-        _name = name,
         _visibility = visibility,
         _returnType = returnType ?? UMLDataType.voidType(),
         _parameters =
@@ -64,16 +63,6 @@ class UMLOperation implements NamedUMLElement {
   }
 
   Model? get model => _umlType?.model;
-
-  String get name => _name;
-
-  set name(String newName) {
-    if (newName != _name) {
-      final oldName = _name;
-      _name = newName;
-      model?.updateText(id, oldName, newName);
-    }
-  }
 
   UMLVisibility get visibility => _visibility;
 
@@ -124,7 +113,7 @@ class UMLOperation implements NamedUMLElement {
     final parameters = _parameters.values
         .map((param) => param.stringRepresentation)
         .join(', ');
-    return '${_visibility.symbol} $_name($parameters): ${_returnType.stringRepresentation}';
+    return '${_visibility.symbol} $name($parameters): ${_returnType.stringRepresentation}';
   }
 
   String get xmlRepresentation {

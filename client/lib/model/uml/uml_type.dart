@@ -15,7 +15,7 @@ import 'package:xml/xml.dart';
 
 enum InheritanceType { generalization, realization }
 
-class UMLType implements NamedUMLElement {
+class UMLType extends NamedUMLElement {
   static const xmlTag = 'type';
 
   static const _supertypesTag = 'supertypes';
@@ -29,7 +29,7 @@ class UMLType implements NamedUMLElement {
 
   UMLModel? _umlModel;
   final String id;
-  String _name;
+  String name;
   int _x, _y;
   UMLTypeType _type;
   Map<String, List<String>> _supertypes =
@@ -39,7 +39,7 @@ class UMLType implements NamedUMLElement {
 
   UMLType(
       {String? id,
-      name = '',
+      this.name = '',
       x = 0,
       y = 0,
       type = UMLTypeType.classType,
@@ -47,7 +47,6 @@ class UMLType implements NamedUMLElement {
       List<UMLAttribute>? attributes,
       List<UMLOperation>? operations})
       : id = id ?? Uuid().v4(),
-        _name = name,
         _x = x,
         _y = y,
         _type = type,
@@ -101,16 +100,6 @@ class UMLType implements NamedUMLElement {
   }
 
   Model? get model => _umlModel?.model;
-
-  String get name => _name;
-
-  set name(String newName) {
-    if (newName != _name) {
-      final oldName = _name;
-      _name = newName;
-      model?.updateText(id, oldName, newName);
-    }
-  }
 
   UMLTypeType get type => _type;
 
@@ -234,7 +223,10 @@ class UMLType implements NamedUMLElement {
   }
 
   bool get isEmpty =>
-      _name.isEmpty && _attributes.isEmpty && _operations.isEmpty;
+      name.isEmpty &&
+      _supertypes.isEmpty &&
+      _attributes.isEmpty &&
+      _operations.isEmpty;
 
   void addToModel() => model?.insertElement(
       this,
@@ -264,12 +256,12 @@ class UMLType implements NamedUMLElement {
 
   @override
   String toString() {
-    final name = _name.isEmpty ? '<name>' : _name;
+    final nameString = name.isEmpty ? '<name>' : name;
     final attributes =
         _attributes.values.map((a) => a.stringRepresentation).join(', ');
     final operations =
         _operations.values.map((op) => op.stringRepresentation).join(', ');
-    return '$name[$attributes | $operations]';
+    return '$nameString[$attributes | $operations]';
   }
 
   void addToMapping(Map<String, UMLElement> mapping) {

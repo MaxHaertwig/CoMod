@@ -184,9 +184,9 @@ class Model extends ChangeNotifier {
     notifyListeners();
   }
 
-  // TODO: apply delta
-  void updateText(String id, String oldText, String newText) {
-    _jsBridge.updateText(id, oldText, newText);
+  void updateText(
+      String id, int position, int deleteLength, String insertString) {
+    _jsBridge.updateText(id, position, deleteLength, insertString);
     notifyListeners();
   }
 

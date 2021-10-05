@@ -1,3 +1,4 @@
+import 'package:client/model/model.dart';
 import 'package:tuple/tuple.dart';
 
 /// A UML element.
@@ -13,6 +14,14 @@ abstract class UMLElement {
 
 /// A UMLElement with a name.
 abstract class NamedUMLElement extends UMLElement {
-  String get name => '';
-  set name(String newName) {}
+  String name = '';
+  Model? get model;
+
+  void updateName(
+      String newName, int position, int deleteLength, String insertString) {
+    if (newName != name) {
+      name = newName;
+      model?.updateText(id, position, deleteLength, insertString);
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:client/extensions.dart';
+import 'package:client/logic/diff_text_input_formatter.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_type.dart';
@@ -69,10 +70,10 @@ class _OperationRowState extends State<OperationRow> {
                       focusNode: widget.focusNode,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
-                            RegExp(identifierCharactersRegex))
+                            RegExp(identifierCharactersRegex)),
+                        DiffTextInputFormatter(
+                            (f) => _editOperation(context, f)),
                       ],
-                      onChanged: (value) => _editOperation(context,
-                          (operation) => operation.name = value.trim()),
                     ),
                   ),
                   const SizedBox(width: 8),

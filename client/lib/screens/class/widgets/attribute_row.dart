@@ -1,4 +1,5 @@
 import 'package:client/extensions.dart';
+import 'package:client/logic/diff_text_input_formatter.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
@@ -62,10 +63,9 @@ class _AttributeRowState extends State<AttributeRow> {
                   focusNode: widget.focusNode,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
-                        RegExp(identifierCharactersRegex))
+                        RegExp(identifierCharactersRegex)),
+                    DiffTextInputFormatter((f) => _editAttribute(context, f)),
                   ],
-                  onChanged: (value) => _editAttribute(
-                      context, (attribute) => attribute.name = value.trim()),
                 ),
               ),
               const SizedBox(width: 8),

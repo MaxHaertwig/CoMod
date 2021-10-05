@@ -141,9 +141,10 @@ class JSBridge {
   void deleteElements(List<String> ids) => _evaluate(
       'client.deleteElements([${ids.map((id) => '"$id"').join(', ')}]);');
 
-  // TODO: apply delta
-  void updateText(String id, String oldText, String newText) =>
-      _evaluate('client.updateText("$id", "$newText");');
+  void updateText(
+          String id, int position, int deleteLength, String insertString) =>
+      _evaluate(
+          'client.updateText("$id", $position, $deleteLength, "$insertString");');
 
   void updateAttribute(String id, String attribute, String value) =>
       _evaluate('client.updateAttribute("$id", "$attribute", "$value");');

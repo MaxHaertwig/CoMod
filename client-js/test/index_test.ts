@@ -117,7 +117,7 @@ describe('client-js', () => {
     const localDoc = createSampleYDoc();
     client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(localDoc)), false);
 
-    client.updateText('PA1', 'fullName');
+    client.updateText('PA1', 0, 1, 'fullN');
 
     const model = client.activeDoc.getXmlFragment().get(0) as yjs.XmlElement;
     const person = model.get(0) as yjs.XmlElement;

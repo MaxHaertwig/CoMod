@@ -107,17 +107,22 @@ function deleteElement(id: string) {
   mapping.delete(id);
 }
 
-// TODO: apply delta
-export function updateText(id: string, name: string): void {
+export function updateText(id: string, position: number, deleteLength: number, insertString: string): void {
   const element = mapping.get(id)!;
   let text = element.get(0);
   if (text instanceof yjs.XmlElement) {
     text = text.get(0);
   }
-  activeDoc.transact(() => {
-    (text as yjs.XmlText).delete(0, text.length);
-    (text as yjs.XmlText).insert(0, name);
-  });
+  if (insertString.length && deleteLength === 0) {
+    (text as yjs.XmlText).insert(position, insertString);
+  } else if (insertString.length === 0 && deleteLength > 0) {
+    (text as yjs.XmlText).delete(position, deleteLength);
+  } else {
+    activeDoc.transact(() => {
+      (text as yjs.XmlText).delete(position, deleteLength);
+      (text as yjs.XmlText).insert(position, insertString);
+    });
+  }
   serializeModel();
 }
 
@@ -129,7 +134,6 @@ export function updateAttribute(id: string, attribute: string, value: string): v
 export enum MoveType {
   ToTop = 0, Up, Down, ToBottom
 }
-
 
 export function moveElement(id: string, moveType: MoveType): void {
   const element = mapping.get(id)!;

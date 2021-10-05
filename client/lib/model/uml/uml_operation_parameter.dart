@@ -7,19 +7,18 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
-class UMLOperationParameter implements NamedUMLElement {
+class UMLOperationParameter extends NamedUMLElement {
   static const xmlTag = 'param';
   static const _idAttribute = 'id';
   static const _typeAttribute = 'type';
 
   UMLOperation? _operation;
   final String id;
-  String _name;
+  String name;
   UMLDataType _type;
 
-  UMLOperationParameter({String? id, name = '', UMLDataType? type})
+  UMLOperationParameter({String? id, this.name = '', UMLDataType? type})
       : id = id ?? Uuid().v4(),
-        _name = name,
         _type = type ?? UMLDataType(Left(UMLPrimitiveType.string));
 
   static UMLOperationParameter fromXml(String xml) =>
@@ -38,16 +37,6 @@ class UMLOperationParameter implements NamedUMLElement {
 
   Model? get model => _operation?.model;
 
-  String get name => _name;
-
-  set name(String newName) {
-    if (newName != _name) {
-      final oldName = _name;
-      _name = newName;
-      model?.updateText(id, oldName, newName);
-    }
-  }
-
   UMLDataType get type => _type;
 
   set type(UMLDataType type) {
@@ -60,11 +49,11 @@ class UMLOperationParameter implements NamedUMLElement {
   void addToModel() => model?.insertElement(this, _operation!.id, -1, xmlTag,
       name, [Tuple2(_typeAttribute, type.xmlRepresentation)]);
 
-  String get stringRepresentation => '$_name: ${_type.stringRepresentation}';
+  String get stringRepresentation => '$name: ${_type.stringRepresentation}';
 
   String get xmlRepresentation =>
       '<$xmlTag $_idAttribute="$id" $_typeAttribute="${_type.xmlRepresentation}">' +
-      _name +
+      name +
       '</$xmlTag>';
 
   @override

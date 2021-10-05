@@ -1,4 +1,5 @@
 import 'package:client/extensions.dart';
+import 'package:client/logic/diff_text_input_formatter.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_type.dart';
@@ -69,10 +70,9 @@ class _OperationParameterRowState extends State<OperationParameterRow> {
                     focusNode: widget.focusNode,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
-                          RegExp(identifierCharactersRegex))
+                          RegExp(identifierCharactersRegex)),
+                      DiffTextInputFormatter((f) => _editParameter(context, f)),
                     ],
-                    onChanged: (value) => _editParameter(
-                        context, (parameter) => parameter.name = value.trim()),
                   ),
                 ),
                 const SizedBox(width: 8),

@@ -1,3 +1,4 @@
+import 'package:client/logic/diff_text_input_formatter.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
@@ -79,10 +80,9 @@ class _TypeScreenState extends State<TypeScreen> {
                         controller: _nameTextEditingController,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
-                              RegExp(identifierCharactersRegex))
+                              RegExp(identifierCharactersRegex)),
+                          DiffTextInputFormatter((f) => _editType(context, f)),
                         ],
-                        onChanged: (value) => _editType(
-                            context, (cls) => cls.name = value.trim()),
                       ),
                       const SizedBox(height: 24),
                       ExpandedRow(
