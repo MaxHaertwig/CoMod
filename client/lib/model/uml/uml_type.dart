@@ -166,6 +166,34 @@ class UMLType implements NamedUMLElement {
     return false;
   }
 
+  String get supertypesLabel {
+    final supertypes =
+        _supertypes.keys.compactMap((id) => _umlModel!.types[id]);
+    final interfaces = supertypes
+        .where((st) => st.type == UMLTypeType.interface)
+        .map((interface) => interface.name)
+        .toList()
+      ..sort((a, b) => a.compareTo(b));
+    final implementsString =
+        interfaces.isEmpty ? '' : 'Implements: ${interfaces.join(', ')}';
+    if (type == UMLTypeType.interface) {
+      return implementsString.isEmpty ? 'None' : implementsString;
+    }
+
+    final classes = supertypes
+        .where((st) => st.type != UMLTypeType.interface)
+        .map((cls) => cls.name)
+        .toList()
+      ..sort((a, b) => a.compareTo(b));
+    final extendsString =
+        classes.isEmpty ? '' : 'Extends: ${classes.join(', ')}';
+    return extendsString.isEmpty && implementsString.isEmpty
+        ? 'None'
+        : extendsString +
+            (extendsString.isEmpty || implementsString.isEmpty ? '' : '\n') +
+            implementsString;
+  }
+
   UnmodifiableMapView<String, UMLAttribute> get attributes =>
       UnmodifiableMapView(_attributes);
 

@@ -59,4 +59,37 @@ void main() {
     [type1, type2, type3]
         .forEach((type) => expect(type.hasInheritanceCycle(), true));
   });
+
+  test('UMLType supertypesLabel', () {
+    final umlModel = UMLModel();
+
+    final type = UMLType();
+    umlModel.addType(type);
+    expect(type.supertypesLabel, 'None');
+
+    final superclass1 = UMLType(name: 'SC1');
+    umlModel.addType(superclass1);
+    type.addSupertype(superclass1.id);
+    expect(type.supertypesLabel, 'Extends: SC1');
+
+    final superclass2 = UMLType(name: 'SC2');
+    umlModel.addType(superclass2);
+    type.addSupertype(superclass2.id);
+
+    final interface = UMLType(name: 'I', type: UMLTypeType.interface);
+    umlModel.addType(interface);
+    type.addSupertype(interface.id);
+
+    expect(type.supertypesLabel, 'Extends: SC1, SC2\nImplements: I');
+
+    // Interfaces can't extend classes
+    type.type = UMLTypeType.interface;
+    expect(type.supertypesLabel, 'Implements: I');
+
+    type.type = UMLTypeType.abstractClass;
+    type.removeSupertype(superclass1.id);
+    type.removeSupertype(superclass2.id);
+
+    expect(type.supertypesLabel, 'Implements: I');
+  });
 }
