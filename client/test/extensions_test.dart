@@ -11,6 +11,13 @@ void main() {
     expect(list.firstWhereOrNull((val) => val == 3), null);
   });
 
+  test('Iterable compactMap', () {
+    final list = [1, 2, 3, 4];
+    expect(list.compactMap((x) => null), []);
+    expect(list.compactMap((x) => x), list);
+    expect(list.compactMap((x) => x % 2 == 0 ? x : null), [2, 4]);
+  });
+
   test('LinkedHashMap insertAt', () {
     final tests = [
       Tuple2(0, [9, 0, 1, 2]),

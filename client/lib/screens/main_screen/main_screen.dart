@@ -1,3 +1,4 @@
+import 'package:client/extensions.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/screens/class/type_screen.dart';
@@ -51,9 +52,8 @@ class MainScreen extends StatelessWidget {
                                     InheritanceIndicators(
                                       type,
                                       type.supertypes
-                                          .map((id) => model.umlModel.types[id])
-                                          .where((st) => st != null)
-                                          .map((st) => st!)
+                                          .compactMap(
+                                              (id) => model.umlModel.types[id])
                                           .toList(),
                                       (type) => _editType(context, type),
                                     ),
