@@ -67,6 +67,7 @@ class Model extends ChangeNotifier {
       _umlModel.model = this;
       for (final umlType in _umlModel.types.values) {
         _umlModel.addType(umlType);
+        umlType.supertypes.forEach((id) => umlType.addSupertype(id, true));
         umlType.attributes.values.forEach((attr) => umlType.addAttribute(attr));
         for (final operation in umlType.operations.values) {
           umlType.addOperation(operation);

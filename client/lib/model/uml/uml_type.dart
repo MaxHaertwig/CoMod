@@ -123,10 +123,11 @@ class UMLType implements NamedUMLElement {
 
   List<String> get supertypes => _supertypes.keys.toList();
 
-  void addSupertype(String superID) {
-    if (!_supertypes.containsKey(superID)) {
+  void addSupertype(String superID, [bool force = false]) {
+    if (!_supertypes.containsKey(superID) || force) {
       _supertypes[superID] = [Uuid().v4()];
-      UMLSupertype(superID: superID).addToModel();
+      final supertype = UMLSupertype(superID: superID)..umlType = this;
+      supertype.addToModel();
     }
   }
 
