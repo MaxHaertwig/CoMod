@@ -202,7 +202,7 @@ describe('client-js', () => {
       ['<attribute id="PA3" type="string" visibility="protected">address</attribute>', 1],
       ['<operation id="PO1" returnType="string" visibility="private">op</operation>', 0]
     ]);
-    assert.deepEqual(personElementChanges[3], ['PA2']);
+    assert.deepEqual(personElementChanges[3], [['PA2', 'attribute']]);
   });
 
   it('ignores local modifications when observing remote changes', () => {

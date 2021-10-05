@@ -278,27 +278,37 @@ class UMLType implements NamedUMLElement {
   }
 
   @override
-  List<UMLElement>? update(List<Tuple2<String, String>> attributes,
-      List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
+  List<UMLElement>? update(
+      List<Tuple2<String, String>> attributes,
+      List<Tuple2<String, int>> addedElements,
+      List<Tuple2<String, String>> deletedElements) {
     for (final tuple in attributes) {
       if (tuple.item1 == _typeAttribute) {
         _type = UMLTypeTypeExt.fromString(tuple.item2);
       }
     }
 
-    for (final id in deletedElements) {
-      if (_attributes.remove(id) == null) {
-        if (_operations.remove(id) == null) {
+    for (final tuple in deletedElements) {
+      switch (tuple.item2) {
+        case UMLSupertype.xmlTag:
           // TODO: optimize
           for (final entry in _supertypes.entries) {
-            if (entry.value.remove(id)) {
+            if (entry.value.remove(tuple.item1)) {
               if (entry.value.isEmpty) {
                 _supertypes.remove(entry.key);
               }
               break;
             }
           }
-        }
+          break;
+        case UMLAttribute.xmlTag:
+          _attributes.remove(tuple.item1);
+          break;
+        case UMLOperation.xmlTag:
+          _operations.remove(tuple.item1);
+          break;
+        default:
+          break;
       }
     }
 

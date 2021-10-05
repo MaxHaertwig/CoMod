@@ -10,7 +10,7 @@ import 'package:tuple/tuple.dart';
 
 typedef TextChange = Tuple2<String, String>;
 typedef ElementChange = Tuple4<String, List<Tuple2<String, String>>,
-    List<Tuple2<String, int>>, List<String>>;
+    List<Tuple2<String, int>>, List<Tuple2<String, String>>>;
 
 typedef LocalUpdateFunction = void Function(List<int>);
 typedef RemoteUpdateFunction = void Function(
@@ -70,7 +70,10 @@ class JSBridge {
                       .map<Tuple2<String, int>>(
                           (c) => Tuple2(c[0] as String, c[1] as int))
                       .toList() as List<Tuple2<String, int>>,
-                  ec[3].cast<String>() as List<String>,
+                  ec[3]
+                      .map<Tuple2<String, String>>(
+                          (c) => Tuple2(c[0] as String, c[1] as String))
+                      .toList() as List<Tuple2<String, String>>,
                 ))
             .toList() as List<ElementChange>;
         onRemoteUpdate!(textChanges, elementChanges);

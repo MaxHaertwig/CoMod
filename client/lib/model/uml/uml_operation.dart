@@ -146,8 +146,10 @@ class UMLOperation implements NamedUMLElement {
   }
 
   @override
-  List<UMLElement>? update(List<Tuple2<String, String>> attributes,
-      List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
+  List<UMLElement>? update(
+      List<Tuple2<String, String>> attributes,
+      List<Tuple2<String, int>> addedElements,
+      List<Tuple2<String, String>> deletedElements) {
     for (final tuple in attributes) {
       switch (tuple.item1) {
         case _visibilityAttribute:
@@ -159,7 +161,7 @@ class UMLOperation implements NamedUMLElement {
       }
     }
 
-    deletedElements.forEach((id) => _parameters.remove(id));
+    deletedElements.forEach((tuple) => _parameters.remove(tuple.item1));
 
     final List<UMLElement> newElements = [];
     for (final tuple in addedElements) {

@@ -169,11 +169,11 @@ export function startObservingRemoteChanges(): void {
     //     'id',                                   // ID
     //     [['attr1', 'val1'], ['attr2', 'val2']], // attributes
     //     [['<param>...</param>', 2]],            // added elements (xml, index)
-    //     ['id1']                                 // deleted element IDs  
+    //     [['id1', 'type']]                       // deleted elements (id, tag)
     //   ]
     // ]
     const textChanges: [string, string][] = [];
-    const elementChanges = new Map<string, [[string, string][], [string, number][], string[]]>();
+    const elementChanges = new Map<string, [[string, string][], [string, number][], [string, string][]]>();
     for (const event of events) {
       if (event instanceof yjs.YTextEvent) {
         textChanges.push([
@@ -207,10 +207,10 @@ export function startObservingRemoteChanges(): void {
         }
 
         const addedElements = Array.from(event.changes.added.values()).map(item => item.content.getContent()[0]);
-        const deletedElements = Array.from(event.changes.deleted.values()).map(item => item.content.getContent()[0]);
+        const deletedElements = Array.from(event.changes.deleted.values()).map(item => item.content.getContent()[0]); // workaround, getAttribute('id') returns undefined, because the type is deleted
 
-        deletedElements.forEach(e => mapping.delete(e.getAttribute('id')));
-        addedElements.forEach(e => mapping.set(e.getAttribute('id'), e));
+        deletedElements.forEach(el => mapping.delete(el._map.get('id').content.getContent()[0]));
+        addedElements.forEach(el => mapping.set(el.getAttribute('id'), el));
 
         const elementArray = element.toArray();
         const firstChildIsText = element.get(0) instanceof yjs.XmlText;
@@ -219,12 +219,12 @@ export function startObservingRemoteChanges(): void {
           elementChanges.set(id, [[], [], []]);
         }
         const array = elementChanges.get(id)!;
-        array[0].push(...Array.from(event.attributesChanged.values()).map(key => [key, element.getAttribute(key)]) as [string, string][]);
-        array[1].push(...addedElements.map(item => {
-          const index = elementArray.indexOf(item);
-          return [item.toJSON(), firstChildIsText ? index - 1 : index];
+        array[0].push(...Array.from(event.attributesChanged.values()).map(key => [key, element.getAttribute(key)] as [string, string]));
+        array[1].push(...addedElements.map(el => {
+          const index = elementArray.indexOf(el);
+          return [el.toJSON(), firstChildIsText ? index - 1 : index];
         }) as [string, number][]);
-        array[2].push(...deletedElements.map(item => item._map.get('id').content.getContent()[0])); // workaround, getAttribute('id') returns undefined, because the type is deleted
+        array[2].push(...deletedElements.map(el => [el._map.get('id').content.getContent()[0], el.nodeName] as [string, string])); // workaround, getAttribute('id') returns undefined, because the type is deleted
       }
     }
     sendMessage('RemoteUpdate', JSON.stringify({

@@ -5,8 +5,10 @@ abstract class UMLElement {
   String get id => '';
 
   /// Instructs the element to update its attributes, insert element, and delete elements. Returns the elements that were created as part of the update.
-  List<UMLElement>? update(List<Tuple2<String, String>> attributes,
-      List<Tuple2<String, int>> addedElements, List<String> deletedElements) {}
+  List<UMLElement>? update(
+      List<Tuple2<String, String>> attributes,
+      List<Tuple2<String, int>> addedElements,
+      List<Tuple2<String, String>> deletedElements) {}
 }
 
 /// A UMLElement with a name.

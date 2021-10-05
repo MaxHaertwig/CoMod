@@ -70,9 +70,11 @@ class UMLModel implements UMLElement {
   }
 
   @override
-  List<UMLElement>? update(List<Tuple2<String, String>> attributes,
-      List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
-    deletedElements.forEach((id) => _types.remove(id));
+  List<UMLElement>? update(
+      List<Tuple2<String, String>> attributes,
+      List<Tuple2<String, int>> addedElements,
+      List<Tuple2<String, String>> deletedElements) {
+    deletedElements.forEach((tuple) => _types.remove(tuple.item1));
 
     final List<UMLElement> newElements = [];
     for (final tuple in addedElements) {

@@ -46,5 +46,5 @@ class UMLSupertype implements UMLElement {
   List<UMLElement>? update(
       List<Tuple2<String, String>> attributes,
       List<Tuple2<String, int>> addedElements,
-      List<String> deletedElements) {} // Class can't be updated
+      List<Tuple2<String, String>> deletedElements) {} // Class can't be updated
 }

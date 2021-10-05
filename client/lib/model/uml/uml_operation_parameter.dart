@@ -68,8 +68,10 @@ class UMLOperationParameter implements NamedUMLElement {
       '</$xmlTag>';
 
   @override
-  List<UMLElement>? update(List<Tuple2<String, String>> attributes,
-      List<Tuple2<String, int>> addedElements, List<String> deletedElements) {
+  List<UMLElement>? update(
+      List<Tuple2<String, String>> attributes,
+      List<Tuple2<String, int>> addedElements,
+      List<Tuple2<String, String>> deletedElements) {
     for (final tuple in attributes) {
       if (tuple.item1 == _typeAttribute) {
         _type = UMLDataType.fromString(tuple.item2);
