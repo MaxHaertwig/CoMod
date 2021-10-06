@@ -45,15 +45,13 @@ class TypeCard extends StatelessWidget {
                   const Text('No attributes',
                       style: TextStyle(color: Colors.grey)),
                 ...umlType.attributes.values
-                    .map((attribute) =>
-                        Text(attribute.stringRepresentation)) // TODO: monospace
+                    .map((attribute) => Text(attribute.stringRepresentation))
                     .toList(),
                 if (umlType.operations.isNotEmpty)
                   const Divider(color: Colors.grey),
                 if (umlType.operations.isNotEmpty)
                   ...umlType.operations.values
-                      .map((operation) => Text(
-                          operation.stringRepresentation)) // TODO: monospace
+                      .map((operation) => Text(operation.stringRepresentation))
                       .toList(),
               ],
             ),
