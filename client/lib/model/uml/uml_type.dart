@@ -106,7 +106,21 @@ class UMLType extends NamedUMLElement {
   set type(UMLTypeType newType) {
     if (newType != _type) {
       _type = newType;
+      // TODO: single transaction
       model?.updateAttribute(id, _typeAttribute, _type.xmlRepresentation);
+      if (_type == UMLTypeType.interface && _umlModel != null) {
+        final supertypeIDs = _supertypes.keys
+            .toList(); // Separate list to avoid mutation while iterating
+        final ids = supertypeIDs
+            .compactMap((id) => _umlModel!.types[id])
+            .where((st) => st.type != UMLTypeType.interface)
+            .compactMap((cls) => removeSupertype(cls.id, true))
+            .expand((x) => x)
+            .toList();
+        if (ids.isNotEmpty) {
+          model?.deleteElements(ids);
+        }
+      }
     }
   }
 
