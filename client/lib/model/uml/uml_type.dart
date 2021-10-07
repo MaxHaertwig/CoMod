@@ -23,14 +23,11 @@ class UMLType extends NamedUMLElement {
   static const _operationsTag = 'operations';
 
   static const _idAttribute = 'id';
-  static const _xAttribute = 'x';
-  static const _yAttribute = 'y';
   static const _typeAttribute = 'type';
 
   UMLModel? _umlModel;
   final String id;
   String name;
-  int _x, _y;
   UMLTypeType _type;
   Map<String, List<String>> _supertypes =
       {}; // superID -> ids (a supertype might be present multiple times due to concurrent edits)
@@ -40,15 +37,11 @@ class UMLType extends NamedUMLElement {
   UMLType(
       {String? id,
       this.name = '',
-      x = 0,
-      y = 0,
       type = UMLTypeType.classType,
       Map<String, List<String>>? supertypes,
       List<UMLAttribute>? attributes,
       List<UMLOperation>? operations})
       : id = id ?? Uuid().v4(),
-        _x = x,
-        _y = y,
         _type = type,
         _supertypes = supertypes ?? {},
         _attributes =
@@ -76,8 +69,6 @@ class UMLType extends NamedUMLElement {
           ? (element.firstChild as XmlText).text.trim()
           : '',
       id: element.getAttribute(_idAttribute)!,
-      x: int.parse(element.getAttribute(_xAttribute) ?? '0'),
-      y: int.parse(element.getAttribute(_yAttribute) ?? '0'),
       type: UMLTypeTypeExt.fromString(element.getAttribute(_typeAttribute)!),
       supertypes: supertypes,
       attributes: element
@@ -260,7 +251,7 @@ class UMLType extends NamedUMLElement {
         _attributes.values.map((attr) => attr.xmlRepresentation).join();
     final operations =
         _operations.values.map((op) => op.xmlRepresentation).join();
-    return '<$xmlTag $_idAttribute="$id" $_xAttribute="$_x" $_yAttribute="$_y" $_typeAttribute="${_type.xmlRepresentation}">' +
+    return '<$xmlTag $_idAttribute="$id" $_typeAttribute="${_type.xmlRepresentation}">' +
         name +
         '<$_supertypesTag>$supertypes</$_supertypesTag>' +
         '<$_attributesTag>$attributes</$_attributesTag>' +

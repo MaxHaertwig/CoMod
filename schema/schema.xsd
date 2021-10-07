@@ -66,8 +66,6 @@
               </xs:element>
             </xs:sequence>
             <xs:attribute name="id" type="uuid" use="required" />
-            <xs:attribute name="x" type="xs:integer" use="required" />
-            <xs:attribute name="y" type="xs:integer" use="required" />
             <xs:attribute name="type" type="type" />
             <xs:attribute name="extends" type="xs:string" />
           </xs:complexType>

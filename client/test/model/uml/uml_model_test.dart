@@ -82,7 +82,6 @@ void main() {
         UMLType(
           id: 'S',
           name: 'Student',
-          y: 100,
           supertypes: Map.fromEntries([
             MapEntry(person.id, ['ST'])
           ]),
@@ -118,7 +117,7 @@ void main() {
     );
     final xml = '''<?xml version="1.0" encoding="UTF-8"?>
     <model uuid="M">
-      <type id="P" x="0" y="0" type="class">
+      <type id="P" type="class">
         Person
         <supertypes></supertypes>
         <attributes>
@@ -127,7 +126,7 @@ void main() {
         </attributes>
         <operations></operations>
       </type>
-      <type id="S" x="0" y="100" type="class">
+      <type id="S" type="class">
         Student
         <supertypes>
           <supertype id="ST" superID="P" />
@@ -153,12 +152,12 @@ void main() {
 
   test('UMLModel should load partially empty model', () {
     final xml = '''<model uuid="M">
-      <type id="Empty" x="0" y="0" type="class" extends="">
+      <type id="Empty" type="class" extends="">
         <supertypes />
         <attributes />
         <operations />
       </type>
-      <type id="EmptyAttributeAndOperation" x="0" y="0" type="class" extends="">
+      <type id="EmptyAttributeAndOperation" type="class" extends="">
         <supertypes />
         <attributes>
           <attribute id="AA" visibility="public" type="string"></attribute>
@@ -167,7 +166,7 @@ void main() {
           <operation id="BO" visibility="protected" returnType="void"></operation>
         </operations>
       </type>
-      <type id="EmptyOperationParameter" x="0" y="0" type="class" extends="">
+      <type id="EmptyOperationParameter" type="class" extends="">
         <supertypes />
         <attributes />
         <operations>
