@@ -1,5 +1,11 @@
 import 'dart:collection';
 
+extension StringExtensions on String {
+  String capitalize() => length <= 1
+      ? toUpperCase()
+      : "${this[0].toUpperCase()}${this.substring(1)}";
+}
+
 extension IterableExtensions<T> on Iterable<T> {
   T? firstWhereOrNull(bool Function(T element) test) {
     final list = where(test);

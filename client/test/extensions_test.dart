@@ -5,6 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tuple/tuple.dart';
 
 void main() {
+  test('String capitalize', () {
+    expect(''.capitalize(), '');
+    expect('abc'.capitalize(), 'Abc');
+  });
+
   test('Iterable firstWhereOrNull', () {
     final list = [0, 1, 2];
     expect(list.firstWhereOrNull((val) => val == 1), 1);
