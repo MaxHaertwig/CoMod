@@ -6,7 +6,7 @@ import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:client/model/uml/uml_operation_parameter.dart';
 import 'package:client/screens/class/widgets/data_type_button.dart';
-import 'package:client/screens/class/widgets/operation_parameter_row.dart';
+import 'package:client/screens/class/widgets/operations/operation_parameter_row.dart';
 import 'package:client/screens/class/widgets/visibility_button.dart';
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';

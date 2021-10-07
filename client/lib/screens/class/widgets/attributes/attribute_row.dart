@@ -4,7 +4,7 @@ import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_type.dart';
-import 'package:client/screens/class/widgets/attribute_action_button.dart';
+import 'package:client/screens/class/widgets/attributes/attribute_action_button.dart';
 import 'package:client/screens/class/widgets/data_type_button.dart';
 import 'package:client/screens/class/widgets/visibility_button.dart';
 import 'package:either_dart/either.dart';
