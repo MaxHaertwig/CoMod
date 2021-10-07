@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:client/extensions.dart';
 import 'package:client/model/model.dart';
+import 'package:client/model/uml/uml_relationship.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_element.dart';
 import 'package:tuple/tuple.dart';
@@ -16,10 +17,15 @@ class UMLModel implements UMLElement {
   Model? _model;
   final String uuid;
   Map<String, UMLType> _types;
+  Map<String, UMLRelationship> _relationships;
 
-  UMLModel({String? uuid, List<UMLType>? types})
+  UMLModel(
+      {String? uuid,
+      List<UMLType>? types,
+      List<UMLRelationship>? relationships})
       : uuid = uuid ?? Uuid().v4(),
-        _types = {for (var cls in types ?? []) cls.id: cls};
+        _types = {for (var type in types ?? []) type.id: type},
+        _relationships = {for (var rel in relationships ?? []) rel.id: rel};
 
   static UMLModel fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);
@@ -32,6 +38,10 @@ class UMLModel implements UMLElement {
           .findElements(UMLType.xmlTag)
           .map((child) => UMLType.fromXmlElement(child))
           .toList(),
+      relationships: element
+          .findElements(UMLRelationship.xmlTag)
+          .map((child) => UMLRelationship.fromXmlElement(child))
+          .toList(),
     );
   }
 
@@ -41,7 +51,8 @@ class UMLModel implements UMLElement {
 
   set model(Model? model) {
     _model = model;
-    _types.values.forEach((cls) => cls.umlModel = this);
+    _types.values.forEach((type) => type.umlModel = this);
+    _relationships.values.forEach((rel) => rel.umlModel = this);
   }
 
   UnmodifiableMapView<String, UMLType> get types => UnmodifiableMapView(_types);
@@ -61,11 +72,28 @@ class UMLModel implements UMLElement {
     _model?.deleteElements([umlType.id] + ids);
   }
 
+  UnmodifiableMapView<String, UMLRelationship> get relationships =>
+      UnmodifiableMapView(_relationships);
+
+  void addRelationship(UMLRelationship relationship) {
+    relationship.umlModel = this;
+    _relationships[relationship.id] = relationship;
+    relationship.addToModel();
+  }
+
+  void removeRelationship(UMLRelationship relationship) {
+    _relationships.remove(relationship.id);
+    _model?.deleteElements([relationship.id]);
+  }
+
   String get xmlRepresentation {
-    final types = _types.values.map((cls) => cls.xmlRepresentation).join();
+    final types = _types.values.map((type) => type.xmlRepresentation).join();
+    final relationships =
+        _relationships.values.map((rel) => rel.xmlRepresentation).join();
     return _xmlDeclaration +
         '<$_xmlTag $_uuidAttribute="$uuid">' +
         types +
+        relationships +
         '</$_xmlTag>';
   }
 

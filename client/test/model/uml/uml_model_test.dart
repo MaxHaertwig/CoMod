@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:client/model/uml/uml_attribute.dart';
+import 'package:client/model/uml/uml_relationship.dart';
+import 'package:client/model/uml/uml_relationship_multiplicity.dart';
+import 'package:client/model/uml/uml_relationship_type.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_operation.dart';
@@ -15,8 +18,9 @@ void main() {
   test('UMLModel should load model from XML file.', () async {
     final xmlString = await File('test_resources/valid.xml').readAsString();
     final model = UMLModel.fromXml(xmlString);
-    expect(model.types.values.map((c) => c.name).toSet(),
+    expect(model.types.values.map((type) => type.name).toSet(),
         {'Person', 'Student', 'Book'});
+    expect(model.relationships.values.map((rel) => rel.name).toSet(), {'has'});
 
     final person = model.types.values.firstWhere((c) => c.name == 'Person');
     expect(person.type, UMLTypeType.abstractClass);
@@ -54,6 +58,14 @@ void main() {
         UMLDataType(Left(UMLPrimitiveType.string)));
     expect(studentStudy.parameters.values.skip(1).first.type,
         UMLDataType(Left(UMLPrimitiveType.integer)));
+
+    final book = model.types.values.firstWhere((c) => c.name == 'Book');
+    expect(book.type, UMLTypeType.classType);
+
+    final hasRelationship = model.relationships.values.first;
+    expect(hasRelationship.fromID, student.id);
+    expect(hasRelationship.toID, book.id);
+    expect(hasRelationship.type, UMLRelationshipType.aggregation);
   });
 
   test('UMLModel xmlRepresentation', () {
@@ -62,59 +74,59 @@ void main() {
       name: 'Person',
       attributes: [
         UMLAttribute(
-          id: 'PA1',
-          name: 'name',
-          visibility: UMLVisibility.public,
-          dataType: UMLDataType.string(),
-        ),
+            id: 'PA1',
+            name: 'name',
+            visibility: UMLVisibility.public,
+            dataType: UMLDataType.string()),
         UMLAttribute(
-          id: 'PA2',
-          name: 'age',
-          visibility: UMLVisibility.private,
-          dataType: UMLDataType.integer(),
-        ),
+            id: 'PA2',
+            name: 'age',
+            visibility: UMLVisibility.private,
+            dataType: UMLDataType.integer()),
       ],
     );
-    final umlModel = UMLModel(
-      uuid: 'M',
-      types: [
-        person,
-        UMLType(
-          id: 'S',
-          name: 'Student',
-          supertypes: Map.fromEntries([
-            MapEntry(person.id, ['ST'])
-          ]),
-          attributes: [
-            UMLAttribute(
-              id: 'SA1',
-              name: 'major',
-              visibility: UMLVisibility.public,
-              dataType: UMLDataType.string(),
-            ),
+    final student = UMLType(
+      id: 'S',
+      name: 'Student',
+      supertypes: {
+        person.id: ['ST']
+      },
+      attributes: [
+        UMLAttribute(
+            id: 'SA1',
+            name: 'major',
+            visibility: UMLVisibility.public,
+            dataType: UMLDataType.string()),
+      ],
+      operations: [
+        UMLOperation(
+          id: 'SO1',
+          name: 'study',
+          visibility: UMLVisibility.protected,
+          parameters: [
+            UMLOperationParameter(
+                id: 'SOP1', name: 'subject', type: UMLDataType.string()),
+            UMLOperationParameter(
+                id: 'SOP2', name: 'hours', type: UMLDataType.integer())
           ],
-          operations: [
-            UMLOperation(
-              id: 'SO1',
-              name: 'study',
-              visibility: UMLVisibility.protected,
-              parameters: [
-                UMLOperationParameter(
-                  id: 'SOP1',
-                  name: 'subject',
-                  type: UMLDataType.string(),
-                ),
-                UMLOperationParameter(
-                  id: 'SOP2',
-                  name: 'hours',
-                  type: UMLDataType.integer(),
-                )
-              ],
-            )
-          ],
-        ),
+        )
       ],
     );
+    final book = UMLType(id: 'B', name: 'Book');
+    final umlModel = UMLModel(uuid: 'M', types: [
+      person,
+      student,
+      book
+    ], relationships: [
+      UMLRelationship(
+          id: 'R',
+          name: 'has',
+          fromID: student.id,
+          toID: book.id,
+          type: UMLRelationshipType.aggregation,
+          fromMultiplicity: UMLRelationshipMultiplicity(1, -1),
+          toMultiplicity: UMLRelationshipMultiplicity(0, -99))
+    ]);
     final xml = '''<?xml version="1.0" encoding="UTF-8"?>
     <model uuid="M">
       <type id="P" type="class">
@@ -142,6 +154,13 @@ void main() {
           </operation>
         </operations>
       </type>
+      <type id="B" type="class">
+        Book
+        <supertypes></supertypes>
+        <attributes></attributes>
+        <operations></operations>
+      </type>
+      <relationship id="R" from="S" to="B" type="aggregation" fromMulti="1" toMulti="0..*">has</relationship>
     </model>
     '''
         .split('\n')
@@ -175,6 +194,7 @@ void main() {
           </operation>
         </operations>
       </type>
+      <relationship id="R" from="Empty" to="Empty" type="association" fromMulti="" toMulti=""></relationship>
     </model>''';
     UMLModel.fromXml(xml);
   });
