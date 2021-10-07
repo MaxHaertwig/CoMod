@@ -8,6 +8,7 @@ import 'package:client/model/uml/uml_operation.dart';
 import 'package:client/screens/class/widgets/attribute_row.dart';
 import 'package:client/screens/class/widgets/operation_row.dart';
 import 'package:client/screens/class/widgets/supertypes_button.dart';
+import 'package:client/screens/class/widgets/type_screen_section.dart';
 import 'package:client/screens/class/widgets/type_type_button.dart';
 import 'package:client/widgets/expanded_row.dart';
 import 'package:client/widgets/menu_item.dart';
@@ -111,59 +112,47 @@ class _TypeScreenState extends State<TypeScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      const Text('Attributes',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      ...widget.umlType.attributes.values
-                          .map((attribute) => AttributeRow(
-                                widget.umlType,
-                                attribute,
-                                key: Key(attribute.id),
-                                focusNode: _focusNodes[attribute.id],
-                              ))
-                          .toList(),
-                      TextButton(
-                        child: const Text('Add attribute',
-                            textAlign: TextAlign.center),
-                        onPressed: () {
-                          final newAttribute = UMLAttribute();
-                          _editType(
-                              context, (cls) => cls.addAttribute(newAttribute));
-                          final focusNode = FocusNode();
-                          _focusNodes[newAttribute.id] = focusNode;
-                          focusNode.requestFocus();
-                        },
-                      ),
                       const SizedBox(height: 12),
-                      const Text('Operations',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      ...widget.umlType.operations.values
-                          .map((operation) => OperationRow(
-                                widget.umlType,
-                                operation,
-                                key: Key(operation.id),
-                                focusNode: _focusNodes[operation.id],
-                              )),
-                      TextButton(
-                        child: const Text('Add operation',
-                            textAlign: TextAlign.center),
-                        onPressed: () {
-                          final newOperation = UMLOperation();
-                          _editType(
-                              context, (cls) => cls.addOperation(newOperation));
-                          final focusNode = FocusNode();
-                          _focusNodes[newOperation.id] = focusNode;
-                          focusNode.requestFocus();
-                        },
-                      ),
+                      TypeScreenSection('Attributes', 'Add attribute',
+                          children: widget.umlType.attributes.values
+                              .map((attribute) => AttributeRow(
+                                  widget.umlType, attribute,
+                                  key: Key(attribute.id),
+                                  focusNode: _focusNodes[attribute.id]))
+                              .toList(),
+                          onAddButtonPressed: _addAttribute),
+                      TypeScreenSection('Operations', 'Add operation',
+                          children: widget.umlType.operations.values
+                              .map((operation) => OperationRow(
+                                    widget.umlType,
+                                    operation,
+                                    key: Key(operation.id),
+                                    focusNode: _focusNodes[operation.id],
+                                  ))
+                              .toList(),
+                          onAddButtonPressed: _addOperation),
                     ],
                   ),
                 ),
               );
             }),
       );
+
+  void _addAttribute() {
+    final newAttribute = UMLAttribute();
+    _editType(context, (cls) => cls.addAttribute(newAttribute));
+    final focusNode = FocusNode();
+    _focusNodes[newAttribute.id] = focusNode;
+    focusNode.requestFocus();
+  }
+
+  void _addOperation() {
+    final newOperation = UMLOperation();
+    _editType(context, (cls) => cls.addOperation(newOperation));
+    final focusNode = FocusNode();
+    _focusNodes[newOperation.id] = focusNode;
+    focusNode.requestFocus();
+  }
 
   void _editType(BuildContext context, EditTypeFunction f) {
     final wasEmpty = widget.umlType.isEmpty;
