@@ -2,11 +2,13 @@ import 'package:client/logic/diff_text_input_formatter.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
+import 'package:client/model/uml/uml_relationship.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:client/screens/class/widgets/attributes/attribute_row.dart';
 import 'package:client/screens/class/widgets/operations/operation_row.dart';
+import 'package:client/screens/class/widgets/relationships/relationship_row.dart';
 import 'package:client/screens/class/widgets/supertypes_button.dart';
 import 'package:client/screens/class/widgets/type_screen_section.dart';
 import 'package:client/screens/class/widgets/type_type_button.dart';
@@ -114,23 +116,31 @@ class _TypeScreenState extends State<TypeScreen> {
                       ),
                       const SizedBox(height: 12),
                       TypeScreenSection('Attributes', 'Add attribute',
-                          children: widget.umlType.attributes.values
+                          children: umlType.attributes.values
                               .map((attribute) => AttributeRow(
-                                  widget.umlType, attribute,
+                                  umlType, attribute,
                                   key: Key(attribute.id),
                                   focusNode: _focusNodes[attribute.id]))
                               .toList(),
                           onAddButtonPressed: _addAttribute),
                       TypeScreenSection('Operations', 'Add operation',
-                          children: widget.umlType.operations.values
+                          children: umlType.operations.values
                               .map((operation) => OperationRow(
-                                    widget.umlType,
-                                    operation,
-                                    key: Key(operation.id),
-                                    focusNode: _focusNodes[operation.id],
-                                  ))
+                                  umlType, operation,
+                                  key: Key(operation.id),
+                                  focusNode: _focusNodes[operation.id]))
                               .toList(),
                           onAddButtonPressed: _addOperation),
+                      TypeScreenSection('Relationships', 'Add relationship',
+                          children: umlType.relationships
+                              .map((rel) =>
+                                  RelationshipRow(rel, key: Key(rel.id)))
+                              .toList(),
+                          onAddButtonPressed: () => _editType(
+                              context,
+                              (type) => type.addRelationship(UMLRelationship(
+                                  fromID: type.id,
+                                  toID: umlModel.types.values.first.id)))),
                     ],
                   ),
                 ),
@@ -140,7 +150,7 @@ class _TypeScreenState extends State<TypeScreen> {
 
   void _addAttribute() {
     final newAttribute = UMLAttribute();
-    _editType(context, (cls) => cls.addAttribute(newAttribute));
+    _editType(context, (type) => type.addAttribute(newAttribute));
     final focusNode = FocusNode();
     _focusNodes[newAttribute.id] = focusNode;
     focusNode.requestFocus();
@@ -148,7 +158,7 @@ class _TypeScreenState extends State<TypeScreen> {
 
   void _addOperation() {
     final newOperation = UMLOperation();
-    _editType(context, (cls) => cls.addOperation(newOperation));
+    _editType(context, (type) => type.addOperation(newOperation));
     final focusNode = FocusNode();
     _focusNodes[newOperation.id] = focusNode;
     focusNode.requestFocus();

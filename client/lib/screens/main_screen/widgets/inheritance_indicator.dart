@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_type_type.dart';
 import 'package:flutter/material.dart';

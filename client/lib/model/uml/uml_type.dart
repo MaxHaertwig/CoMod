@@ -6,6 +6,7 @@ import 'package:client/model/uml/uml_attribute.dart';
 import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_operation.dart';
+import 'package:client/model/uml/uml_relationship.dart';
 import 'package:client/model/uml/uml_supertype.dart';
 import 'package:client/model/uml/uml_type_type.dart';
 import 'package:collection/collection.dart';
@@ -226,6 +227,14 @@ class UMLType extends NamedUMLElement {
     _operations.move(operation.id, moveType);
     model?.moveElement(operation.id, moveType);
   }
+
+  // TODO: optimize
+  List<UMLRelationship> get relationships => _umlModel!.relationships.values
+      .where((rel) => rel.fromID == id || rel.toID == id)
+      .toList();
+
+  void addRelationship(UMLRelationship relationship) =>
+      _umlModel!.addRelationship(relationship);
 
   bool get isEmpty =>
       name.isEmpty &&

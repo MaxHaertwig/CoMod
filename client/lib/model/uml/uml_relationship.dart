@@ -26,8 +26,8 @@ class UMLRelationship extends NamedUMLElement {
   UMLRelationship(
       {String? id,
       this.name = '',
-      fromID = '',
-      toID = '',
+      required fromID,
+      required toID,
       UMLRelationshipType? type,
       UMLRelationshipMultiplicity? fromMultiplicity,
       UMLRelationshipMultiplicity? toMultiplicity})
@@ -54,7 +54,7 @@ class UMLRelationship extends NamedUMLElement {
       fromMultiplicity: UMLRelationshipMultiplicity.parse(
           element.getAttribute(_fromMultiplicityAttribute)!),
       toMultiplicity: UMLRelationshipMultiplicity.parse(
-          element.getAttribute(_fromMultiplicityAttribute)!),
+          element.getAttribute(_toMultiplicityAttribute)!),
     );
   }
 
@@ -89,11 +89,32 @@ class UMLRelationship extends NamedUMLElement {
     }
   }
 
+  UMLRelationshipMultiplicity get fromMultiplicity => _fromMultiplicity;
+
+  set fromMultiplicity(UMLRelationshipMultiplicity multiplicity) {
+    if (multiplicity != _fromMultiplicity) {
+      _fromMultiplicity = multiplicity;
+      model?.updateAttribute(
+          id, _fromAttribute, multiplicity.xmlRepresentation);
+    }
+  }
+
+  UMLRelationshipMultiplicity get toMultiplicity => _toMultiplicity;
+
+  set toMultiplicity(UMLRelationshipMultiplicity multiplicity) {
+    if (multiplicity != _toMultiplicity) {
+      _toMultiplicity = multiplicity;
+      model?.updateAttribute(id, _toAttribute, multiplicity.xmlRepresentation);
+    }
+  }
+
   void addToModel() =>
       model?.insertElement(this, model!.uuid, -1, xmlTag, name, [
         Tuple2(_fromAttribute, _fromID),
         Tuple2(_toAttribute, _toID),
-        Tuple2(_typeAttribute, _type.xmlRepresentation)
+        Tuple2(_typeAttribute, _type.xmlRepresentation),
+        Tuple2(_fromMultiplicityAttribute, _fromMultiplicity.xmlRepresentation),
+        Tuple2(_toMultiplicityAttribute, _toMultiplicity.xmlRepresentation),
       ]);
 
   String get xmlRepresentation =>
@@ -102,7 +123,8 @@ class UMLRelationship extends NamedUMLElement {
       '</$xmlTag>';
 
   @override
-  int get hashCode => hash4(name, _toID, _fromID, _type);
+  int get hashCode => hash2(hash4(name, _toID, _fromID, _type),
+      hash2(_fromMultiplicity, _toMultiplicity));
 
   @override
   bool operator ==(other) =>
@@ -110,7 +132,9 @@ class UMLRelationship extends NamedUMLElement {
       name == other.name &&
       _toID == other._toID &&
       _fromID == other._fromID &&
-      _type == other.type;
+      _type == other._type &&
+      _fromMultiplicity == other._fromMultiplicity &&
+      _toMultiplicity == other._toMultiplicity;
 
   @override
   List<UMLElement>? update(

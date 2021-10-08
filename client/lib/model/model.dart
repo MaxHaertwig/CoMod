@@ -75,6 +75,8 @@ class Model extends ChangeNotifier {
               .forEach((param) => operation.addParameter(param));
         }
       }
+      _umlModel.relationships.values
+          .forEach((rel) => _umlModel.addRelationship(rel));
     }
   }
 

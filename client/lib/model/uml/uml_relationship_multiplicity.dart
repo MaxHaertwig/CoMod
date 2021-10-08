@@ -1,27 +1,25 @@
 class UMLRelationshipMultiplicity {
-  final int from, to;
+  int lower, upper;
 
-  const UMLRelationshipMultiplicity(this.from, this.to);
+  UMLRelationshipMultiplicity(this.lower, this.upper);
 
   UMLRelationshipMultiplicity.empty()
-      : from = -1,
-        to = -1;
+      : lower = -1,
+        upper = -1;
 
   static UMLRelationshipMultiplicity parse(String string) {
     if (string == '') {
       return UMLRelationshipMultiplicity.empty();
     }
     if (!string.contains('..')) {
-      return UMLRelationshipMultiplicity(
-          _parseMultiplicityComponent(string), -1);
+      return UMLRelationshipMultiplicity(parseComponent(string), -1);
     }
     final components = string.split('..');
     return UMLRelationshipMultiplicity(
-        _parseMultiplicityComponent(components[0]),
-        _parseMultiplicityComponent(components[1]));
+        parseComponent(components[0]), parseComponent(components[1]));
   }
 
-  static int _parseMultiplicityComponent(String component) {
+  static int parseComponent(String component) {
     switch (component) {
       case '':
         return -1;
@@ -43,9 +41,9 @@ class UMLRelationshipMultiplicity {
     }
   }
 
-  String get xmlRepresentation => from == to || to == -1
-      ? componentString(from)
-      : from == -1
-          ? componentString(to)
-          : componentString(from) + '..' + componentString(to);
+  String get xmlRepresentation => lower == upper || upper == -1
+      ? componentString(lower)
+      : lower == -1
+          ? componentString(upper)
+          : componentString(lower) + '..' + componentString(upper);
 }
