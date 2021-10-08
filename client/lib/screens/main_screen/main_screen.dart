@@ -1,11 +1,9 @@
-import 'package:client/extensions.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/screens/class/type_screen.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_dialog.dart';
 import 'package:client/screens/main_screen/widgets/collaboration_menu_button.dart';
-import 'package:client/screens/main_screen/widgets/inheritance_indicators.dart';
-import 'package:client/screens/main_screen/widgets/type_card.dart';
+import 'package:client/screens/main_screen/widgets/type_section.dart';
 import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,27 +41,9 @@ class MainScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     children: model.umlModel.types.values
                         .where((type) => !type.isEmpty)
-                        .map((type) => Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
-                              child: Column(
-                                children: [
-                                  if (type.supertypes.isNotEmpty)
-                                    InheritanceIndicators(
-                                      type,
-                                      type.supertypes
-                                          .compactMap(
-                                              (id) => model.umlModel.types[id])
-                                          .toList(),
-                                      (type) => _editType(context, type),
-                                    ),
-                                  GestureDetector(
-                                    child: TypeCard(type),
-                                    onTap: () => _editType(context, type),
-                                  ),
-                                ],
-                              ),
-                            ))
+                        .map((type) => TypeSection(
+                            type, model.umlModel, _editType,
+                            key: Key(type.id)))
                         .toList(),
                   ),
             floatingActionButton: model.umlModel.types.isEmpty
