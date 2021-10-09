@@ -160,7 +160,7 @@ void main() {
         <attributes></attributes>
         <operations></operations>
       </type>
-      <relationship id="R" from="S" to="B" type="aggregation" fromMulti="1" toMulti="0..*">has</relationship>
+      <relationship id="R" from="S" to="B" type="aggregation" fromMulti="1" toMulti="0..*" associationClass="">has</relationship>
     </model>
     '''
         .split('\n')
@@ -194,7 +194,7 @@ void main() {
           </operation>
         </operations>
       </type>
-      <relationship id="R" from="Empty" to="Empty" type="association" fromMulti="" toMulti=""></relationship>
+      <relationship id="R" from="Empty" to="Empty" type="association" fromMulti="" toMulti="" associationClass=""></relationship>
     </model>''';
     UMLModel.fromXml(xml);
   });
