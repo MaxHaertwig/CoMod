@@ -152,12 +152,11 @@ class UMLOperation extends NamedUMLElement {
 
     deletedElements.forEach((tuple) => _parameters.remove(tuple.item1));
 
-    final List<UMLElement> newElements = [];
-    for (final tuple in addedElements) {
+    return (addedElements..sort((a, b) => a.item2.compareTo(b.item2)))
+        .map((tuple) {
       final parameter = UMLOperationParameter.fromXml(tuple.item1);
       _parameters[parameter.id] = parameter;
-      newElements.add(parameter);
-    }
-    return newElements;
+      return parameter;
+    }).toList();
   }
 }
