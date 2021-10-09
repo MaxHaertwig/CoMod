@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:client/extensions.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_relationship.dart';
+import 'package:client/model/uml/uml_relationship_type.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_element.dart';
 import 'package:tuple/tuple.dart';
@@ -65,11 +66,22 @@ class UMLModel implements UMLElement {
 
   void removeType(UMLType umlType) {
     _types.remove(umlType.id);
-    final ids = _types.values
+    final deletedTypeIDs = _types.values
         .compactMap((type) => type.removeSupertype(umlType.id, true))
         .expand((x) => x)
         .toList();
-    _model?.deleteElements([umlType.id] + ids);
+    final relationshipIDs = _relationships.values
+        .where((rel) => rel.fromID == umlType.id || rel.toID == umlType.id)
+        .map((rel) => rel.id)
+        .toList();
+    relationshipIDs.forEach((id) => _relationships.remove(id));
+    _model?.deleteElements([umlType.id] + deletedTypeIDs + relationshipIDs);
+    _relationships.values
+        .where((rel) =>
+            rel.type == UMLRelationshipType.associationWithClass &&
+            rel.associationClassID == umlType.id)
+        .forEach((rel) =>
+            rel.type == UMLRelationshipType.association); // TODO: transaction
   }
 
   UnmodifiableMapView<String, UMLRelationship> get relationships =>
