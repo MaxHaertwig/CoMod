@@ -40,14 +40,14 @@ class RelationshipIndicator extends StatelessWidget {
                 const SizedBox(height: 4),
               ],
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 3),
             CustomPaint(
                 size: Size(10, 40),
                 painter: relationship.type == UMLRelationshipType.association
                     ? _VerticalLinePainter()
                     : _AggregationCompositionPainter(
                         relationship.type, reversed)),
-            const SizedBox(width: 4),
+            const SizedBox(width: 3),
             Text(relationship.name, style: const TextStyle(fontSize: 10)),
           ],
         ),

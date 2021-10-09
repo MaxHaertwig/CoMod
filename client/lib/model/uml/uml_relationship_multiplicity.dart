@@ -1,9 +1,9 @@
 class UMLRelationshipMultiplicity {
-  int lower, upper;
+  final int lower, upper;
 
-  UMLRelationshipMultiplicity(this.lower, this.upper);
+  const UMLRelationshipMultiplicity(this.lower, this.upper);
 
-  UMLRelationshipMultiplicity.empty()
+  const UMLRelationshipMultiplicity.empty()
       : lower = -1,
         upper = -1;
 
@@ -44,6 +44,9 @@ class UMLRelationshipMultiplicity {
   bool get isEmpty => lower == -1 && upper == -1;
 
   bool get isNotEmpty => lower != -1 || upper != -1;
+
+  bool get isValid =>
+      lower != -99 && (lower <= upper || upper == -1 || upper == -99);
 
   String get xmlRepresentation => lower == upper || upper == -1
       ? componentString(lower)

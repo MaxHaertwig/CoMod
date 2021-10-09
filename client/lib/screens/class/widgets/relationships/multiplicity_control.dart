@@ -17,11 +17,10 @@ class MultiplicityControl extends StatelessWidget {
         border: InputBorder.none,
         hintText: '_',
         hintStyle: TextStyle(color: Colors.grey));
-    // TODO: check validity
     return Row(
       children: [
         SizedBox(
-          width: 12,
+          width: 20,
           child: TextFormField(
             autocorrect: false,
             decoration: multiTextFieldDecoration,
@@ -30,19 +29,22 @@ class MultiplicityControl extends StatelessWidget {
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp('[0-9]'))
             ],
+            style: TextStyle(
+                color: multiplicity.isValid ? Colors.black : Colors.red),
             textAlign: TextAlign.center,
-            onChanged: (value) {
-              multiplicity.lower =
-                  UMLRelationshipMultiplicity.parseComponent(value);
-              onMultiplicityChanged(multiplicity);
-            },
+            onChanged: (value) => onMultiplicityChanged(
+                UMLRelationshipMultiplicity(
+                    UMLRelationshipMultiplicity.parseComponent(value),
+                    multiplicity.upper)),
           ),
         ),
         const SizedBox(width: 2),
-        const Text('..'),
+        Text('..',
+            style: TextStyle(
+                color: multiplicity.isValid ? Colors.black : Colors.red)),
         const SizedBox(width: 2),
         SizedBox(
-          width: 12,
+          width: 20,
           child: TextFormField(
             autocorrect: false,
             decoration: multiTextFieldDecoration,
@@ -52,12 +54,12 @@ class MultiplicityControl extends StatelessWidget {
               FilteringTextInputFormatter.allow(RegExp(
                   '[0-9]')) // TODO: custom formatter that allows numbers OR *
             ],
+            style: TextStyle(
+                color: multiplicity.isValid ? Colors.black : Colors.red),
             textAlign: TextAlign.center,
-            onChanged: (value) {
-              multiplicity.upper =
-                  UMLRelationshipMultiplicity.parseComponent(value);
-              onMultiplicityChanged(multiplicity);
-            },
+            onChanged: (value) => onMultiplicityChanged(
+                UMLRelationshipMultiplicity(multiplicity.lower,
+                    UMLRelationshipMultiplicity.parseComponent(value))),
           ),
         ),
       ],
