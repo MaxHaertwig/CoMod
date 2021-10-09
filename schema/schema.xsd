@@ -78,8 +78,9 @@
                 <xs:attribute name="from" type="uuid" use="required" />
                 <xs:attribute name="to" type="uuid" use="required" />
                 <xs:attribute name="type" type="relationshipType" use="required" />
-                <xs:attribute name="fromMulti" type="xs:string" />
-                <xs:attribute name="toMulti" type="xs:string" />
+                <xs:attribute name="fromMulti" type="xs:string" use="required" />
+                <xs:attribute name="toMulti" type="xs:string" use="required" />
+                <xs:attribute name="associationClass" type="uuid" />
               </xs:extension>
             </xs:simpleContent>
           </xs:complexType>
@@ -128,6 +129,8 @@
   </xs:simpleType>
   <xs:simpleType name="relationshipType">
     <xs:restriction base="xs:string">
+      <xs:enumeration value="association" />
+      <xs:enumeration value="associationWithClass" />
       <xs:enumeration value="aggregation" />
       <xs:enumeration value="composition" />
     </xs:restriction>

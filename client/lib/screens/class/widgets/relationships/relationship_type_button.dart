@@ -37,18 +37,46 @@ class RelationshipTypeButton extends StatelessWidget {
 }
 
 class _RelationshipTypePainter extends CustomPainter {
+  static final strokePaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1;
+
   final UMLRelationshipType type;
 
   _RelationshipTypePainter(this.type);
 
   @override
   void paint(Canvas canvas, Size size) {
+    switch (type) {
+      case UMLRelationshipType.association:
+        canvas.drawLine(Offset(0, size.height / 2),
+            Offset(size.width, size.height / 2), strokePaint);
+        break;
+      case UMLRelationshipType.associationWithClass:
+        _drawAssociationWithClass(canvas, size);
+        break;
+      default:
+        _drawAggregationOrComposition(canvas, size);
+        break;
+    }
+  }
+
+  void _drawAssociationWithClass(Canvas canvas, Size size) {
+    canvas.drawLine(Offset(0, 0), Offset(size.width, 0), strokePaint);
+    canvas.drawLine(Offset(size.width / 2, 0),
+        Offset(size.width / 2, size.height / 2), strokePaint);
+    canvas.drawRect(
+        Rect.fromCenter(
+            center: Offset(size.width / 2, size.height * 0.75),
+            width: size.height,
+            height: size.height / 2),
+        strokePaint);
+  }
+
+  void _drawAggregationOrComposition(Canvas canvas, Size size) {
     final diamondWidth = size.height * 1.5;
-    canvas.drawLine(
-        Offset(type == UMLRelationshipType.association ? 0 : diamondWidth,
-            size.height / 2),
-        Offset(size.width, size.height / 2),
-        Paint()..strokeWidth = 1);
+    canvas.drawLine(Offset(diamondWidth, size.height / 2),
+        Offset(size.width, size.height / 2), strokePaint);
     if (type != UMLRelationshipType.association) {
       final path = Path()
         ..moveTo(0, size.height / 2)
@@ -56,13 +84,8 @@ class _RelationshipTypePainter extends CustomPainter {
         ..lineTo(diamondWidth, size.height / 2)
         ..lineTo(diamondWidth / 2, size.height)
         ..close();
-      canvas.drawPath(
-          path,
-          type == UMLRelationshipType.aggregation
-              ? (Paint()
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = 1)
-              : Paint());
+      canvas.drawPath(path,
+          type == UMLRelationshipType.aggregation ? strokePaint : Paint());
     }
   }
 

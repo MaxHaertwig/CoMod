@@ -28,7 +28,12 @@ class RelationshipIndicators extends StatelessWidget {
               .map((tuple) => Container(
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   child: RelationshipIndicator(
-                      tuple.item1, tuple.item2!, () => onTap(tuple.item2!))))
+                      tuple.item1,
+                      tuple.item2!,
+                      tuple.item1.associationClassID.isEmpty
+                          ? null
+                          : umlModel.types[tuple.item1.associationClassID],
+                      () => onTap(tuple.item2!))))
               .toList(),
         ),
       );

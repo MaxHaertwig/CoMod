@@ -8,9 +8,11 @@ import 'package:flutter/material.dart';
 class RelationshipIndicator extends StatelessWidget {
   final UMLRelationship relationship;
   final UMLType target;
+  final UMLType? associationClass;
   final VoidCallback onTap;
 
-  RelationshipIndicator(this.relationship, this.target, this.onTap);
+  RelationshipIndicator(
+      this.relationship, this.target, this.associationClass, this.onTap);
 
   @override
   Widget build(BuildContext context) {
@@ -40,21 +42,64 @@ class RelationshipIndicator extends StatelessWidget {
                 const SizedBox(height: 4),
               ],
             ),
-            const SizedBox(width: 3),
-            CustomPaint(
-                size: Size(10, 40),
-                painter: relationship.type == UMLRelationshipType.association
-                    ? _VerticalLinePainter()
-                    : _AggregationCompositionPainter(
-                        relationship.type, reversed)),
-            const SizedBox(width: 3),
-            Text(relationship.name, style: const TextStyle(fontSize: 10)),
+            if (relationship.fromMultiplicity.isNotEmpty ||
+                relationship.toMultiplicity.isNotEmpty)
+              const SizedBox(width: 3),
+            associationClass != null
+                ? Row(
+                    children: [
+                      CustomPaint(
+                          size: Size(1, 40), painter: _VerticalLinePainter()),
+                      CustomPaint(
+                          size: Size(15, 1), painter: _DashedLinePainter()),
+                      TypeLink(
+                          associationClass!, TypeLinkSize.small, false, onTap),
+                    ],
+                  )
+                : CustomPaint(
+                    size: Size(10, 40),
+                    painter:
+                        relationship.type == UMLRelationshipType.association
+                            ? _VerticalLinePainter()
+                            : _AggregationCompositionPainter(
+                                relationship.type, reversed)),
+            if (associationClass != null) const SizedBox(width: 3),
+            if (associationClass != null)
+              Text(relationship.name, style: const TextStyle(fontSize: 10)),
           ],
         ),
         TypeLink(target, TypeLinkSize.regular, false, onTap),
       ],
     );
   }
+}
+
+/// Paints a vertical line along the center axis of its canvas.
+class _VerticalLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawLine(Offset(size.width / 2, 0),
+        Offset(size.width / 2, size.height), Paint());
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// Paints a dashed horizontal line along the middle axis of its canvas.
+class _DashedLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawLine(Offset(0, size.height / 2),
+        Offset(size.width * 0.2, size.height / 2), Paint());
+    canvas.drawLine(Offset(size.width * 0.4, size.height / 2),
+        Offset(size.width * 0.6, size.height / 2), Paint());
+    canvas.drawLine(Offset(size.width * 0.8, size.height / 2),
+        Offset(size.width, size.height / 2), Paint());
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 /// Paints an aggregation or composition relationship.
@@ -82,18 +127,6 @@ class _AggregationCompositionPainter extends CustomPainter {
         type == UMLRelationshipType.aggregation
             ? (Paint()..style = PaintingStyle.stroke)
             : Paint());
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-/// Paints a vertical line along the center axis of its canvas.
-class _VerticalLinePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawLine(Offset(size.width / 2, 0),
-        Offset(size.width / 2, size.height), Paint());
   }
 
   @override
