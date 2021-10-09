@@ -95,7 +95,7 @@ class UMLRelationship extends NamedUMLElement {
     if (multiplicity != _fromMultiplicity) {
       _fromMultiplicity = multiplicity;
       model?.updateAttribute(
-          id, _fromAttribute, multiplicity.xmlRepresentation);
+          id, _fromMultiplicityAttribute, multiplicity.xmlRepresentation);
     }
   }
 
@@ -104,7 +104,8 @@ class UMLRelationship extends NamedUMLElement {
   set toMultiplicity(UMLRelationshipMultiplicity multiplicity) {
     if (multiplicity != _toMultiplicity) {
       _toMultiplicity = multiplicity;
-      model?.updateAttribute(id, _toAttribute, multiplicity.xmlRepresentation);
+      model?.updateAttribute(
+          id, _toMultiplicityAttribute, multiplicity.xmlRepresentation);
     }
   }
 

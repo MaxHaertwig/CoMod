@@ -1,3 +1,4 @@
+import 'package:client/logic/diff_text_input_formatter.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_relationship.dart';
@@ -51,6 +52,9 @@ class RelationshipRow extends StatelessWidget {
                               style: const TextStyle(fontSize: 12),
                               textAlign: TextAlign.center,
                               initialValue: relationship.name,
+                              inputFormatters: [
+                                DiffTextInputFormatter((f) => f(relationship))
+                              ],
                             ),
                           ),
                         ),
