@@ -41,6 +41,10 @@ class UMLRelationshipMultiplicity {
     }
   }
 
+  bool get isEmpty => lower == -1 && upper == -1;
+
+  bool get isNotEmpty => lower != -1 || upper != -1;
+
   String get xmlRepresentation => lower == upper || upper == -1
       ? componentString(lower)
       : lower == -1

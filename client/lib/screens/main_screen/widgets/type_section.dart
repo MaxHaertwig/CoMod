@@ -2,11 +2,13 @@ import 'package:client/extensions.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/screens/main_screen/widgets/inheritance_indicators.dart';
+import 'package:client/screens/main_screen/widgets/relationship_indicators.dart';
 import 'package:client/screens/main_screen/widgets/type_card.dart';
 import 'package:flutter/material.dart';
 
 typedef EditTypeFunction = void Function(BuildContext, UMLType);
 
+/// Shows a type's UML card along with its supertypes and relationships.
 class TypeSection extends StatelessWidget {
   final UMLType type;
   final UMLModel umlModel;
@@ -30,6 +32,9 @@ class TypeSection extends StatelessWidget {
               child: TypeCard(type),
               onTap: () => onEditType(context, type),
             ),
+            if (type.relationships.isNotEmpty)
+              RelationshipIndicators(
+                  type, umlModel, (type) => onEditType(context, type)),
           ],
         ),
       );

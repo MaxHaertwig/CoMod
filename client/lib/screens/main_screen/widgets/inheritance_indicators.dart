@@ -7,29 +7,25 @@ typedef OnTapFunction = void Function(UMLType);
 
 // TODO: opt. show hierarchy up to root
 class InheritanceIndicators extends StatelessWidget {
-  final UMLType _umlType;
-  final List<UMLType> _supertypes;
-  final OnTapFunction _onTap;
+  final UMLType umlType;
+  final List<UMLType> supertypes;
+  final OnTapFunction onTap;
 
-  InheritanceIndicators(
-      UMLType umlType, List<UMLType> supertypes, OnTapFunction onTap)
-      : _umlType = umlType,
-        _supertypes = supertypes,
-        _onTap = onTap;
+  InheritanceIndicators(this.umlType, this.supertypes, this.onTap);
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: _supertypes
+          children: supertypes
               .map((supertype) =>
-                  Tuple2(supertype, _umlType.inheritanceRelationTo(supertype)))
+                  Tuple2(supertype, umlType.inheritanceRelationTo(supertype)))
               .where((tuple) => tuple.item2 != null)
               .map((tuple) => Container(
-                    margin: EdgeInsets.symmetric(horizontal: 3),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
                     child: InheritanceIndicator(
-                        tuple.item1, tuple.item2!, () => _onTap(tuple.item1)),
+                        tuple.item1, tuple.item2!, () => onTap(tuple.item1)),
                   ))
               .toList(),
         ),

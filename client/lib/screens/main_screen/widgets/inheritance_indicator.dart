@@ -4,50 +4,43 @@ import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_type_type.dart';
 import 'package:flutter/material.dart';
 
-typedef OnTapFunction = void Function();
-
 class InheritanceIndicator extends StatelessWidget {
-  final UMLType _umlType;
-  final InheritanceType _inheritanceType;
-  final OnTapFunction _onTap;
+  final UMLType umlType;
+  final InheritanceType inheritanceType;
+  final VoidCallback onTap;
 
-  InheritanceIndicator(
-      UMLType umlType, InheritanceType inheritanceType, OnTapFunction onTap)
-      : _umlType = umlType,
-        _inheritanceType = inheritanceType,
-        _onTap = onTap;
+  InheritanceIndicator(this.umlType, this.inheritanceType, this.onTap);
 
   @override
   Widget build(BuildContext context) => Column(
         children: [
           GestureDetector(
             child: Card(
-              margin: EdgeInsets.only(top: 0, bottom: 2),
+              margin: const EdgeInsets.only(top: 0, bottom: 2),
               elevation: 2,
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Text(_umlType.name,
+                child: Text(umlType.name,
                     style: TextStyle(
-                        fontStyle: _umlType.type == UMLTypeType.abstractClass
+                        fontStyle: umlType.type == UMLTypeType.abstractClass
                             ? FontStyle.italic
                             : FontStyle.normal)),
               ),
             ),
-            onTap: _onTap,
+            onTap: onTap,
           ),
           CustomPaint(
               size: Size(16, 24),
-              painter: _InheritancePainter(_inheritanceType)),
+              painter: _InheritancePainter(inheritanceType)),
         ],
       );
 }
 
 class _InheritancePainter extends CustomPainter {
-  final InheritanceType _inheritanceType;
+  final InheritanceType inheritanceType;
 
-  _InheritancePainter(InheritanceType inheritanceType)
-      : _inheritanceType = inheritanceType;
+  _InheritancePainter(this.inheritanceType);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -60,7 +53,7 @@ class _InheritancePainter extends CustomPainter {
       ..close();
     canvas.drawPath(path, Paint()..color = Colors.white);
     canvas.drawPath(path, Paint()..style = PaintingStyle.stroke);
-    if (_inheritanceType == InheritanceType.generalization) {
+    if (inheritanceType == InheritanceType.generalization) {
       canvas.drawLine(
           Offset(middle, offset), Offset(middle, size.height), Paint());
     } else {
