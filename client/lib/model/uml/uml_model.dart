@@ -107,14 +107,23 @@ class UMLModel implements UMLElement {
       List<Tuple2<String, String>> attributes,
       List<Tuple2<String, int>> addedElements,
       List<Tuple2<String, String>> deletedElements) {
-    deletedElements.forEach((tuple) => _types.remove(tuple.item1));
+    deletedElements
+        .where((tuple) => tuple.item2 == UMLType.xmlTag)
+        .forEach((tuple) => _types.remove(tuple.item1));
+    deletedElements
+        .where((tuple) => tuple.item2 == UMLRelationship.xmlTag)
+        .forEach((tuple) => _relationships.remove(tuple.item1));
 
-    final List<UMLElement> newElements = [];
-    for (final tuple in addedElements) {
-      final umlType = UMLType.fromXml(tuple.item1);
-      _types[umlType.id] = umlType;
-      newElements.add(umlType);
-    }
-    return newElements;
+    return addedElements.map((tuple) {
+      if (tuple.item1.startsWith('<' + UMLType.xmlTag)) {
+        final umlType = UMLType.fromXml(tuple.item1);
+        _types[umlType.id] = umlType;
+        return umlType;
+      } else {
+        final relationship = UMLRelationship.fromXml(tuple.item1);
+        _relationships[relationship.id] = relationship;
+        return relationship;
+      }
+    }).toList();
   }
 }
