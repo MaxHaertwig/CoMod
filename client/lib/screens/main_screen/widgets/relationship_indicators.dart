@@ -33,7 +33,7 @@ class RelationshipIndicators extends StatelessWidget {
                       tuple.item1.associationClassID.isEmpty
                           ? null
                           : umlModel.types[tuple.item1.associationClassID],
-                      () => onTap(tuple.item2!))))
+                      onTap)))
               .toList(),
         ),
       );

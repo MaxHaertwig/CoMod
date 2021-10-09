@@ -4,12 +4,14 @@ import 'package:client/model/uml/uml_type.dart';
 import 'package:client/screens/main_screen/widgets/type_link.dart';
 import 'package:flutter/material.dart';
 
+typedef OnTapFunction = void Function(UMLType);
+
 /// Indicates a relationship to another type.
 class RelationshipIndicator extends StatelessWidget {
   final UMLRelationship relationship;
   final UMLType target;
   final UMLType? associationClass;
-  final VoidCallback onTap;
+  final OnTapFunction onTap;
 
   RelationshipIndicator(
       this.relationship, this.target, this.associationClass, this.onTap);
@@ -52,8 +54,8 @@ class RelationshipIndicator extends StatelessWidget {
                           size: Size(1, 40), painter: _VerticalLinePainter()),
                       CustomPaint(
                           size: Size(15, 1), painter: _DashedLinePainter()),
-                      TypeLink(
-                          associationClass!, TypeLinkSize.small, false, onTap),
+                      TypeLink(associationClass!, TypeLinkSize.small, false,
+                          () => onTap(associationClass!)),
                     ],
                   )
                 : CustomPaint(
@@ -68,7 +70,7 @@ class RelationshipIndicator extends StatelessWidget {
               Text(relationship.name, style: const TextStyle(fontSize: 10)),
           ],
         ),
-        TypeLink(target, TypeLinkSize.regular, false, onTap),
+        TypeLink(target, TypeLinkSize.regular, false, () => onTap(target)),
       ],
     );
   }
