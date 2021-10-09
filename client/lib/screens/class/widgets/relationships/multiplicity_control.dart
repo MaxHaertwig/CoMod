@@ -1,3 +1,4 @@
+import 'package:client/logic/upper_multiplicity_text_input_formatter.dart';
 import 'package:client/model/uml/uml_relationship_multiplicity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,10 +51,7 @@ class MultiplicityControl extends StatelessWidget {
             decoration: multiTextFieldDecoration,
             initialValue:
                 UMLRelationshipMultiplicity.componentString(multiplicity.upper),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(
-                  '[0-9]')) // TODO: custom formatter that allows numbers OR *
-            ],
+            inputFormatters: [UpperMultiplicityTextInputFormatter()],
             style: TextStyle(
                 color: multiplicity.isValid ? Colors.black : Colors.red),
             textAlign: TextAlign.center,
