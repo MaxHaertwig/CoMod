@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:client/model/uml/uml_type.dart';
-import 'package:client/model/uml/uml_type_type.dart';
+import 'package:client/screens/main_screen/widgets/type_link.dart';
 import 'package:flutter/material.dart';
 
 class InheritanceIndicator extends StatelessWidget {
@@ -14,22 +14,7 @@ class InheritanceIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
         children: [
-          GestureDetector(
-            child: Card(
-              margin: const EdgeInsets.only(top: 0, bottom: 2),
-              elevation: 2,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Text(umlType.name,
-                    style: TextStyle(
-                        fontStyle: umlType.type == UMLTypeType.abstractClass
-                            ? FontStyle.italic
-                            : FontStyle.normal)),
-              ),
-            ),
-            onTap: onTap,
-          ),
+          TypeLink(umlType, TypeLinkSize.regular, true, onTap),
           CustomPaint(
               size: Size(16, 24),
               painter: _InheritancePainter(inheritanceType)),

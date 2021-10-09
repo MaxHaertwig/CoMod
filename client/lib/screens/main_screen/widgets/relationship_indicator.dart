@@ -1,7 +1,7 @@
 import 'package:client/model/uml/uml_relationship.dart';
 import 'package:client/model/uml/uml_relationship_type.dart';
 import 'package:client/model/uml/uml_type.dart';
-import 'package:client/model/uml/uml_type_type.dart';
+import 'package:client/screens/main_screen/widgets/type_link.dart';
 import 'package:flutter/material.dart';
 
 /// Indicates a relationship to another type.
@@ -51,21 +51,7 @@ class RelationshipIndicator extends StatelessWidget {
             Text(relationship.name, style: const TextStyle(fontSize: 10)),
           ],
         ),
-        GestureDetector(
-          child: Card(
-            margin: const EdgeInsets.symmetric(vertical: 0),
-            elevation: 2,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(target.name,
-                  style: TextStyle(
-                      fontStyle: target.type == UMLTypeType.abstractClass
-                          ? FontStyle.italic
-                          : FontStyle.normal)),
-            ),
-          ),
-          onTap: onTap,
-        ),
+        TypeLink(target, TypeLinkSize.regular, false, onTap),
       ],
     );
   }
