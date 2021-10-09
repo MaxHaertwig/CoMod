@@ -319,28 +319,41 @@ class UMLType extends NamedUMLElement {
       }
     }
 
-    final List<UMLElement> newElements = [];
-    for (final tuple in addedElements
-      ..sort((a, b) => a.item2.compareTo(b.item2))) {
-      if (tuple.item1.startsWith('<' + UMLSupertype.xmlTag)) {
-        final supertype = UMLSupertype.fromXml(tuple.item1);
-        final list = _supertypes[supertype.superID];
-        if (list != null) {
-          list.add(supertype.id);
-        } else {
-          _supertypes[supertype.superID] = [supertype.id];
-        }
-        newElements.add(supertype);
-      } else if (tuple.item1.startsWith('<' + UMLAttribute.xmlTag)) {
-        final attribute = UMLAttribute.fromXml(tuple.item1);
-        _attributes.insertAt(attribute.id, attribute, tuple.item2);
-        newElements.add(attribute);
+    final newSupertypes = (addedElements
+            .where((tuple) => tuple.item1.startsWith('<' + UMLSupertype.xmlTag))
+            .toList()
+          ..sort((a, b) => a.item2.compareTo(b.item2)))
+        .map((tuple) {
+      final supertype = UMLSupertype.fromXml(tuple.item1);
+      final list = _supertypes[supertype.superID];
+      if (list != null) {
+        list.add(supertype.id);
       } else {
-        final operation = UMLOperation.fromXml(tuple.item1);
-        _operations.insertAt(operation.id, operation, tuple.item2);
-        newElements.add(operation);
+        _supertypes[supertype.superID] = [supertype.id];
       }
-    }
-    return newElements;
+      return supertype;
+    });
+    final newAttributes = (addedElements
+            .where((tuple) => tuple.item1.startsWith('<' + UMLAttribute.xmlTag))
+            .toList()
+          ..sort((a, b) => a.item2.compareTo(b.item2)))
+        .map((tuple) {
+      final attribute = UMLAttribute.fromXml(tuple.item1);
+      _attributes.insertAt(attribute.id, attribute, tuple.item2);
+      return attribute;
+    });
+    final newOperations = (addedElements
+            .where((tuple) => tuple.item1.startsWith('<' + UMLOperation.xmlTag))
+            .toList()
+          ..sort((a, b) => a.item2.compareTo(b.item2)))
+        .map((tuple) {
+      final operation = UMLOperation.fromXml(tuple.item1);
+      _operations.insertAt(operation.id, operation, tuple.item2);
+      return operation;
+    });
+    // ignore: unnecessary_cast
+    return (newSupertypes.toList() as List<UMLElement>) +
+        (newAttributes.toList()) +
+        (newOperations.toList());
   }
 }
