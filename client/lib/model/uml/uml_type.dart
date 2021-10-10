@@ -320,7 +320,8 @@ class UMLType extends NamedUMLElement {
       }
     }
 
-    final newSupertypes = (addedElements
+    final newElements = <UMLElement>[];
+    (addedElements
             .where((tuple) => tuple.item1.startsWith('<' + UMLSupertype.xmlTag))
             .toList()
           ..sort((a, b) => a.item2.compareTo(b.item2)))
@@ -333,8 +334,8 @@ class UMLType extends NamedUMLElement {
         _supertypes[supertype.superID] = [supertype.id];
       }
       return supertype;
-    });
-    final newAttributes = (addedElements
+    }).forEach(newElements.add);
+    (addedElements
             .where((tuple) => tuple.item1.startsWith('<' + UMLAttribute.xmlTag))
             .toList()
           ..sort((a, b) => a.item2.compareTo(b.item2)))
@@ -342,8 +343,8 @@ class UMLType extends NamedUMLElement {
       final attribute = UMLAttribute.fromXml(tuple.item1);
       _attributes.insertAt(attribute.id, attribute, tuple.item2);
       return attribute;
-    });
-    final newOperations = (addedElements
+    }).forEach(newElements.add);
+    (addedElements
             .where((tuple) => tuple.item1.startsWith('<' + UMLOperation.xmlTag))
             .toList()
           ..sort((a, b) => a.item2.compareTo(b.item2)))
@@ -351,10 +352,7 @@ class UMLType extends NamedUMLElement {
       final operation = UMLOperation.fromXml(tuple.item1);
       _operations.insertAt(operation.id, operation, tuple.item2);
       return operation;
-    });
-    // ignore: unnecessary_cast
-    return (newSupertypes.toList() as List<UMLElement>) +
-        (newAttributes.toList()) +
-        (newOperations.toList());
+    }).forEach(newElements.add);
+    return newElements;
   }
 }
