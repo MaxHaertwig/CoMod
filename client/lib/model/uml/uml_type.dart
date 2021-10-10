@@ -270,10 +270,8 @@ class UMLType extends NamedUMLElement {
   @override
   String toString() {
     final nameString = name.isEmpty ? '<name>' : name;
-    final attributes =
-        _attributes.values.map((a) => a.stringRepresentation).join(', ');
-    final operations =
-        _operations.values.map((op) => op.stringRepresentation).join(', ');
+    final attributes = _attributes.values.map((a) => a.toString()).join(', ');
+    final operations = _operations.values.map((op) => op.toString()).join(', ');
     return '$nameString[$attributes | $operations]';
   }
 

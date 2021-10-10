@@ -1,6 +1,7 @@
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_element.dart';
+import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:either_dart/either.dart';
 import 'package:tuple/tuple.dart';
@@ -46,12 +47,16 @@ class UMLOperationParameter extends NamedUMLElement {
   void addToModel() => model?.insertElement(this, _operation!.id, -1, xmlTag,
       name, [Tuple2(_typeAttribute, type.xmlRepresentation)]);
 
-  String get stringRepresentation => '$name: ${_type.stringRepresentation}';
-
   String get xmlRepresentation =>
       '<$xmlTag $_idAttribute="$id" $_typeAttribute="${_type.xmlRepresentation}">' +
       name +
       '</$xmlTag>';
+
+  String stringRepresentation(UMLModel umlModel) =>
+      '$name: ${_type.stringRepresentation(umlModel)}';
+
+  @override
+  String toString() => '$name: $_type';
 
   @override
   List<UMLElement>? update(

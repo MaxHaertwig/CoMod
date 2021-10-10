@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:client/extensions.dart';
 import 'package:client/model/model.dart';
+import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_element.dart';
@@ -106,13 +107,6 @@ class UMLOperation extends NamedUMLElement {
         Tuple2(_returnTypeAttribute, returnType.xmlRepresentation)
       ]);
 
-  String get stringRepresentation {
-    final parameters = _parameters.values
-        .map((param) => param.stringRepresentation)
-        .join(', ');
-    return '${_visibility.symbol} $name($parameters): ${_returnType.stringRepresentation}';
-  }
-
   String get xmlRepresentation {
     final visibility =
         '$_visibilityAttribute="${_visibility.xmlRepresentation}"';
@@ -126,10 +120,17 @@ class UMLOperation extends NamedUMLElement {
         '</$xmlTag>';
   }
 
+  String stringRepresentation(UMLModel umlModel) =>
+      '${_visibility.symbol} $name(${_parameters.values.map((param) => param.stringRepresentation(umlModel)).join(', ')}): ${_returnType.stringRepresentation(umlModel)}';
+
   void addToMapping(Map<String, UMLElement> mapping) {
     mapping[id] = this;
     _parameters.values.forEach((param) => mapping[param.id] = param);
   }
+
+  @override
+  String toString() =>
+      '${_visibility.symbol} $name(${_parameters.values.map((param) => param.toString()).join(', ')}): $_returnType';
 
   @override
   List<UMLElement>? update(

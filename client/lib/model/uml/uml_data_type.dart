@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:client/extensions.dart';
+import 'package:client/model/uml/uml_model.dart';
 import 'package:either_dart/either.dart';
 import 'package:flutter/foundation.dart';
 
@@ -14,16 +15,16 @@ extension UMLPrimitiveTypeExt on UMLPrimitiveType {
 }
 
 class UMLDataType {
-  Either<UMLPrimitiveType, String> type;
+  final Either<UMLPrimitiveType, String> type;
 
-  UMLDataType(this.type);
+  const UMLDataType(this.type);
 
-  UMLDataType.voidType() : this(Left(UMLPrimitiveType.voidType));
-  UMLDataType.boolean() : this(Left(UMLPrimitiveType.boolean));
-  UMLDataType.integer() : this(Left(UMLPrimitiveType.integer));
-  UMLDataType.real() : this(Left(UMLPrimitiveType.real));
-  UMLDataType.string() : this(Left(UMLPrimitiveType.string));
-  UMLDataType.object(String id) : this(Right(id));
+  const UMLDataType.voidType() : this(const Left(UMLPrimitiveType.voidType));
+  const UMLDataType.boolean() : this(const Left(UMLPrimitiveType.boolean));
+  const UMLDataType.integer() : this(const Left(UMLPrimitiveType.integer));
+  const UMLDataType.real() : this(const Left(UMLPrimitiveType.real));
+  const UMLDataType.string() : this(const Left(UMLPrimitiveType.string));
+  UMLDataType.type(String id) : this(Right(id));
 
   static UnmodifiableListView<UMLDataType> primitiveDataTypes(
           bool includingVoid) =>
@@ -39,14 +40,15 @@ class UMLDataType {
         primitiveType != null ? Left(primitiveType) : Right(string));
   }
 
-  String get stringRepresentation => type.isLeft
+  String stringRepresentation(UMLModel umlModel) => type.isLeft
+      ? xmlRepresentation
+      : umlModel.types[type.right]?.name ?? '<error>'; // TODO: use string?
+
+  String get xmlRepresentation => type.isLeft
       ? (type.left == UMLPrimitiveType.voidType
           ? 'void'
           : describeEnum(type.left))
       : type.right;
-
-  // TODO: support custom types
-  String get xmlRepresentation => stringRepresentation;
 
   @override
   String toString() =>
@@ -56,12 +58,9 @@ class UMLDataType {
   int get hashCode => type.hashCode;
 
   @override
-  bool operator ==(other) {
-    if (!(other is UMLDataType) || type.isLeft != other.type.isLeft) {
-      return false;
-    }
-    return type.isLeft
-        ? type.left == other.type.left
-        : type.right == other.type.right;
-  }
+  bool operator ==(other) =>
+      other is UMLDataType &&
+      type.isLeft == other.type.isLeft &&
+      ((type.isLeft && type.left == other.type.left) ||
+          (!type.isLeft && type.right == other.type.right));
 }

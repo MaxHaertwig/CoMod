@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:client/extensions.dart';
 import 'package:client/model/model.dart';
+import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_relationship.dart';
 import 'package:client/model/uml/uml_relationship_type.dart';
 import 'package:client/model/uml/uml_type.dart';
@@ -65,11 +66,14 @@ class UMLModel implements UMLElement {
   }
 
   void removeType(UMLType umlType) {
+    // Remove type
     _types.remove(umlType.id);
+    // Remove as supertype
     final deletedTypeIDs = _types.values
         .compactMap((type) => type.removeSupertype(umlType.id, true))
         .expand((x) => x)
         .toList();
+    // Remove relationships
     final relationshipIDs = _relationships.values
         .where((rel) => rel.fromID == umlType.id || rel.toID == umlType.id)
         .map((rel) => rel.id)
@@ -77,6 +81,24 @@ class UMLModel implements UMLElement {
     relationshipIDs.forEach((id) => _relationships.remove(id));
     model?.beginTransaction();
     _model?.deleteElements([umlType.id] + deletedTypeIDs + relationshipIDs);
+    // Remove as attribute data type
+    final dataType = UMLDataType.type(umlType.id);
+    _types.values
+        .expand((type) => type.attributes.values)
+        .where((attribute) => attribute.dataType == dataType)
+        .forEach((attribute) => attribute.dataType = UMLDataType.string());
+    // Remove as operation return type
+    _types.values
+        .expand((type) => type.operations.values)
+        .where((operation) => operation.returnType == dataType)
+        .forEach((operation) => operation.returnType = UMLDataType.string());
+    // Remove as operation parameter type
+    _types.values
+        .expand((type) => type.operations.values)
+        .expand((operation) => operation.parameters.values)
+        .where((parameter) => parameter.type == dataType)
+        .forEach((parameter) => parameter.type = UMLDataType.string());
+    // Change associationWithClass relationships to association
     _relationships.values
         .where((rel) =>
             rel.type == UMLRelationshipType.associationWithClass &&

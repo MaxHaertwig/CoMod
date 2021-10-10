@@ -1,4 +1,5 @@
 import 'package:client/model/model.dart';
+import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:client/model/uml/uml_element.dart';
@@ -69,9 +70,6 @@ class UMLAttribute extends NamedUMLElement {
         Tuple2(_typeAttribute, dataType.xmlRepresentation)
       ]);
 
-  String get stringRepresentation =>
-      '${_visibility.symbol} ${name.isEmpty ? '<name>' : name}: ${_dataType.stringRepresentation}';
-
   String get xmlRepresentation {
     final visibility =
         '$_visibilityAttribute="${_visibility.xmlRepresentation}"';
@@ -81,8 +79,12 @@ class UMLAttribute extends NamedUMLElement {
         '</$xmlTag>';
   }
 
+  String stringRepresentation(UMLModel umlModel) =>
+      '${_visibility.symbol} ${name.isEmpty ? '<no name>' : name}: ${_dataType.stringRepresentation(umlModel)}';
+
   @override
-  String toString() => stringRepresentation;
+  String toString() =>
+      '${_visibility.symbol} ${name.isEmpty ? '<no name>' : name}: $_dataType';
 
   @override
   int get hashCode => hash3(name, _visibility, _dataType);
