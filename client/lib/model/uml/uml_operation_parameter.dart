@@ -4,7 +4,6 @@ import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_operation.dart';
 import 'package:either_dart/either.dart';
 import 'package:tuple/tuple.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 class UMLOperationParameter extends NamedUMLElement {
@@ -13,13 +12,11 @@ class UMLOperationParameter extends NamedUMLElement {
   static const _typeAttribute = 'type';
 
   UMLOperation? _operation;
-  final String id;
   UMLDataType _type;
 
   UMLOperationParameter({String? id, name = '', UMLDataType? type})
-      : id = id ?? Uuid().v4(),
-        _type = type ?? UMLDataType(Left(UMLPrimitiveType.string)),
-        super(name);
+      : _type = type ?? UMLDataType(Left(UMLPrimitiveType.string)),
+        super(id: id, name: name);
 
   static UMLOperationParameter fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);

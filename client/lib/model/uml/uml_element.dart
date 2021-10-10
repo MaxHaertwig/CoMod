@@ -1,9 +1,12 @@
 import 'package:client/model/model.dart';
 import 'package:tuple/tuple.dart';
+import 'package:uuid/uuid.dart';
 
 /// A UML element.
 abstract class UMLElement {
-  String get id => '';
+  final String id;
+
+  UMLElement(String? id) : id = id ?? Uuid().v4();
 
   /// Instructs the element to update its attributes, insert element, and delete elements. Returns the elements that were created as part of the update.
   List<UMLElement>? update(
@@ -20,7 +23,9 @@ abstract class NamedUMLElement extends UMLElement {
 
   NameChangedFunction? onNameChanged;
 
-  NamedUMLElement([name = '']) : _name = name;
+  NamedUMLElement({String? id, name = ''})
+      : _name = name,
+        super(id);
 
   String get name => _name;
 

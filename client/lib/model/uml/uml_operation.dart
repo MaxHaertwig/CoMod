@@ -8,7 +8,6 @@ import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_operation_parameter.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:tuple/tuple.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 class UMLOperation extends NamedUMLElement {
@@ -18,7 +17,6 @@ class UMLOperation extends NamedUMLElement {
   static const _returnTypeAttribute = 'returnType';
 
   UMLType? _umlType;
-  final String id;
   UMLVisibility _visibility;
   UMLDataType _returnType;
   LinkedHashMap<String, UMLOperationParameter> _parameters;
@@ -29,12 +27,11 @@ class UMLOperation extends NamedUMLElement {
       visibility = UMLVisibility.public,
       UMLDataType? returnType,
       List<UMLOperationParameter>? parameters})
-      : id = id ?? Uuid().v4(),
-        _visibility = visibility,
+      : _visibility = visibility,
         _returnType = returnType ?? UMLDataType.voidType(),
         _parameters =
             LinkedHashMap.fromIterable(parameters ?? [], key: (p) => p.id),
-        super(name);
+        super(id: id, name: name);
 
   static UMLOperation fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);

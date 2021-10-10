@@ -5,7 +5,6 @@ import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:quiver/core.dart';
 import 'package:tuple/tuple.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 class UMLAttribute extends NamedUMLElement {
@@ -15,7 +14,6 @@ class UMLAttribute extends NamedUMLElement {
   static const _typeAttribute = 'type';
 
   UMLType? _umlType;
-  final String id;
   UMLVisibility _visibility;
   UMLDataType _dataType;
 
@@ -24,10 +22,9 @@ class UMLAttribute extends NamedUMLElement {
       name = '',
       UMLVisibility visibility = UMLVisibility.public,
       UMLDataType? dataType})
-      : id = id ?? Uuid().v4(),
-        _visibility = visibility,
+      : _visibility = visibility,
         _dataType = dataType ?? UMLDataType.string(),
-        super(name);
+        super(id: id, name: name);
 
   static UMLAttribute fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);

@@ -5,7 +5,6 @@ import 'package:client/model/uml/uml_relationship_type.dart';
 import 'package:client/model/uml/uml_element.dart';
 import 'package:quiver/core.dart';
 import 'package:tuple/tuple.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 class UMLRelationship extends NamedUMLElement {
@@ -19,7 +18,6 @@ class UMLRelationship extends NamedUMLElement {
   static const _associationClassAttribute = 'associationClass';
 
   UMLModel? _umlModel;
-  final String id;
   String _fromID, _toID, _associationClassID;
   UMLRelationshipType _type;
   UMLRelationshipMultiplicity _fromMultiplicity, _toMultiplicity;
@@ -33,15 +31,14 @@ class UMLRelationship extends NamedUMLElement {
       UMLRelationshipMultiplicity? fromMultiplicity,
       UMLRelationshipMultiplicity? toMultiplicity,
       associationClassID = ''})
-      : id = id ?? Uuid().v4(),
-        _fromID = fromID,
+      : _fromID = fromID,
         _toID = toID,
         _type = type ?? UMLRelationshipType.association,
         _fromMultiplicity =
             fromMultiplicity ?? UMLRelationshipMultiplicity.empty(),
         _toMultiplicity = toMultiplicity ?? UMLRelationshipMultiplicity.empty(),
         _associationClassID = associationClassID,
-        super(name);
+        super(id: id, name: name);
 
   static UMLRelationship fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);

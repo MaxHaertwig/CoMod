@@ -11,7 +11,6 @@ import 'package:client/model/uml/uml_supertype.dart';
 import 'package:client/model/uml/uml_type_type.dart';
 import 'package:collection/collection.dart';
 import 'package:tuple/tuple.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 enum InheritanceType { generalization, realization }
@@ -27,7 +26,6 @@ class UMLType extends NamedUMLElement {
   static const _typeAttribute = 'type';
 
   UMLModel? _umlModel;
-  final String id;
   UMLTypeType _type;
   Map<String, List<String>> _supertypes =
       {}; // superID -> ids (a supertype might be present multiple times due to concurrent edits)
@@ -41,14 +39,13 @@ class UMLType extends NamedUMLElement {
       Map<String, List<String>>? supertypes,
       List<UMLAttribute>? attributes,
       List<UMLOperation>? operations})
-      : id = id ?? Uuid().v4(),
-        _type = type,
+      : _type = type,
         _supertypes = supertypes ?? {},
         _attributes =
             LinkedHashMap.fromIterable(attributes ?? [], key: (a) => a.id),
         _operations =
             LinkedHashMap.fromIterable(operations ?? [], key: (op) => op.id),
-        super(name);
+        super(id: id, name: name);
 
   static UMLType fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);
