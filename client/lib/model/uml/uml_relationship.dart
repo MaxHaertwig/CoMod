@@ -20,13 +20,13 @@ class UMLRelationship extends NamedUMLElement {
 
   UMLModel? _umlModel;
   final String id;
-  String name, _fromID, _toID, _associationClassID;
+  String _fromID, _toID, _associationClassID;
   UMLRelationshipType _type;
   UMLRelationshipMultiplicity _fromMultiplicity, _toMultiplicity;
 
   UMLRelationship(
       {String? id,
-      this.name = '',
+      name = '',
       required fromID,
       required toID,
       UMLRelationshipType? type,
@@ -40,7 +40,8 @@ class UMLRelationship extends NamedUMLElement {
         _fromMultiplicity =
             fromMultiplicity ?? UMLRelationshipMultiplicity.empty(),
         _toMultiplicity = toMultiplicity ?? UMLRelationshipMultiplicity.empty(),
-        _associationClassID = associationClassID;
+        _associationClassID = associationClassID,
+        super(name);
 
   static UMLRelationship fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);

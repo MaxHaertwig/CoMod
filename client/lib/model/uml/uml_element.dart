@@ -17,6 +17,8 @@ abstract class NamedUMLElement extends UMLElement {
   String name = '';
   Model? get model;
 
+  NamedUMLElement([this.name = '']);
+
   void updateName(
       String newName, int position, int deleteLength, String insertString) {
     if (newName != name) {

@@ -19,14 +19,13 @@ class UMLOperation extends NamedUMLElement {
 
   UMLType? _umlType;
   final String id;
-  String name;
   UMLVisibility _visibility;
   UMLDataType _returnType;
   LinkedHashMap<String, UMLOperationParameter> _parameters;
 
   UMLOperation(
       {String? id,
-      this.name = '',
+      name = '',
       visibility = UMLVisibility.public,
       UMLDataType? returnType,
       List<UMLOperationParameter>? parameters})
@@ -34,7 +33,8 @@ class UMLOperation extends NamedUMLElement {
         _visibility = visibility,
         _returnType = returnType ?? UMLDataType.voidType(),
         _parameters =
-            LinkedHashMap.fromIterable(parameters ?? [], key: (p) => p.id);
+            LinkedHashMap.fromIterable(parameters ?? [], key: (p) => p.id),
+        super(name);
 
   static UMLOperation fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);

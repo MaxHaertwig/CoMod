@@ -28,7 +28,6 @@ class UMLType extends NamedUMLElement {
 
   UMLModel? _umlModel;
   final String id;
-  String name;
   UMLTypeType _type;
   Map<String, List<String>> _supertypes =
       {}; // superID -> ids (a supertype might be present multiple times due to concurrent edits)
@@ -37,7 +36,7 @@ class UMLType extends NamedUMLElement {
 
   UMLType(
       {String? id,
-      this.name = '',
+      name = '',
       type = UMLTypeType.classType,
       Map<String, List<String>>? supertypes,
       List<UMLAttribute>? attributes,
@@ -48,7 +47,8 @@ class UMLType extends NamedUMLElement {
         _attributes =
             LinkedHashMap.fromIterable(attributes ?? [], key: (a) => a.id),
         _operations =
-            LinkedHashMap.fromIterable(operations ?? [], key: (op) => op.id);
+            LinkedHashMap.fromIterable(operations ?? [], key: (op) => op.id),
+        super(name);
 
   static UMLType fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);

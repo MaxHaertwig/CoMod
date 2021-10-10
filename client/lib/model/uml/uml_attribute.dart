@@ -16,18 +16,18 @@ class UMLAttribute extends NamedUMLElement {
 
   UMLType? _umlType;
   final String id;
-  String name;
   UMLVisibility _visibility;
   UMLDataType _dataType;
 
   UMLAttribute(
       {String? id,
-      this.name = '',
+      name = '',
       UMLVisibility visibility = UMLVisibility.public,
       UMLDataType? dataType})
       : id = id ?? Uuid().v4(),
         _visibility = visibility,
-        _dataType = dataType ?? UMLDataType.string();
+        _dataType = dataType ?? UMLDataType.string(),
+        super(name);
 
   static UMLAttribute fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);

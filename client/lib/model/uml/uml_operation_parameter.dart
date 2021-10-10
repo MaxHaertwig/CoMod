@@ -14,12 +14,12 @@ class UMLOperationParameter extends NamedUMLElement {
 
   UMLOperation? _operation;
   final String id;
-  String name;
   UMLDataType _type;
 
-  UMLOperationParameter({String? id, this.name = '', UMLDataType? type})
+  UMLOperationParameter({String? id, name = '', UMLDataType? type})
       : id = id ?? Uuid().v4(),
-        _type = type ?? UMLDataType(Left(UMLPrimitiveType.string));
+        _type = type ?? UMLDataType(Left(UMLPrimitiveType.string)),
+        super(name);
 
   static UMLOperationParameter fromXml(String xml) =>
       fromXmlElement(XmlDocument.parse(xml).rootElement);
