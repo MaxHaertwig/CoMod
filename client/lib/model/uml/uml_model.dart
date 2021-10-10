@@ -59,6 +59,7 @@ class UMLModel implements UMLElement {
   UnmodifiableMapView<String, UMLType> get types => UnmodifiableMapView(_types);
 
   void addType(UMLType umlType) {
+    umlType.umlModel = this;
     _types[umlType.id] = umlType;
     umlType.addToModel();
   }
