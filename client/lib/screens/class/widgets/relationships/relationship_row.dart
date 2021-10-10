@@ -38,7 +38,8 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
             children: [
               const SizedBox(width: 12),
               MultiplicityControl(
-                  widget.relationship.fromMultiplicity,
+                  widget.relationship,
+                  true,
                   (multiplicity) =>
                       widget.relationship.fromMultiplicity = multiplicity),
               Expanded(
@@ -102,7 +103,8 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
                 ),
               ),
               MultiplicityControl(
-                  widget.relationship.toMultiplicity,
+                  widget.relationship,
+                  false,
                   (multiplicity) =>
                       widget.relationship.toMultiplicity = multiplicity),
               const SizedBox(width: 8),

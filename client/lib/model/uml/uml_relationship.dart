@@ -7,6 +7,9 @@ import 'package:quiver/core.dart';
 import 'package:tuple/tuple.dart';
 import 'package:xml/xml.dart';
 
+typedef MultiplicityChangedFunction = void Function(
+    UMLRelationshipMultiplicity);
+
 class UMLRelationship extends NamedUMLElement {
   static const xmlTag = 'relationship';
   static const _idAttribute = 'id';
@@ -21,6 +24,8 @@ class UMLRelationship extends NamedUMLElement {
   String _fromID, _toID, _associationClassID;
   UMLRelationshipType _type;
   UMLRelationshipMultiplicity _fromMultiplicity, _toMultiplicity;
+  MultiplicityChangedFunction? onFromMultiplicityChanged,
+      onToMultiplicityChanged;
 
   UMLRelationship(
       {String? id,
@@ -198,9 +203,15 @@ class UMLRelationship extends NamedUMLElement {
           break;
         case _fromMultiplicityAttribute:
           _fromMultiplicity = UMLRelationshipMultiplicity.parse(tuple.item2);
+          if (onFromMultiplicityChanged != null) {
+            onFromMultiplicityChanged!(_fromMultiplicity);
+          }
           break;
         case _toMultiplicityAttribute:
           _toMultiplicity = UMLRelationshipMultiplicity.parse(tuple.item2);
+          if (onToMultiplicityChanged != null) {
+            onToMultiplicityChanged!(_toMultiplicity);
+          }
           break;
       }
     }
