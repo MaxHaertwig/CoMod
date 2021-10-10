@@ -91,23 +91,27 @@ class UMLRelationship extends NamedUMLElement {
           ? _type
           : UMLRelationshipType.association;
 
-  void setType(UMLRelationshipType newType, String newAssociationClassID) {
+  void setType(UMLRelationshipType newType, String newAssociationClassID,
+      [inTransaction = false]) {
     assert((newType == UMLRelationshipType.associationWithClass) ==
         newAssociationClassID.isNotEmpty);
     if (newType != _type) {
+      if (!inTransaction) {
+        model?.beginTransaction();
+      }
       if (_type == UMLRelationshipType.associationWithClass) {
-        // TODO: transaction
-        name = '';
-        model?.updateText(id, 0, name.length, '');
-        _associationClassID = '';
-        model?.updateAttribute(id, _associationClassAttribute, '');
+        updateName('', 0, name.length, ''); // triggers update (in transaction)
+        setAssociationClassID('', true); // triggers update (in transaction)
       }
       _type = newType;
       if (_type == UMLRelationshipType.associationWithClass) {
-        // TODO: transaction
-        associationClassID = newAssociationClassID;
+        setAssociationClassID(
+            newAssociationClassID, true); // triggers update (in transaction)
       }
       model?.updateAttribute(id, _typeAttribute, _type.xmlRepresentation);
+      if (!inTransaction) {
+        model?.endTransaction();
+      }
     }
   }
 
@@ -133,13 +137,18 @@ class UMLRelationship extends NamedUMLElement {
 
   String get associationClassID => _associationClassID;
 
-  set associationClassID(String newID) {
+  void setAssociationClassID(String newID, [inTransaction = false]) {
     if (newID != _associationClassID) {
       _associationClassID = newID;
+      if (!inTransaction) {
+        model?.beginTransaction();
+      }
       model?.updateAttribute(id, _associationClassAttribute, newID);
       if (_type != UMLRelationshipType.associationWithClass) {
-        // TODO: transaction
-        setType(UMLRelationshipType.associationWithClass, newID);
+        setType(UMLRelationshipType.associationWithClass, newID, inTransaction);
+      }
+      if (!inTransaction) {
+        model?.endTransaction();
       }
     }
   }

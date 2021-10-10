@@ -238,4 +238,18 @@ describe('client-js', () => {
     const localPerson = model.get(0) as yjs.XmlElement;
     assert.strictEqual(localPerson.toArray().length, 3);
   });
+
+  it('can perform multiple operations in a single transaction', () => {
+    const yDoc = createSampleYDoc();
+    client.loadModel('uuid', Base64.fromUint8Array(yjs.encodeStateAsUpdate(yDoc)), false);
+
+    client.beginTransaction();
+    client.activeDoc.transact(() => {
+      client.insertElement('P', -1, 'A3', 'attribute', 'address', [['visibility', 'protected'], ['type', 'string']], ['tag']);
+      client.updateAttribute('P', 'test', 'a');
+    });
+    client.endTransaction();
+
+    assertChannels(['LocalUpdate', 'ModelSerialized']);
+  });
 });

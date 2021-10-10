@@ -98,7 +98,7 @@ class UMLType extends NamedUMLElement {
   set type(UMLTypeType newType) {
     if (newType != _type) {
       _type = newType;
-      // TODO: single transaction
+      model?.beginTransaction();
       model?.updateAttribute(id, _typeAttribute, _type.xmlRepresentation);
       if (_type == UMLTypeType.interface && _umlModel != null) {
         final supertypeIDs = _supertypes.keys
@@ -113,6 +113,7 @@ class UMLType extends NamedUMLElement {
           model?.deleteElements(ids);
         }
       }
+      model?.endTransaction();
     }
   }
 

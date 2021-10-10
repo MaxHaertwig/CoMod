@@ -62,7 +62,7 @@ class RelationshipRow extends StatelessWidget {
                                           child: Text(type.name)))
                                       .toList(),
                                   onSelected: (String id) =>
-                                      relationship.associationClassID = id,
+                                      relationship.setAssociationClassID(id),
                                 )
                               : TextFormField(
                                   autocorrect: false,

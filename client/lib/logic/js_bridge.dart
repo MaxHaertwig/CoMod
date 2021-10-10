@@ -27,6 +27,8 @@ class JSBridge {
   LocalUpdateFunction? onLocalUpdate;
   RemoteUpdateFunction? onRemoteUpdate;
 
+  List<String>? transactionStatements;
+
   final Future<void> _ready;
 
   factory JSBridge() => _shared;
@@ -120,6 +122,27 @@ class JSBridge {
   void processUpdate(List<int> data) =>
       _evaluate('client.processUpdate("${base64Encode(data)}");');
 
+  void beginTransaction() {
+    assert(transactionStatements == null);
+    transactionStatements = [];
+  }
+
+  void endTransaction() {
+    assert(transactionStatements != null);
+    if (transactionStatements!.isNotEmpty) {
+      if (transactionStatements!.length == 1) {
+        _evaluate(transactionStatements![0]);
+      } else {
+        _evaluate('''client.beginTransaction();
+        client.activeDoc.transact(() => {
+          ${transactionStatements!.join('')}
+        });
+        client.endTransaction();''');
+      }
+    }
+    transactionStatements = null;
+  }
+
   void insertElement(
       String parentID,
       int parentTagIndex,
@@ -134,20 +157,21 @@ class JSBridge {
     final tagsString = tags != null
         ? '[${tags.map((tag) => '"$tag"').join(', ')}]'
         : 'undefined';
-    _evaluate(
+    _evaluateWithTransaction(
         'client.insertElement("$parentID", $parentTagIndex, "$id", "$nodeName", "$name", $attributesString, $tagsString);');
   }
 
-  void deleteElements(List<String> ids) => _evaluate(
+  void deleteElements(List<String> ids) => _evaluateWithTransaction(
       'client.deleteElements([${ids.map((id) => '"$id"').join(', ')}]);');
 
   void updateText(
           String id, int position, int deleteLength, String insertString) =>
-      _evaluate(
+      _evaluateWithTransaction(
           'client.updateText("$id", $position, $deleteLength, "$insertString");');
 
   void updateAttribute(String id, String attribute, String value) =>
-      _evaluate('client.updateAttribute("$id", "$attribute", "$value");');
+      _evaluateWithTransaction(
+          'client.updateAttribute("$id", "$attribute", "$value");');
 
   void moveElement(String id, MoveType moveType) =>
       _evaluate('client.moveElement("$id", ${moveType.index});');
@@ -157,6 +181,14 @@ class JSBridge {
 
   void stopObservingRemoteChanges() =>
       _evaluate('client.stopObservingRemoteChanges();');
+
+  void _evaluateWithTransaction(String code) {
+    if (transactionStatements != null) {
+      transactionStatements!.add(code);
+    } else {
+      _evaluate(code);
+    }
+  }
 
   Future<String> _evaluate(String code) async {
     final result = await _jsRuntime.evaluateAsync(code);

@@ -3,7 +3,8 @@ import * as yjs from 'yjs';
 
 declare function sendMessage(channel: string, message: string): void;
 
-export let activeDoc: yjs.Doc; // exported for testing purposes
+export let activeDoc: yjs.Doc;
+let inTransaction = false;
 let activeModel: yjs.XmlElement;
 let mapping: Map<string, yjs.XmlElement>;
 
@@ -68,6 +69,15 @@ export function processUpdate(data: string): void {
   serializeModel();
 }
 
+export function beginTransaction(): void {
+  inTransaction = true;
+}
+
+export function endTransaction(): void {
+  inTransaction = false;
+  serializeModel();
+}
+
 export function insertElement(parentID: string, parentTagIndex: number, id: string, nodeName: string, name: string, attributes?: [string, string][], tags?: string[]): void {
   const element = new yjs.XmlElement(nodeName);
   element.setAttribute('id', id);
@@ -88,16 +98,22 @@ export function insertElement(parentID: string, parentTagIndex: number, id: stri
     (mapping.get(parentID)!.get(parentTagIndex) as yjs.XmlElement).push([element]);
   }
 
-  serializeModel();
+  if (!inTransaction) {
+    serializeModel();
+  }
 }
 
 export function deleteElements(ids: string[]): void {
   if (ids.length === 1) {
     deleteElement(ids[0]);
-  } else {
+  } else if (!inTransaction) {
     activeDoc.transact(() => ids.forEach(id => deleteElement(id)));
+  } else {
+    ids.forEach(id => deleteElement(id));
   }
-  serializeModel();
+  if (!inTransaction) {
+    serializeModel();
+  }
 }
 
 function deleteElement(id: string) {
@@ -117,18 +133,25 @@ export function updateText(id: string, position: number, deleteLength: number, i
     (text as yjs.XmlText).insert(position, insertString);
   } else if (insertString.length === 0 && deleteLength > 0) {
     (text as yjs.XmlText).delete(position, deleteLength);
+  } else if (inTransaction) {
+    (text as yjs.XmlText).delete(position, deleteLength);
+    (text as yjs.XmlText).insert(position, insertString);
   } else {
     activeDoc.transact(() => {
       (text as yjs.XmlText).delete(position, deleteLength);
       (text as yjs.XmlText).insert(position, insertString);
     });
   }
-  serializeModel();
+  if (!inTransaction) {
+    serializeModel();
+  }
 }
 
 export function updateAttribute(id: string, attribute: string, value: string): void {
   mapping.get(id)!.setAttribute(attribute, value);
-  serializeModel();
+  if (!inTransaction) {
+    serializeModel();
+  }
 }
 
 export enum MoveType {
@@ -243,7 +266,7 @@ export function stopObservingRemoteChanges(): void {
   activeModel.unobserveDeep(observationFunction);
 }
 
-function serializeModel(yDoc?: yjs.Doc) {
+function serializeModel(yDoc?: yjs.Doc): void {
   const doc = yDoc || activeDoc;
   sendMessage('ModelSerialized', JSON.stringify({
     uuid: doc.guid,

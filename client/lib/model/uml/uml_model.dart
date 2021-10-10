@@ -75,13 +75,15 @@ class UMLModel implements UMLElement {
         .map((rel) => rel.id)
         .toList();
     relationshipIDs.forEach((id) => _relationships.remove(id));
+    model?.beginTransaction();
     _model?.deleteElements([umlType.id] + deletedTypeIDs + relationshipIDs);
     _relationships.values
         .where((rel) =>
             rel.type == UMLRelationshipType.associationWithClass &&
             rel.associationClassID == umlType.id)
-        .forEach((rel) =>
-            rel.type == UMLRelationshipType.association); // TODO: transaction
+        .forEach(
+            (rel) => rel.setType(UMLRelationshipType.association, '', true));
+    model?.endTransaction();
   }
 
   UnmodifiableMapView<String, UMLRelationship> get relationships =>

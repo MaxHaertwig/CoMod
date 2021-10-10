@@ -65,6 +65,7 @@ class Model extends ChangeNotifier {
       umlModel =
           UMLModel.fromXml(await rootBundle.loadString('assets/example.xml'));
       _umlModel.model = this;
+      beginTransaction();
       for (final umlType in _umlModel.types.values) {
         _umlModel.addType(umlType);
         umlType.supertypes.forEach((id) => umlType.addSupertype(id, true));
@@ -77,6 +78,7 @@ class Model extends ChangeNotifier {
       }
       _umlModel.relationships.values
           .forEach((rel) => _umlModel.addRelationship(rel));
+      endTransaction();
     }
   }
 
@@ -170,6 +172,10 @@ class Model extends ChangeNotifier {
     _session = null;
     notifyListeners();
   }
+
+  void beginTransaction() => _jsBridge.beginTransaction();
+
+  void endTransaction() => _jsBridge.endTransaction();
 
   void insertElement(UMLElement element, String parentID, int parentTagIndex,
       String nodeName, String name, List<Tuple2<String, String>>? attributes,
