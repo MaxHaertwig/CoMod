@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-typedef OnCancelFunction = void Function();
-
 class CollaborationDialog extends StatelessWidget {
-  final OnCancelFunction onCancel;
+  final VoidCallback onCancel;
 
   CollaborationDialog({required this.onCancel});
 

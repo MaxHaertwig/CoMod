@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 
 enum ModelRowAction { rename, delete }
 
-typedef OnTapFunction = void Function();
 typedef OnActionFunction = void Function(ModelRowAction);
 
 class ModelRow extends StatelessWidget {
   final Model model;
-  final OnTapFunction onTap;
+  final VoidCallback onTap;
   final OnActionFunction onAction;
 
   ModelRow(this.model, {required this.onTap, required this.onAction});

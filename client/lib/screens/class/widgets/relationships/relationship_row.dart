@@ -1,7 +1,6 @@
 import 'package:client/logic/diff_text_input_formatter.dart';
 import 'package:client/logic/named_element_state.dart';
 import 'package:client/model/model.dart';
-import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_relationship.dart';
 import 'package:client/model/uml/uml_relationship_type.dart';

@@ -14,14 +14,13 @@ import 'package:provider/provider.dart';
 
 import 'operation_action_button.dart';
 
-typedef AddParameterFunction = void Function();
 typedef EditParameterFunction = void Function(UMLOperationParameter);
 
 class OperationParameterRow extends StatefulWidget {
   final UMLType _umlType;
   final UMLOperation _operation;
   final UMLOperationParameter _parameter;
-  final AddParameterFunction _addParameterFunction;
+  final VoidCallback _addParameterFunction;
   final FocusNode? focusNode;
 
   OperationParameterRow(this._umlType, this._operation, this._parameter,
