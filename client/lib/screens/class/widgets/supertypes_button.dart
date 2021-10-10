@@ -11,28 +11,32 @@ class SupertypesButton extends StatelessWidget {
         _umlModel = umlModel;
 
   @override
-  Widget build(BuildContext context) => PopupMenuButton(
-        tooltip: 'Supertypes',
-        child: Container(
-          height: 44,
-          alignment: Alignment.centerLeft,
-          child: Text(
-              _umlType.supertypes.isEmpty
-                  ? 'None'
-                  : _umlType.supertypesLabel, // May overflow
-              style: TextStyle(color: Colors.blue)),
-        ),
-        itemBuilder: (_) => _umlModel.types.values
-            .where((type) => type != _umlType)
-            .map((type) =>
-                CheckedPopupMenuItem(value: type, child: Text(type.name)))
-            .toList(),
-        onSelected: (UMLType supertype) {
-          if (_umlType.supertypes.contains(supertype.id)) {
-            _umlType.removeSupertype(supertype.id);
-          } else {
-            _umlType.addSupertype(supertype.id);
-          }
-        },
-      );
+  Widget build(BuildContext context) {
+    final candidates = _umlModel.types.values.where((type) => type != _umlType);
+    return PopupMenuButton(
+      tooltip: 'Supertypes',
+      enabled: candidates.isNotEmpty,
+      child: Container(
+        height: 44,
+        alignment: Alignment.centerLeft,
+        child: Text(
+            _umlType.supertypes.isEmpty
+                ? 'None'
+                : _umlType.supertypesLabel, // May overflow
+            style: TextStyle(
+                color: candidates.isEmpty ? Colors.grey : Colors.blue)),
+      ),
+      itemBuilder: (_) => candidates
+          .map((type) =>
+              CheckedPopupMenuItem(value: type, child: Text(type.name)))
+          .toList(),
+      onSelected: (UMLType supertype) {
+        if (_umlType.supertypes.contains(supertype.id)) {
+          _umlType.removeSupertype(supertype.id);
+        } else {
+          _umlType.addSupertype(supertype.id);
+        }
+      },
+    );
+  }
 }
