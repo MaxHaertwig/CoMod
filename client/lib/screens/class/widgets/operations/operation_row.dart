@@ -1,5 +1,6 @@
 import 'package:client/extensions.dart';
 import 'package:client/logic/diff_text_input_formatter.dart';
+import 'package:client/logic/named_element_state.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_type.dart';
@@ -26,20 +27,16 @@ class OperationRow extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _OperationRowState(_operation.name);
+  State<StatefulWidget> createState() => _OperationRowState(_operation);
 }
 
-class _OperationRowState extends State<OperationRow> {
-  final _textEditingController = TextEditingController();
+class _OperationRowState extends NamedElementState<OperationRow> {
   final _focusNodes = Map<String, FocusNode>();
 
-  _OperationRowState(String name) {
-    _textEditingController.text = name;
-  }
+  _OperationRowState(UMLOperation operation) : super(operation);
 
   @override
   void dispose() {
-    _textEditingController.dispose();
     _focusNodes.values.forEach((node) => node.dispose());
     super.dispose();
   }
@@ -66,7 +63,7 @@ class _OperationRowState extends State<OperationRow> {
                       autocorrect: false,
                       decoration: const InputDecoration(
                           border: InputBorder.none, hintText: 'Operation name'),
-                      controller: _textEditingController,
+                      controller: nameTextEditingController,
                       focusNode: widget.focusNode,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(

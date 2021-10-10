@@ -12,17 +12,32 @@ abstract class UMLElement {
       List<Tuple2<String, String>> deletedElements) {}
 }
 
-/// A UMLElement with a name.
+typedef NameChangedFunction = void Function(String);
+
 abstract class NamedUMLElement extends UMLElement {
-  String name = '';
+  String _name = '';
   Model? get model;
 
-  NamedUMLElement([this.name = '']);
+  NameChangedFunction? onNameChanged;
+
+  NamedUMLElement([name = '']) : _name = name;
+
+  String get name => _name;
+
+  set name(String newName) {
+    // Called when name changes remotely
+    if (newName != _name) {
+      _name = newName;
+      if (onNameChanged != null) {
+        onNameChanged!(newName);
+      }
+    }
+  }
 
   void updateName(
       String newName, int position, int deleteLength, String insertString) {
-    if (newName != name) {
-      name = newName;
+    if (newName != _name) {
+      _name = newName;
       model?.updateText(id, position, deleteLength, insertString);
     }
   }

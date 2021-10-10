@@ -1,5 +1,7 @@
 import 'package:client/logic/diff_text_input_formatter.dart';
+import 'package:client/logic/named_element_state.dart';
 import 'package:client/model/model.dart';
+import 'package:client/model/uml/uml_element.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_relationship.dart';
 import 'package:client/model/uml/uml_relationship_type.dart';
@@ -12,27 +14,34 @@ import 'package:provider/provider.dart';
 
 typedef EditRelationshipFunction = void Function(UMLRelationship);
 
-class RelationshipRow extends StatelessWidget {
+class RelationshipRow extends StatefulWidget {
   final UMLRelationship relationship;
 
   const RelationshipRow(this.relationship, {Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _RelationshipRowState(relationship);
+}
+
+class _RelationshipRowState extends NamedElementState<RelationshipRow> {
+  _RelationshipRowState(UMLRelationship relationship) : super(relationship);
 
   @override
   Widget build(BuildContext context) => Selector<Model, UMLModel>(
       selector: (_, model) => model.umlModel,
       shouldRebuild: (previous, next) => next != previous,
       builder: (context, umlModel, __) {
-        final isAssociationWithClass =
-            relationship.type == UMLRelationshipType.associationWithClass;
+        final isAssociationWithClass = widget.relationship.type ==
+            UMLRelationshipType.associationWithClass;
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: Row(
             children: [
               const SizedBox(width: 12),
               MultiplicityControl(
-                  relationship.fromMultiplicity,
+                  widget.relationship.fromMultiplicity,
                   (multiplicity) =>
-                      relationship.fromMultiplicity = multiplicity),
+                      widget.relationship.fromMultiplicity = multiplicity),
               Expanded(
                 child: Container(
                   height: isAssociationWithClass ? 40 : 36,
@@ -50,8 +59,8 @@ class RelationshipRow extends StatelessWidget {
                               ? PopupMenuButton(
                                   child: Text(
                                       umlModel
-                                          .types[
-                                              relationship.associationClassID]!
+                                          .types[widget
+                                              .relationship.associationClassID]!
                                           .name,
                                       textAlign: TextAlign.center,
                                       style:
@@ -61,11 +70,12 @@ class RelationshipRow extends StatelessWidget {
                                           value: type.id,
                                           child: Text(type.name)))
                                       .toList(),
-                                  onSelected: (String id) =>
-                                      relationship.setAssociationClassID(id),
+                                  onSelected: (String id) => widget.relationship
+                                      .setAssociationClassID(id),
                                 )
-                              : TextFormField(
+                              : TextField(
                                   autocorrect: false,
+                                  controller: nameTextEditingController,
                                   decoration: const InputDecoration(
                                       border: InputBorder.none,
                                       hintText: 'label',
@@ -73,17 +83,16 @@ class RelationshipRow extends StatelessWidget {
                                           fontSize: 12, color: Colors.grey)),
                                   style: const TextStyle(fontSize: 12),
                                   textAlign: TextAlign.center,
-                                  initialValue: relationship.name,
                                   inputFormatters: [
                                     DiffTextInputFormatter(
-                                        (f) => f(relationship))
+                                        (f) => f(widget.relationship))
                                   ],
                                 ),
                         ),
                       ),
                       RelationshipTypeButton(
-                          relationship.type,
-                          (newType) => relationship.setType(
+                          widget.relationship.type,
+                          (newType) => widget.relationship.setType(
                               newType,
                               newType ==
                                       UMLRelationshipType.associationWithClass
@@ -93,8 +102,10 @@ class RelationshipRow extends StatelessWidget {
                   ),
                 ),
               ),
-              MultiplicityControl(relationship.toMultiplicity,
-                  (multiplicity) => relationship.toMultiplicity = multiplicity),
+              MultiplicityControl(
+                  widget.relationship.toMultiplicity,
+                  (multiplicity) =>
+                      widget.relationship.toMultiplicity = multiplicity),
               const SizedBox(width: 8),
               PopupMenuButton(
                 child: Container(
@@ -102,7 +113,7 @@ class RelationshipRow extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   child: Center(
                     child: Text(
-                      umlModel.types[relationship.toID]!.name,
+                      umlModel.types[widget.relationship.toID]!.name,
                       textAlign: TextAlign.center,
                       style: const TextStyle(color: Colors.blue),
                     ),
@@ -113,10 +124,10 @@ class RelationshipRow extends StatelessWidget {
                     .map((type) =>
                         PopupMenuItem(value: type.id, child: Text(type.name)))
                     .toList(),
-                onSelected: (String id) => relationship.toID = id,
+                onSelected: (String id) => widget.relationship.toID = id,
               ),
               RelationshipActionButton(
-                  (_) => umlModel.removeRelationship(relationship)),
+                  (_) => umlModel.removeRelationship(widget.relationship)),
             ],
           ),
         );

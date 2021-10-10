@@ -1,5 +1,6 @@
 import 'package:client/extensions.dart';
 import 'package:client/logic/diff_text_input_formatter.dart';
+import 'package:client/logic/named_element_state.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
@@ -23,21 +24,11 @@ class AttributeRow extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _AttributeRowState(_attribute.name);
+  State<StatefulWidget> createState() => _AttributeRowState(_attribute);
 }
 
-class _AttributeRowState extends State<AttributeRow> {
-  final _textEditingController = TextEditingController();
-
-  _AttributeRowState(String name) {
-    _textEditingController.text = name;
-  }
-
-  @override
-  void dispose() {
-    _textEditingController.dispose();
-    super.dispose();
-  }
+class _AttributeRowState extends NamedElementState<AttributeRow> {
+  _AttributeRowState(UMLAttribute attribute) : super(attribute);
 
   @override
   Widget build(BuildContext context) => Selector<Model, UMLAttribute>(
@@ -59,7 +50,7 @@ class _AttributeRowState extends State<AttributeRow> {
                   autocorrect: false,
                   decoration: const InputDecoration(
                       border: InputBorder.none, hintText: 'Attribute name'),
-                  controller: _textEditingController,
+                  controller: nameTextEditingController,
                   focusNode: widget.focusNode,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(

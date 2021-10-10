@@ -1,4 +1,5 @@
 import 'package:client/logic/diff_text_input_formatter.dart';
+import 'package:client/logic/named_element_state.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_attribute.dart';
@@ -27,20 +28,17 @@ class TypeScreen extends StatefulWidget {
   TypeScreen(this.umlType, this.isNewType);
 
   @override
-  State<StatefulWidget> createState() => _TypeScreenState(umlType.name);
+  State<StatefulWidget> createState() => _TypeScreenState(umlType);
 }
 
-class _TypeScreenState extends State<TypeScreen> {
-  final _nameTextEditingController = TextEditingController();
+class _TypeScreenState extends NamedElementState<TypeScreen> {
   final _focusNodes = Map<String, FocusNode>();
 
-  _TypeScreenState(String name) {
-    _nameTextEditingController.text = name;
-  }
+  _TypeScreenState(UMLType umlType) : super(umlType);
 
   @override
   void dispose() {
-    _nameTextEditingController.dispose();
+    widget.umlType.onNameChanged = null;
     _focusNodes.values.forEach((node) => node.dispose());
     super.dispose();
   }
@@ -80,7 +78,7 @@ class _TypeScreenState extends State<TypeScreen> {
                       TextField(
                         autofocus: widget.isNewType,
                         decoration: InputDecoration(hintText: 'Enter name'),
-                        controller: _nameTextEditingController,
+                        controller: nameTextEditingController,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(identifierCharactersRegex)),
