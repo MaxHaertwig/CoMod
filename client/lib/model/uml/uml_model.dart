@@ -59,7 +59,6 @@ class UMLModel implements UMLElement {
   UnmodifiableMapView<String, UMLType> get types => UnmodifiableMapView(_types);
 
   void addType(UMLType umlType) {
-    umlType.umlModel = this;
     _types[umlType.id] = umlType;
     umlType.addToModel();
   }
@@ -131,6 +130,7 @@ class UMLModel implements UMLElement {
     return addedElements.map((tuple) {
       if (tuple.item1.startsWith('<' + UMLType.xmlTag)) {
         final umlType = UMLType.fromXml(tuple.item1);
+        umlType.umlModel = this;
         _types[umlType.id] = umlType;
         return umlType;
       } else {

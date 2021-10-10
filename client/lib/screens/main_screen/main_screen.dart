@@ -56,7 +56,8 @@ class MainScreen extends StatelessWidget {
         ),
       );
 
-  void _newType(BuildContext context) => _editType(context, UMLType(), true);
+  void _newType(BuildContext context) =>
+      _editType(context, UMLType()..umlModel = _model.umlModel, true);
 
   void _editType(BuildContext context, UMLType umlType,
       [bool isNewType = false]) {
