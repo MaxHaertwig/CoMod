@@ -112,7 +112,8 @@ class UMLModel implements UMLElement {
 
   void addToMapping(Map<String, UMLElement> mapping) {
     mapping[id] = this;
-    _types.values.forEach((cls) => cls.addToMapping(mapping));
+    _types.values.forEach((type) => type.addToMapping(mapping));
+    _relationships.values.forEach((rel) => mapping[rel.id] = rel);
   }
 
   @override

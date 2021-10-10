@@ -66,7 +66,7 @@ class RelationshipIndicator extends StatelessWidget {
                             : _AggregationCompositionPainter(
                                 relationship.type, reversed)),
             if (associationClass != null) const SizedBox(width: 3),
-            if (associationClass != null)
+            if (associationClass == null)
               Text(relationship.name, style: const TextStyle(fontSize: 10)),
           ],
         ),

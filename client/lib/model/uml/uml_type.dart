@@ -241,7 +241,8 @@ class UMLType extends NamedUMLElement {
       name.isEmpty &&
       _supertypes.isEmpty &&
       _attributes.isEmpty &&
-      _operations.isEmpty;
+      _operations.isEmpty &&
+      relationships.isEmpty;
 
   void addToModel() => model?.insertElement(
       this,
