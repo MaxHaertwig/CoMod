@@ -1,3 +1,5 @@
+import 'package:quiver/core.dart';
+
 class UMLRelationshipMultiplicity {
   final int lower, upper;
 
@@ -59,4 +61,13 @@ class UMLRelationshipMultiplicity {
       : lower == -1
           ? componentString(upper)
           : componentString(lower) + '..' + componentString(upper);
+
+  @override
+  int get hashCode => hash2(lower, upper);
+
+  @override
+  bool operator ==(other) =>
+      other is UMLRelationshipMultiplicity &&
+      lower == other.lower &&
+      upper == other.upper;
 }
