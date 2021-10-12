@@ -167,7 +167,7 @@ class UMLType extends NamedUMLElement {
         .where((st) => st.type == UMLTypeType.interface)
         .map((interface) => interface.name)
         .toList()
-      ..sort((a, b) => a.compareTo(b));
+      ..sort();
     final implementsString =
         interfaces.isEmpty ? '' : 'Implements: ${interfaces.join(', ')}';
     if (type == UMLTypeType.interface) {

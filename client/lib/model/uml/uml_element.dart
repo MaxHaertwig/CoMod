@@ -17,7 +17,8 @@ abstract class UMLElement {
 
 typedef NameChangedFunction = void Function(String);
 
-abstract class NamedUMLElement extends UMLElement {
+abstract class NamedUMLElement extends UMLElement
+    implements Comparable<NamedUMLElement> {
   String _name = '';
   Model? get model;
 
@@ -46,4 +47,7 @@ abstract class NamedUMLElement extends UMLElement {
       model?.updateText(id, position, deleteLength, insertString);
     }
   }
+
+  @override
+  int compareTo(NamedUMLElement other) => _name.compareTo(other._name);
 }

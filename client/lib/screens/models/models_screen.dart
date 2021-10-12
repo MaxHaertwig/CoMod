@@ -84,10 +84,10 @@ class _ModelsScreenState extends State<ModelsScreen> {
   }
 
   void _newModel(BuildContext context) async {
-    final document = await _editModelMetadata(context, null);
-    if (document != null) {
+    final model = await _editModelMetadata(context, null);
+    if (model != null) {
       setState(() {
-        _models?.add(document);
+        _models?.add(model);
         _models?.sort();
       });
     }
@@ -111,7 +111,7 @@ class _ModelsScreenState extends State<ModelsScreen> {
     switch (action) {
       case ModelRowAction.rename:
         await _editModelMetadata(context, model);
-        setState(() => _models?.sort((a, b) => a.name.compareTo(b.name)));
+        setState(() => _models?.sort());
         break;
       case ModelRowAction.delete:
         model.delete();
@@ -142,9 +142,8 @@ class _ModelsScreenState extends State<ModelsScreen> {
   void _joinCollaborationSession(String uuid) async {
     showDialog(
       context: context,
-      builder: (_) => CollaborationDialog(
-        onCancel: () => Navigator.pop(context),
-      ),
+      builder: (_) =>
+          CollaborationDialog(onCancel: () => Navigator.pop(context)),
       barrierDismissible: false,
     );
 
@@ -158,7 +157,11 @@ class _ModelsScreenState extends State<ModelsScreen> {
         final name = 'Shared';
         final model = Model(await ModelsManager.path(uuid), name);
         await model.load(await JSBridge().loadModel(uuid, data, true));
-        ModelsManager.addModel(uuid, name);
+        await ModelsManager.addModel(uuid, name);
+        setState(() {
+          _models?.add(model);
+          _models?.sort();
+        });
         completer.complete(model);
       },
       onStateChanged: (state) {

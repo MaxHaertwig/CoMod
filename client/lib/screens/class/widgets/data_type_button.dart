@@ -33,8 +33,7 @@ class DataTypeButton extends StatelessWidget {
               .map((v) => PopupMenuItem(
                   value: v, child: Text(v.stringRepresentation(umlModel))))
               .toList() +
-          (umlModel.types.values.toList()
-                ..sort((a, b) => a.name.compareTo(b.name)))
+          (umlModel.types.values.toList()..sort())
               .map((type) => PopupMenuItem(
                   value: UMLDataType.type(type.id), child: Text(type.name)))
               .toList(),
