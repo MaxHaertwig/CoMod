@@ -11,7 +11,7 @@ import 'package:client/model/uml/uml_model.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
-class Model extends ChangeNotifier {
+class Model extends ChangeNotifier implements Comparable<Model> {
   final String path;
 
   final _jsBridge = JSBridge();
@@ -209,4 +209,7 @@ class Model extends ChangeNotifier {
   }
 
   void didChange() => notifyListeners();
+
+  @override
+  int compareTo(Model other) => name.compareTo(other.name);
 }

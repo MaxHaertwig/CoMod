@@ -88,7 +88,7 @@ class _ModelsScreenState extends State<ModelsScreen> {
     if (document != null) {
       setState(() {
         _models?.add(document);
-        _models?.sort((a, b) => a.name.compareTo(b.name));
+        _models?.sort();
       });
     }
   }
