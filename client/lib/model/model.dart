@@ -115,7 +115,9 @@ class Model extends ChangeNotifier implements Comparable<Model> {
             completer.complete();
             break;
           case SessionState.disconnected:
-            completer.complete();
+            if (!completer.isCompleted) {
+              completer.complete();
+            }
             _sessionDisconnected();
             break;
         }
