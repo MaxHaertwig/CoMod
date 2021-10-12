@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:client/extensions.dart';
 import 'package:client/logic/collaboration_session.dart';
 import 'package:client/logic/js_bridge.dart';
 import 'package:client/logic/models_manager.dart';
@@ -101,9 +102,7 @@ class _ModelsScreenState extends State<ModelsScreen> {
 
   void _openModel(BuildContext context, Model model) async {
     await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => MainScreen(model)),
-    );
+        context, MaterialPageRoute(builder: (_) => MainScreen(model)));
     model.stopCollaboratingIfNecessary();
   }
 
@@ -125,10 +124,8 @@ class _ModelsScreenState extends State<ModelsScreen> {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => EditModelScreen(
-            model,
-            existingNames: _models!.map((model) => model.name).toSet(),
-          ),
+          builder: (_) => EditModelScreen(model,
+              existingNames: _models!.map((model) => model.name).toSet()),
         ),
       );
 
@@ -148,36 +145,43 @@ class _ModelsScreenState extends State<ModelsScreen> {
       barrierDismissible: false,
     );
 
-    final completer = Completer();
-    // TODO: model may exist locally
-    final session = CollaborationSession.joinWithoutModel(
-      uuid,
-      onModelReceived: (data) async {
-        print('Model received');
-        // TODO: don't save model right away; support collaboration-only models
-        final name = 'Shared';
-        final model = Model(await ModelsManager.path(uuid), name);
-        await model.load(await JSBridge().loadModel(uuid, data, true));
-        await ModelsManager.addModel(uuid, name);
-        setState(() {
-          _models?.add(model);
-          _models?.sort();
-        });
-        completer.complete(model);
-      },
-      onStateChanged: (state) {
-        if (state == SessionState.disconnected && !completer.isCompleted) {
-          completer.complete(null);
-        }
-      },
-      onError: (error) => ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error))),
-    );
-    final model = await completer.future;
-    Navigator.pop(context);
-    if (model != null) {
-      model.continueSession(session);
-      _openModel(context, model);
+    final localModel = _models?.firstWhereOrNull((model) => model.uuid == uuid);
+    final onError = (String error) => ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(error)));
+    if (localModel != null) {
+      Navigator.pop(context);
+      await localModel.collaborate(onError);
+      _openModel(context, localModel);
+    } else {
+      final completer = Completer();
+      final session = CollaborationSession.joinWithoutModel(
+        uuid,
+        onModelReceived: (data) async {
+          print('Model received');
+          // TODO: don't save model right away; support collaboration-only models
+          final name = 'Shared';
+          final model = Model(await ModelsManager.path(uuid), name);
+          await model.load(await JSBridge().loadModel(uuid, data, true));
+          await ModelsManager.addModel(uuid, name);
+          setState(() {
+            _models?.add(model);
+            _models?.sort();
+          });
+          completer.complete(model);
+        },
+        onStateChanged: (state) {
+          if (state == SessionState.disconnected && !completer.isCompleted) {
+            completer.complete(null);
+          }
+        },
+        onError: onError,
+      );
+      final model = await completer.future;
+      Navigator.pop(context);
+      if (model != null) {
+        model.continueSession(session);
+        _openModel(context, model);
+      }
     }
   }
 }
