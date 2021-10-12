@@ -81,7 +81,7 @@ class MainScreen extends StatelessWidget {
         Clipboard.setData(ClipboardData(text: _model.sessionLink));
         break;
       case 2:
-        _model.stopCollaborating();
+        _model.stopCollaboratingIfNecessary();
         break;
     }
   }

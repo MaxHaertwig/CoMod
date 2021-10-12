@@ -127,10 +127,12 @@ class Model extends ChangeNotifier implements Comparable<Model> {
     return completer.future;
   }
 
-  void stopCollaborating() async {
-    await _session!.close();
-    _session = null;
-    notifyListeners();
+  void stopCollaboratingIfNecessary() async {
+    if (_session != null) {
+      await _session!.close();
+      _session = null;
+      notifyListeners();
+    }
   }
 
   void continueSession(CollaborationSession session) {

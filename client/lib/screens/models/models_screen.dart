@@ -99,12 +99,13 @@ class _ModelsScreenState extends State<ModelsScreen> {
     setState(() => _models?.add(model));
   }
 
-  // TODO: leave session when navigating back
-  void _openModel(BuildContext context, Model model) async =>
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => MainScreen(model)),
-      );
+  void _openModel(BuildContext context, Model model) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MainScreen(model)),
+    );
+    model.stopCollaboratingIfNecessary();
+  }
 
   void _modelAction(
       BuildContext context, Model model, ModelRowAction action) async {
