@@ -15,8 +15,10 @@ typedef EditRelationshipFunction = void Function(UMLRelationship);
 
 class RelationshipRow extends StatefulWidget {
   final UMLRelationship relationship;
+  final bool reversed;
 
-  const RelationshipRow(this.relationship, {Key? key}) : super(key: key);
+  const RelationshipRow(this.relationship, this.reversed, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _RelationshipRowState(relationship);
@@ -38,10 +40,15 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
             children: [
               const SizedBox(width: 12),
               MultiplicityControl(
-                  widget.relationship,
-                  true,
-                  (multiplicity) =>
-                      widget.relationship.fromMultiplicity = multiplicity),
+                  relationship: widget.relationship,
+                  isFromMultiplicity: !widget.reversed,
+                  onMultiplicityChanged: (multiplicity) {
+                    if (widget.reversed) {
+                      widget.relationship.toMultiplicity = multiplicity;
+                    } else {
+                      widget.relationship.fromMultiplicity = multiplicity;
+                    }
+                  }),
               Expanded(
                 child: Container(
                   height: isAssociationWithClass ? 40 : 36,
@@ -92,6 +99,7 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
                       ),
                       RelationshipTypeButton(
                           widget.relationship.type,
+                          widget.reversed,
                           (newType) => widget.relationship.setType(
                               newType,
                               newType ==
@@ -103,10 +111,15 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
                 ),
               ),
               MultiplicityControl(
-                  widget.relationship,
-                  false,
-                  (multiplicity) =>
-                      widget.relationship.toMultiplicity = multiplicity),
+                  relationship: widget.relationship,
+                  isFromMultiplicity: widget.reversed,
+                  onMultiplicityChanged: (multiplicity) {
+                    if (widget.reversed) {
+                      widget.relationship.fromMultiplicity = multiplicity;
+                    } else {
+                      widget.relationship.toMultiplicity = multiplicity;
+                    }
+                  }),
               const SizedBox(width: 8),
               PopupMenuButton(
                 child: Container(
@@ -114,18 +127,28 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
                   padding: const EdgeInsets.all(8),
                   child: Center(
                     child: Text(
-                      umlModel.types[widget.relationship.toID]!.name,
+                      umlModel
+                          .types[widget.reversed
+                              ? widget.relationship.fromID
+                              : widget.relationship.toID]!
+                          .name,
                       textAlign: TextAlign.center,
                       style: const TextStyle(color: Colors.blue),
                     ),
                   ),
                 ),
                 tooltip: 'Relationship target',
-                itemBuilder: (_) => umlModel.types.values
+                itemBuilder: (_) => (umlModel.types.values.toList()..sort())
                     .map((type) =>
                         PopupMenuItem(value: type.id, child: Text(type.name)))
                     .toList(),
-                onSelected: (String id) => widget.relationship.toID = id,
+                onSelected: (String id) {
+                  if (widget.reversed) {
+                    widget.relationship.fromID = id;
+                  } else {
+                    widget.relationship.toID = id;
+                  }
+                },
               ),
               RelationshipActionButton(
                   (_) => umlModel.removeRelationship(widget.relationship)),

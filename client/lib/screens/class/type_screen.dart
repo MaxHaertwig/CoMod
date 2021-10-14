@@ -131,8 +131,11 @@ class _TypeScreenState extends NamedElementState<TypeScreen> {
                           onAddButtonPressed: _addOperation),
                       TypeScreenSection('Relationships', 'Add relationship',
                           children: umlType.relationships
-                              .map((rel) =>
-                                  RelationshipRow(rel, key: Key(rel.id)))
+                              .map((rel) => RelationshipRow(
+                                  rel,
+                                  rel.toID == umlType.id &&
+                                      rel.toID != rel.fromID,
+                                  key: Key(rel.id)))
                               .toList(),
                           onAddButtonPressed: () => _editType(
                               context,

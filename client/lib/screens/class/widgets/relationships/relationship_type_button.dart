@@ -1,33 +1,35 @@
 import 'dart:ui';
 
 import 'package:client/model/uml/uml_relationship_type.dart';
+import 'package:client/widgets/flipped.dart';
 import 'package:flutter/material.dart';
 
 typedef OnSelectedFunction = void Function(UMLRelationshipType);
 
 class RelationshipTypeButton extends StatelessWidget {
   final UMLRelationshipType type;
+  final bool reversed;
   final OnSelectedFunction onSelected;
 
-  RelationshipTypeButton(this.type, this.onSelected);
+  RelationshipTypeButton(this.type, this.reversed, this.onSelected);
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
       builder: (context, constraints) => PopupMenuButton(
             child: Container(
               padding: const EdgeInsets.all(8),
-              child: CustomPaint(
+              child: Flipped(CustomPaint(
                   size: Size(constraints.maxWidth, 10),
-                  painter: _RelationshipTypePainter(type)),
+                  painter: _RelationshipTypePainter(type))),
             ),
             tooltip: 'Relationship target',
             itemBuilder: (_) => UMLRelationshipType.values
                 .map((type) => PopupMenuItem(
                     value: type,
                     child: Row(children: [
-                      CustomPaint(
+                      Flipped(CustomPaint(
                           size: Size(20, 10),
-                          painter: _RelationshipTypePainter(type)),
+                          painter: _RelationshipTypePainter(type))),
                       const SizedBox(width: 12),
                       Text(type.stringRepresentation),
                     ])))

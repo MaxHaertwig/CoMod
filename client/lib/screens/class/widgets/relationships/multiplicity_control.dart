@@ -13,7 +13,9 @@ class MultiplicityControl extends StatefulWidget {
   final MultiplicityChangedFunction onMultiplicityChanged;
 
   MultiplicityControl(
-      this.relationship, this.isFromMultiplicity, this.onMultiplicityChanged);
+      {required this.relationship,
+      required this.isFromMultiplicity,
+      required this.onMultiplicityChanged});
 
   @override
   State<StatefulWidget> createState() =>
@@ -26,6 +28,13 @@ class _MultiplicityControlState extends State<MultiplicityControl> {
 
   _MultiplicityControlState(
       UMLRelationship relationship, bool isFromMultiplicty) {
+    final multiplicity = isFromMultiplicty
+        ? relationship.fromMultiplicity
+        : relationship.toMultiplicity;
+    _lowerTextEditingController.text =
+        UMLRelationshipMultiplicity.componentString(multiplicity.lower);
+    _upperTextEditingController.text =
+        UMLRelationshipMultiplicity.componentString(multiplicity.upper);
     final block = (multiplicity) {
       _lowerTextEditingController.text =
           UMLRelationshipMultiplicity.componentString(multiplicity.lower);
