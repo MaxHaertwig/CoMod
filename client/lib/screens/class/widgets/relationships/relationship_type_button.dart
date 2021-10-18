@@ -11,25 +11,30 @@ class RelationshipTypeButton extends StatelessWidget {
   final bool reversed;
   final OnSelectedFunction onSelected;
 
-  RelationshipTypeButton(this.type, this.reversed, this.onSelected);
+  RelationshipTypeButton(
+      {required this.type, required this.reversed, required this.onSelected});
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
       builder: (context, constraints) => PopupMenuButton(
             child: Container(
               padding: const EdgeInsets.all(8),
-              child: Flipped(CustomPaint(
-                  size: Size(constraints.maxWidth, 10),
-                  painter: _RelationshipTypePainter(type))),
+              child: Flipped(
+                  flipped: reversed,
+                  child: CustomPaint(
+                      size: Size(constraints.maxWidth, 10),
+                      painter: _RelationshipTypePainter(type))),
             ),
             tooltip: 'Relationship target',
             itemBuilder: (_) => UMLRelationshipType.values
                 .map((type) => PopupMenuItem(
                     value: type,
                     child: Row(children: [
-                      Flipped(CustomPaint(
-                          size: Size(20, 10),
-                          painter: _RelationshipTypePainter(type))),
+                      Flipped(
+                          flipped: reversed,
+                          child: CustomPaint(
+                              size: Size(20, 10),
+                              painter: _RelationshipTypePainter(type))),
                       const SizedBox(width: 12),
                       Text(type.stringRepresentation),
                     ])))

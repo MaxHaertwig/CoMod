@@ -17,7 +17,8 @@ class RelationshipRow extends StatefulWidget {
   final UMLRelationship relationship;
   final bool reversed;
 
-  const RelationshipRow(this.relationship, this.reversed, {Key? key})
+  const RelationshipRow(
+      {required this.relationship, required this.reversed, Key? key})
       : super(key: key);
 
   @override
@@ -98,9 +99,9 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
                         ),
                       ),
                       RelationshipTypeButton(
-                          widget.relationship.type,
-                          widget.reversed,
-                          (newType) => widget.relationship.setType(
+                          type: widget.relationship.type,
+                          reversed: widget.reversed,
+                          onSelected: (newType) => widget.relationship.setType(
                               newType,
                               newType ==
                                       UMLRelationshipType.associationWithClass

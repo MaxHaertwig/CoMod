@@ -132,8 +132,8 @@ class _TypeScreenState extends NamedElementState<TypeScreen> {
                       TypeScreenSection('Relationships', 'Add relationship',
                           children: umlType.relationships
                               .map((rel) => RelationshipRow(
-                                  rel,
-                                  rel.toID == umlType.id &&
+                                  relationship: rel,
+                                  reversed: rel.toID == umlType.id &&
                                       rel.toID != rel.fromID,
                                   key: Key(rel.id)))
                               .toList(),

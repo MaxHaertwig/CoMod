@@ -38,7 +38,7 @@ class MainScreen extends StatelessWidget {
                     ['Create Type'],
                     (_) => _newType(context))
                 : ListView(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.only(top: 10, bottom: 20),
                     children: model.umlModel.types.values
                         .where((type) => !type.isEmpty)
                         .map((type) => TypeSection(
