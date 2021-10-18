@@ -12,7 +12,8 @@ class RelationshipIndicators extends StatelessWidget {
   final UMLModel umlModel;
   final OnTapFunction onTap;
 
-  RelationshipIndicators(this.type, this.umlModel, this.onTap);
+  RelationshipIndicators(
+      {required this.type, required this.umlModel, required this.onTap});
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
@@ -28,12 +29,12 @@ class RelationshipIndicators extends StatelessWidget {
               .map((tuple) => Container(
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   child: RelationshipIndicator(
-                      tuple.item1,
-                      tuple.item2!,
-                      tuple.item1.associationClassID.isEmpty
+                      relationship: tuple.item1,
+                      target: tuple.item2!,
+                      associationClass: tuple.item1.associationClassID.isEmpty
                           ? null
                           : umlModel.types[tuple.item1.associationClassID],
-                      onTap)))
+                      onTap: onTap)))
               .toList(),
         ),
       );

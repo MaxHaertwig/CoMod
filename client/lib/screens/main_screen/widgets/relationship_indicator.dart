@@ -14,7 +14,10 @@ class RelationshipIndicator extends StatelessWidget {
   final OnTapFunction onTap;
 
   RelationshipIndicator(
-      this.relationship, this.target, this.associationClass, this.onTap);
+      {required this.relationship,
+      required this.target,
+      required this.associationClass,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {

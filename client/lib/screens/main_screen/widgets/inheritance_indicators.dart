@@ -11,7 +11,8 @@ class InheritanceIndicators extends StatelessWidget {
   final List<UMLType> supertypes;
   final OnTapFunction onTap;
 
-  InheritanceIndicators(this.umlType, this.supertypes, this.onTap);
+  InheritanceIndicators(
+      {required this.umlType, required this.supertypes, required this.onTap});
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(

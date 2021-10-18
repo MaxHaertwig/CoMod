@@ -24,9 +24,11 @@ class TypeSection extends StatelessWidget {
           children: [
             if (type.supertypes.isNotEmpty)
               InheritanceIndicators(
-                type,
-                type.supertypes.compactMap((id) => umlModel.types[id]).toList(),
-                (type) => onEditType(context, type),
+                umlType: type,
+                supertypes: type.supertypes
+                    .compactMap((id) => umlModel.types[id])
+                    .toList(),
+                onTap: (type) => onEditType(context, type),
               ),
             GestureDetector(
               child: TypeCard(type),
@@ -34,7 +36,9 @@ class TypeSection extends StatelessWidget {
             ),
             if (type.relationships.isNotEmpty)
               RelationshipIndicators(
-                  type, umlModel, (type) => onEditType(context, type)),
+                  type: type,
+                  umlModel: umlModel,
+                  onTap: (type) => onEditType(context, type)),
           ],
         ),
       );
