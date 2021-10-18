@@ -54,15 +54,17 @@ class RelationshipIndicator extends StatelessWidget {
                 ? Row(
                     children: [
                       CustomPaint(
-                          size: Size(1, 40), painter: _VerticalLinePainter()),
+                          size: const Size(1, 40),
+                          painter: _VerticalLinePainter()),
                       CustomPaint(
-                          size: Size(15, 1), painter: _DashedLinePainter()),
+                          size: const Size(15, 1),
+                          painter: _DashedLinePainter()),
                       TypeLink(associationClass!, TypeLinkSize.small, false,
                           () => onTap(associationClass!)),
                     ],
                   )
                 : CustomPaint(
-                    size: Size(10, 40),
+                    size: const Size(10, 40),
                     painter:
                         relationship.type == UMLRelationshipType.association
                             ? _VerticalLinePainter()

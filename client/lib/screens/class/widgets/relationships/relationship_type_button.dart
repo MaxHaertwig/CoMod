@@ -33,7 +33,7 @@ class RelationshipTypeButton extends StatelessWidget {
                       Flipped(
                           flipped: reversed,
                           child: CustomPaint(
-                              size: Size(20, 10),
+                              size: const Size(20, 10),
                               painter: _RelationshipTypePainter(type))),
                       const SizedBox(width: 12),
                       Text(type.stringRepresentation),

@@ -16,7 +16,7 @@ class InheritanceIndicator extends StatelessWidget {
         children: [
           TypeLink(umlType, TypeLinkSize.regular, true, onTap),
           CustomPaint(
-              size: Size(16, 24),
+              size: const Size(16, 24),
               painter: _InheritancePainter(inheritanceType)),
         ],
       );
