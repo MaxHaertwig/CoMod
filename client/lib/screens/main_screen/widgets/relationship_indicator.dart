@@ -137,5 +137,6 @@ class _AggregationCompositionPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) =>
+      oldDelegate is _AggregationCompositionPainter && type != oldDelegate.type;
 }
