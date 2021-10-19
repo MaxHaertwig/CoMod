@@ -101,12 +101,8 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
                       RelationshipTypeButton(
                           type: widget.relationship.type,
                           reversed: widget.reversed,
-                          onSelected: (newType) => widget.relationship.setType(
-                              newType,
-                              newType ==
-                                      UMLRelationshipType.associationWithClass
-                                  ? umlModel.types.values.first.id
-                                  : '')),
+                          onSelected: (newType) =>
+                              _newTypeSelected(newType, umlModel)),
                     ],
                   ),
                 ),
@@ -157,4 +153,15 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
           ),
         );
       });
+
+  void _newTypeSelected(UMLRelationshipType newType, UMLModel umlModel) {
+    widget.relationship.setType(
+        newType,
+        newType == UMLRelationshipType.associationWithClass
+            ? umlModel.types.values.first.id
+            : '');
+    if (newType == UMLRelationshipType.associationWithClass) {
+      nameTextEditingController.text = '';
+    }
+  }
 }
