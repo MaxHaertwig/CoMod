@@ -19,15 +19,19 @@ import 'operation_action_button.dart';
 typedef EditOperationFunction = void Function(UMLOperation);
 
 class OperationRow extends StatefulWidget {
-  final UMLType _umlType;
-  final UMLOperation _operation;
+  final UMLType umlType;
+  final UMLOperation operation;
   final FocusNode? focusNode;
 
-  OperationRow(this._umlType, this._operation, {Key? key, this.focusNode})
+  OperationRow(
+      {required this.umlType,
+      required this.operation,
+      Key? key,
+      this.focusNode})
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _OperationRowState(_operation);
+  State<StatefulWidget> createState() => _OperationRowState(operation);
 }
 
 class _OperationRowState extends NamedElementState<OperationRow> {
@@ -44,9 +48,9 @@ class _OperationRowState extends NamedElementState<OperationRow> {
   @override
   Widget build(BuildContext context) => Selector<Model, UMLOperation>(
         selector: (_, model) =>
-            (model.umlModel.types[widget._umlType.id] ?? widget._umlType)
-                .operations[widget._operation.id] ??
-            widget._operation,
+            (model.umlModel.types[widget.umlType.id] ?? widget.umlType)
+                .operations[widget.operation.id] ??
+            widget.operation,
         shouldRebuild: (previous, next) => next != previous,
         builder: (context, operation, __) => Card(
           margin: const EdgeInsets.symmetric(vertical: 4),
@@ -84,17 +88,17 @@ class _OperationRowState extends NamedElementState<OperationRow> {
                   ),
                   const SizedBox(width: 8),
                   OperationActionButton(
-                      widget._umlType.operations.moveTypes(operation.id),
+                      widget.umlType.operations.moveTypes(operation.id),
                       (action) => _operationAction(context, action)),
                 ],
               ),
-              if (widget._operation.parameters.isNotEmpty) Divider(height: 0),
-              ...widget._operation.parameters.values
+              if (widget.operation.parameters.isNotEmpty) Divider(height: 0),
+              ...widget.operation.parameters.values
                   .map((parameter) => OperationParameterRow(
-                        widget._umlType,
-                        widget._operation,
-                        parameter,
-                        _addParameter,
+                        umlType: widget.umlType,
+                        operation: widget.operation,
+                        parameter: parameter,
+                        onAddParameter: _addParameter,
                         key: Key(parameter.id),
                         focusNode: _focusNodes[parameter.id],
                       )),
@@ -104,22 +108,22 @@ class _OperationRowState extends NamedElementState<OperationRow> {
       );
 
   void _editOperation(BuildContext context, EditOperationFunction f) =>
-      f(widget._operation);
+      f(widget.operation);
 
   void _operationAction(BuildContext context, Either<MoveType, int> action) {
     if (action.isLeft) {
-      widget._umlType.moveOperation(widget._operation, action.left);
+      widget.umlType.moveOperation(widget.operation, action.left);
     } else if (action.right == 0) {
       _addParameter();
     } else {
-      widget._umlType.removeOperation(widget._operation);
+      widget.umlType.removeOperation(widget.operation);
     }
   }
 
   void _addParameter() {
     // TODO: add at location
     final newParameter = UMLOperationParameter();
-    widget._operation.addParameter(newParameter);
+    widget.operation.addParameter(newParameter);
     final focusNode = FocusNode();
     _focusNodes[newParameter.id] = focusNode;
     focusNode.requestFocus();

@@ -116,17 +116,21 @@ class _TypeScreenState extends NamedElementState<TypeScreen> {
                       TypeScreenSection('Attributes', 'Add attribute',
                           children: umlType.attributes.values
                               .map((attribute) => AttributeRow(
-                                  umlType, attribute,
-                                  key: Key(attribute.id),
-                                  focusNode: _focusNodes[attribute.id]))
+                                    umlType: umlType,
+                                    attribute: attribute,
+                                    key: Key(attribute.id),
+                                    focusNode: _focusNodes[attribute.id],
+                                  ))
                               .toList(),
                           onAddButtonPressed: _addAttribute),
                       TypeScreenSection('Operations', 'Add operation',
                           children: umlType.operations.values
                               .map((operation) => OperationRow(
-                                  umlType, operation,
-                                  key: Key(operation.id),
-                                  focusNode: _focusNodes[operation.id]))
+                                    umlType: umlType,
+                                    operation: operation,
+                                    key: Key(operation.id),
+                                    focusNode: _focusNodes[operation.id],
+                                  ))
                               .toList(),
                           onAddButtonPressed: _addOperation),
                       TypeScreenSection('Relationships', 'Add relationship',

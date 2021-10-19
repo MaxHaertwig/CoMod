@@ -16,15 +16,19 @@ import 'package:provider/provider.dart';
 typedef EditAttributeFunction = void Function(UMLAttribute);
 
 class AttributeRow extends StatefulWidget {
-  final UMLType _umlType;
-  final UMLAttribute _attribute;
+  final UMLType umlType;
+  final UMLAttribute attribute;
   final FocusNode? focusNode;
 
-  AttributeRow(this._umlType, this._attribute, {Key? key, this.focusNode})
+  AttributeRow(
+      {required this.umlType,
+      required this.attribute,
+      Key? key,
+      this.focusNode})
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _AttributeRowState(_attribute);
+  State<StatefulWidget> createState() => _AttributeRowState(attribute);
 }
 
 class _AttributeRowState extends NamedElementState<AttributeRow> {
@@ -33,9 +37,9 @@ class _AttributeRowState extends NamedElementState<AttributeRow> {
   @override
   Widget build(BuildContext context) => Selector<Model, UMLAttribute>(
         selector: (_, model) =>
-            (model.umlModel.types[widget._umlType.id] ?? widget._umlType)
-                .attributes[widget._attribute.id] ??
-            widget._attribute,
+            (model.umlModel.types[widget.umlType.id] ?? widget.umlType)
+                .attributes[widget.attribute.id] ??
+            widget.attribute,
         shouldRebuild: (previous, next) => next != previous,
         builder: (context, attribute, __) => Card(
           margin: const EdgeInsets.symmetric(vertical: 4),
@@ -64,11 +68,11 @@ class _AttributeRowState extends NamedElementState<AttributeRow> {
               const SizedBox(width: 8),
               DataTypeButton(
                 dataType: attribute.dataType,
-                onChanged: (dt) => widget._attribute.dataType = dt,
+                onChanged: (dt) => widget.attribute.dataType = dt,
               ),
               const SizedBox(width: 8),
               AttributeActionButton(
-                  widget._umlType.attributes.moveTypes(attribute.id),
+                  widget.umlType.attributes.moveTypes(attribute.id),
                   (action) => _attributeAction(context, action)),
             ],
           ),
@@ -76,13 +80,13 @@ class _AttributeRowState extends NamedElementState<AttributeRow> {
       );
 
   void _editAttribute(BuildContext context, EditAttributeFunction f) =>
-      f(widget._attribute);
+      f(widget.attribute);
 
   void _attributeAction(BuildContext context, Either<MoveType, int> action) {
     if (action.isLeft) {
-      widget._umlType.moveAttribute(widget._attribute, action.left);
+      widget.umlType.moveAttribute(widget.attribute, action.left);
     } else {
-      widget._umlType.removeAttribute(widget._attribute);
+      widget.umlType.removeAttribute(widget.attribute);
     }
   }
 }

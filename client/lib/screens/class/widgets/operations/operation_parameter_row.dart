@@ -17,20 +17,23 @@ import 'operation_action_button.dart';
 typedef EditParameterFunction = void Function(UMLOperationParameter);
 
 class OperationParameterRow extends StatefulWidget {
-  final UMLType _umlType;
-  final UMLOperation _operation;
-  final UMLOperationParameter _parameter;
-  final VoidCallback _addParameterFunction;
+  final UMLType umlType;
+  final UMLOperation operation;
+  final UMLOperationParameter parameter;
+  final VoidCallback onAddParameter;
   final FocusNode? focusNode;
 
-  OperationParameterRow(this._umlType, this._operation, this._parameter,
-      this._addParameterFunction,
-      {Key? key, this.focusNode})
+  OperationParameterRow(
+      {required this.umlType,
+      required this.operation,
+      required this.parameter,
+      required this.onAddParameter,
+      Key? key,
+      this.focusNode})
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() =>
-      _OperationParameterRowState(_parameter);
+  State<StatefulWidget> createState() => _OperationParameterRowState(parameter);
 }
 
 class _OperationParameterRowState
@@ -41,11 +44,11 @@ class _OperationParameterRowState
   @override
   Widget build(BuildContext context) => Selector<Model, UMLOperationParameter>(
       selector: (_, model) =>
-          ((model.umlModel.types[widget._umlType.id] ?? widget._umlType)
-                      .operations[widget._operation.id] ??
-                  widget._operation)
-              .parameters[widget._parameter.id] ??
-          widget._parameter,
+          ((model.umlModel.types[widget.umlType.id] ?? widget.umlType)
+                      .operations[widget.operation.id] ??
+                  widget.operation)
+              .parameters[widget.parameter.id] ??
+          widget.parameter,
       shouldRebuild: (previous, next) => next != previous,
       builder: (context, parameter, __) => Container(
             margin: EdgeInsets.only(left: 48),
@@ -77,22 +80,22 @@ class _OperationParameterRowState
                 ),
                 const SizedBox(width: 8),
                 OperationActionButton(
-                    widget._operation.parameters.moveTypes(parameter.id),
+                    widget.operation.parameters.moveTypes(parameter.id),
                     (action) => _parameterAction(context, action)),
               ],
             ),
           ));
 
   void _editParameter(BuildContext context, EditParameterFunction f) =>
-      f(widget._parameter);
+      f(widget.parameter);
 
   void _parameterAction(BuildContext context, Either<MoveType, int> action) {
     if (action.isLeft) {
-      widget._operation.moveParameter(widget._parameter, action.left);
+      widget.operation.moveParameter(widget.parameter, action.left);
     } else if (action.right == 0) {
-      widget._addParameterFunction(); // TODO: index
+      widget.onAddParameter(); // TODO: index
     } else {
-      widget._operation.removeParameter(widget._parameter);
+      widget.operation.removeParameter(widget.parameter);
     }
   }
 }
