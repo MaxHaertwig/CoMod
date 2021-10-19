@@ -182,11 +182,33 @@ class _TypeScreenState extends NamedElementState<TypeScreen> {
     }
   }
 
-  void _deleteType(BuildContext context) {
-    if (!widget.umlType.isEmpty) {
-      final model = Provider.of<Model>(context, listen: false);
-      model.umlModel.removeType(widget.umlType);
+  void _deleteType(BuildContext parentContext) {
+    if (widget.umlType.isEmpty) {
+      Navigator.pop(parentContext);
+      return;
     }
-    Navigator.pop(context);
+
+    showDialog(
+      context: parentContext,
+      builder: (context) => AlertDialog(
+        title: Text('Delete "${widget.umlType.name}"?'),
+        content: const Text(
+            'Deleting this type will remove it as supertype, delete the relationships it is part of, and set attributes and operation parameters whose data type it is to string.',
+            style: TextStyle(fontSize: 16)),
+        actions: [
+          TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context)),
+          TextButton(
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                final model = Provider.of<Model>(parentContext, listen: false);
+                model.umlModel.removeType(widget.umlType);
+                Navigator.pop(context);
+                Navigator.pop(parentContext);
+              })
+        ],
+      ),
+    );
   }
 }
