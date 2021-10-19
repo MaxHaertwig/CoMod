@@ -52,8 +52,17 @@ class RelationshipIndicator extends StatelessWidget {
                             : _AggregationCompositionPainter(
                                 relationship.type, reversed)),
             if (associationClass != null) const SizedBox(width: 3),
-            if (associationClass == null)
-              Text(relationship.name, style: const TextStyle(fontSize: 10)),
+            if (associationClass == null && relationship.name.isNotEmpty)
+              Column(
+                children: [
+                  if (relationship.type == UMLRelationshipType.association &&
+                      reversed)
+                    Container(
+                        height: 12,
+                        child: const Icon(Icons.arrow_drop_up, size: 16)),
+                  Text(relationship.name, style: const TextStyle(fontSize: 10)),
+                ],
+              ),
           ],
         ),
         TypeLink(target, TypeLinkSize.regular, false, () => onTap(target)),

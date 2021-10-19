@@ -61,7 +61,6 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
                         left: 0,
                         right: 0,
                         child: Container(
-                          width: 80,
                           height: 20,
                           child: isAssociationWithClass
                               ? PopupMenuButton(
@@ -103,6 +102,13 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
                           reversed: widget.reversed,
                           onSelected: (newType) =>
                               _newTypeSelected(newType, umlModel)),
+                      if (widget.relationship.type ==
+                              UMLRelationshipType.association &&
+                          widget.reversed)
+                        const Positioned(
+                            top: -3,
+                            left: 8,
+                            child: Icon(Icons.arrow_left, size: 20)),
                     ],
                   ),
                 ),
