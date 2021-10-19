@@ -77,7 +77,8 @@ class _OperationRowState extends NamedElementState<OperationRow> {
                   const Text(':'),
                   const SizedBox(width: 8),
                   DataTypeButton(
-                    operation.returnType,
+                    dataType: operation.returnType,
+                    isReturnType: true,
                     onChanged: (dt) => _editOperation(
                         context, (operation) => operation.returnType = dt),
                   ),

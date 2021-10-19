@@ -63,7 +63,7 @@ class _AttributeRowState extends NamedElementState<AttributeRow> {
               const Text(':'),
               const SizedBox(width: 8),
               DataTypeButton(
-                attribute.dataType,
+                dataType: attribute.dataType,
                 onChanged: (dt) => widget._attribute.dataType = dt,
               ),
               const SizedBox(width: 8),

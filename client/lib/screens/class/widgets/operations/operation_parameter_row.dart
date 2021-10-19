@@ -71,7 +71,7 @@ class _OperationParameterRowState
                 const Text(':'),
                 const SizedBox(width: 8),
                 DataTypeButton(
-                  parameter.type,
+                  dataType: parameter.type,
                   onChanged: (dt) => _editParameter(
                       context, (parameter) => parameter.type = dt),
                 ),

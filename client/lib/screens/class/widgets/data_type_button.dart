@@ -10,7 +10,10 @@ class DataTypeButton extends StatelessWidget {
   final bool isReturnType;
   final OnChangedFunction? onChanged;
 
-  DataTypeButton(this.dataType, {this.isReturnType = false, this.onChanged});
+  DataTypeButton(
+      {required this.dataType,
+      this.isReturnType = false,
+      required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
