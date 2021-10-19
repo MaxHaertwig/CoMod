@@ -27,26 +27,7 @@ class RelationshipIndicator extends StatelessWidget {
       children: [
         Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                const SizedBox(height: 4),
-                Text(
-                    (reversed
-                            ? relationship.toMultiplicity
-                            : relationship.fromMultiplicity)
-                        .xmlRepresentation,
-                    style: const TextStyle(fontSize: 10)),
-                const SizedBox(height: 10),
-                Text(
-                    (reversed
-                            ? relationship.fromMultiplicity
-                            : relationship.toMultiplicity)
-                        .xmlRepresentation,
-                    style: const TextStyle(fontSize: 10)),
-                const SizedBox(height: 4),
-              ],
-            ),
+            _MultiplicityColumn(reversed: reversed, relationship: relationship),
             if (relationship.fromMultiplicity.isNotEmpty ||
                 relationship.toMultiplicity.isNotEmpty)
               const SizedBox(width: 3),
@@ -79,6 +60,35 @@ class RelationshipIndicator extends StatelessWidget {
       ],
     );
   }
+}
+
+class _MultiplicityColumn extends StatelessWidget {
+  final bool reversed;
+  final UMLRelationship relationship;
+
+  _MultiplicityColumn({required this.reversed, required this.relationship});
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          const SizedBox(height: 4),
+          Text(
+              (reversed
+                      ? relationship.toMultiplicity
+                      : relationship.fromMultiplicity)
+                  .xmlRepresentation,
+              style: const TextStyle(fontSize: 10)),
+          const SizedBox(height: 10),
+          Text(
+              (reversed
+                      ? relationship.fromMultiplicity
+                      : relationship.toMultiplicity)
+                  .xmlRepresentation,
+              style: const TextStyle(fontSize: 10)),
+          const SizedBox(height: 4),
+        ],
+      );
 }
 
 /// Paints a vertical line along the center axis of its canvas.
