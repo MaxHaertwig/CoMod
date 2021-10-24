@@ -2,6 +2,7 @@ import 'package:client/model/uml/uml_relationship.dart';
 import 'package:client/model/uml/uml_relationship_type.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/screens/main_screen/widgets/type_link.dart';
+import 'package:client/widgets/flipped.dart';
 import 'package:flutter/material.dart';
 
 typedef OnTapFunction = void Function(UMLType);
@@ -44,13 +45,15 @@ class RelationshipIndicator extends StatelessWidget {
                           () => onTap(associationClass!)),
                     ],
                   )
-                : CustomPaint(
-                    size: const Size(10, 40),
-                    painter:
-                        relationship.type == UMLRelationshipType.association
-                            ? _VerticalLinePainter()
-                            : _AggregationCompositionPainter(
-                                relationship.type, reversed)),
+                : Flipped(
+                    axis: reversed ? Axis.vertical : null,
+                    child: CustomPaint(
+                        size: const Size(10, 40),
+                        painter:
+                            relationship.type == UMLRelationshipType.association
+                                ? _VerticalLinePainter()
+                                : _AggregationCompositionPainter(
+                                    relationship.type))),
             if (associationClass != null) const SizedBox(width: 3),
             if (associationClass == null && relationship.name.isNotEmpty)
               Column(
@@ -131,22 +134,20 @@ class _DashedLinePainter extends CustomPainter {
 /// Paints an aggregation or composition relationship.
 class _AggregationCompositionPainter extends CustomPainter {
   final UMLRelationshipType type;
-  final bool reversed;
 
-  _AggregationCompositionPainter(this.type, this.reversed);
+  _AggregationCompositionPainter(this.type);
 
   @override
   void paint(Canvas canvas, Size size) {
     final middle = size.width / 2;
     final diamondHeight = size.width * 1.5;
-    canvas.drawLine(Offset(middle, reversed ? 0 : diamondHeight),
-        Offset(middle, size.height - (reversed ? diamondHeight : 0)), Paint());
-    final double diamondStart = reversed ? size.height - diamondHeight : 0;
+    canvas.drawLine(Offset(middle, diamondHeight),
+        Offset(middle, size.height - 0), Paint());
     final path = Path()
-      ..moveTo(middle, diamondStart)
-      ..lineTo(0, diamondStart + diamondHeight / 2)
-      ..lineTo(middle, diamondStart + diamondHeight)
-      ..lineTo(size.width, diamondStart + diamondHeight / 2)
+      ..moveTo(middle, 0)
+      ..lineTo(0, diamondHeight / 2)
+      ..lineTo(middle, diamondHeight)
+      ..lineTo(size.width, diamondHeight / 2)
       ..close();
     canvas.drawPath(
         path,

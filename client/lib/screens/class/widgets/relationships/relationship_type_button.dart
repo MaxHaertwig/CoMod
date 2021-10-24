@@ -20,7 +20,7 @@ class RelationshipTypeButton extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               child: Flipped(
-                  flipped: reversed,
+                  axis: reversed ? Axis.horizontal : null,
                   child: CustomPaint(
                       size: Size(constraints.maxWidth, 10),
                       painter: _RelationshipTypePainter(type))),
@@ -31,7 +31,7 @@ class RelationshipTypeButton extends StatelessWidget {
                     value: type,
                     child: Row(children: [
                       Flipped(
-                          flipped: reversed,
+                          axis: reversed ? Axis.horizontal : null,
                           child: CustomPaint(
                               size: const Size(20, 10),
                               painter: _RelationshipTypePainter(type))),
