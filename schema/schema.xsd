@@ -130,9 +130,10 @@
   <xs:simpleType name="relationshipType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="association" />
-      <xs:enumeration value="associationWithClass" />
       <xs:enumeration value="aggregation" />
       <xs:enumeration value="composition" />
+      <xs:enumeration value="associationWithClass" />
+      <xs:enumeration value="qualifiedAssociation" />
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>

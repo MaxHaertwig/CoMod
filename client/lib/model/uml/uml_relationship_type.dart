@@ -3,9 +3,10 @@ import 'package:flutter/foundation.dart';
 
 enum UMLRelationshipType {
   association,
-  associationWithClass,
   aggregation,
-  composition
+  composition,
+  associationWithClass,
+  qualifiedAssociation
 }
 
 extension UMLRelationshipTypeExt on UMLRelationshipType {
@@ -13,10 +14,16 @@ extension UMLRelationshipTypeExt on UMLRelationshipType {
       UMLRelationshipType.values
           .firstWhere((value) => describeEnum(value) == string);
 
-  String get stringRepresentation =>
-      this == UMLRelationshipType.associationWithClass
-          ? 'Association with class'
-          : describeEnum(this).capitalize();
+  String get stringRepresentation {
+    switch (this) {
+      case UMLRelationshipType.associationWithClass:
+        return 'Association with class';
+      case UMLRelationshipType.qualifiedAssociation:
+        return 'Qualified association';
+      default:
+        return describeEnum(this).capitalize();
+    }
+  }
 
   String get xmlRepresentation => describeEnum(this);
 }
