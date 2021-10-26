@@ -4,6 +4,7 @@ import 'package:client/model/uml/uml_type.dart';
 import 'package:client/screens/main_screen/widgets/type_link.dart';
 import 'package:client/widgets/flipped.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 typedef OnTapFunction = void Function(UMLType);
 
@@ -22,13 +23,17 @@ class RelationshipIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final qualified =
+        relationship.type == UMLRelationshipType.qualifiedAssociation;
     final reversed = relationship.fromID == target.id &&
         relationship.fromID != relationship.toID;
     return Column(
       children: [
         Row(
           children: [
-            _MultiplicityColumn(reversed: reversed, relationship: relationship),
+            if (!qualified)
+              _MultiplicityColumn(
+                  reversed: reversed, relationship: relationship),
             if (relationship.fromMultiplicity.isNotEmpty ||
                 relationship.toMultiplicity.isNotEmpty)
               const SizedBox(width: 3),
@@ -45,17 +50,25 @@ class RelationshipIndicator extends StatelessWidget {
                           () => onTap(associationClass!)),
                     ],
                   )
-                : Flipped(
-                    axis: reversed ? Axis.vertical : null,
-                    child: CustomPaint(
-                        size: const Size(10, 40),
-                        painter:
-                            relationship.type == UMLRelationshipType.association
+                : qualified
+                    ? _QualifiedRelationshipIndicator(
+                        name: relationship.name,
+                        multiplicity:
+                            relationship.toMultiplicity.xmlRepresentation,
+                        reversed: reversed)
+                    : Flipped(
+                        axis: reversed ? Axis.vertical : null,
+                        child: CustomPaint(
+                            size: const Size(10, 40),
+                            painter: relationship.type ==
+                                    UMLRelationshipType.association
                                 ? _VerticalLinePainter()
                                 : _AggregationCompositionPainter(
                                     relationship.type))),
             if (associationClass != null) const SizedBox(width: 3),
-            if (associationClass == null && relationship.name.isNotEmpty)
+            if (associationClass == null &&
+                relationship.name.isNotEmpty &&
+                !qualified)
               Column(
                 children: [
                   if (relationship.type == UMLRelationshipType.association &&
@@ -152,11 +165,67 @@ class _AggregationCompositionPainter extends CustomPainter {
     canvas.drawPath(
         path,
         type == UMLRelationshipType.aggregation
-            ? (Paint()..style = PaintingStyle.stroke)
+            ? (Paint()..color = Colors.white)
             : Paint());
+    if (type == UMLRelationshipType.aggregation) {
+      canvas.drawPath(path, Paint()..style = PaintingStyle.stroke);
+    }
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) =>
       oldDelegate is _AggregationCompositionPainter && type != oldDelegate.type;
+}
+
+class _QualifiedRelationshipIndicator extends StatelessWidget {
+  final String name, multiplicity;
+  final bool reversed;
+
+  _QualifiedRelationshipIndicator(
+      {required this.name, required this.multiplicity, required this.reversed});
+
+  @override
+  Widget build(BuildContext context) {
+    const thinBlack = BorderSide(width: 0);
+    const thinGrey = BorderSide(width: 0, color: Colors.grey);
+    return Column(
+      verticalDirection:
+          reversed ? VerticalDirection.up : VerticalDirection.down,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: reversed ? thinBlack : thinGrey,
+                left: thinBlack,
+                right: thinBlack,
+                bottom: reversed ? thinGrey : thinBlack,
+              )),
+          child: Text(name.isEmpty ? '   ' : name,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 10)),
+        ),
+        multiplicity.isEmpty
+            ? CustomPaint(
+                size: const Size(1, 27), painter: _VerticalLinePainter())
+            : Row(
+                crossAxisAlignment: reversed
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.end,
+                children: [
+                  Opacity(
+                    opacity: 0,
+                    child: Text(multiplicity,
+                        style: const TextStyle(fontSize: 10)),
+                  ),
+                  CustomPaint(
+                      size: const Size(1, 27), painter: _VerticalLinePainter()),
+                  const SizedBox(width: 2),
+                  Text(multiplicity, style: const TextStyle(fontSize: 10)),
+                ],
+              ),
+      ],
+    );
+  }
 }

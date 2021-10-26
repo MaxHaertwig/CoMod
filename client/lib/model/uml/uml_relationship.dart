@@ -107,9 +107,12 @@ class UMLRelationship extends NamedUMLElement {
         setAssociationClassID('', true); // triggers update (in transaction)
       }
       _type = newType;
-      if (_type == UMLRelationshipType.associationWithClass) {
+      if (newType == UMLRelationshipType.associationWithClass) {
         setAssociationClassID(
             newAssociationClassID, true); // triggers update (in transaction)
+      } else if (newType == UMLRelationshipType.qualifiedAssociation) {
+        fromMultiplicity = UMLRelationshipMultiplicity
+            .empty(); // triggers update (in transaction)
       }
       model?.updateAttribute(id, _typeAttribute, _type.xmlRepresentation);
       if (!inTransaction) {

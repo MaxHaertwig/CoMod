@@ -62,6 +62,9 @@ class _RelationshipTypePainter extends CustomPainter {
       case UMLRelationshipType.associationWithClass:
         _drawAssociationWithClass(canvas, size);
         break;
+      case UMLRelationshipType.qualifiedAssociation:
+        _drawQualifiedRelationship(canvas, size);
+        break;
       default:
         _drawAggregationOrComposition(canvas, size);
         break;
@@ -78,6 +81,16 @@ class _RelationshipTypePainter extends CustomPainter {
             width: size.height,
             height: size.height / 2),
         strokePaint);
+  }
+
+  void _drawQualifiedRelationship(Canvas canvas, Size size) {
+    canvas.drawLine(Offset.zero, Offset(size.height, 0), strokePaint);
+    canvas.drawLine(
+        Offset(size.height, 0), Offset(size.height, size.height), strokePaint);
+    canvas.drawLine(
+        Offset(0, size.height), Offset(size.height, size.height), strokePaint);
+    canvas.drawLine(Offset(size.height, size.height / 2),
+        Offset(size.width, size.height / 2), strokePaint);
   }
 
   void _drawAggregationOrComposition(Canvas canvas, Size size) {

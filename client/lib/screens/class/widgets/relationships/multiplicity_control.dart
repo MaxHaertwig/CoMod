@@ -1,6 +1,7 @@
 import 'package:client/logic/upper_multiplicity_text_input_formatter.dart';
 import 'package:client/model/uml/uml_relationship.dart';
 import 'package:client/model/uml/uml_relationship_multiplicity.dart';
+import 'package:client/model/uml/uml_relationship_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -64,6 +65,14 @@ class _MultiplicityControlState extends State<MultiplicityControl> {
     final multiplicity = widget.isFromMultiplicity
         ? widget.relationship.fromMultiplicity
         : widget.relationship.toMultiplicity;
+    final enabled =
+        widget.relationship.type != UMLRelationshipType.qualifiedAssociation ||
+            !widget.isFromMultiplicity;
+    if (!enabled) {
+      // Workaround
+      _lowerTextEditingController.text = '';
+      _upperTextEditingController.text = '';
+    }
     return Row(
       children: [
         SizedBox(
@@ -72,6 +81,7 @@ class _MultiplicityControlState extends State<MultiplicityControl> {
             autocorrect: false,
             controller: _lowerTextEditingController,
             decoration: multiTextFieldDecoration,
+            enabled: enabled,
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp('[0-9]'))
             ],
@@ -87,7 +97,11 @@ class _MultiplicityControlState extends State<MultiplicityControl> {
         const SizedBox(width: 2),
         Text('..',
             style: TextStyle(
-                color: multiplicity.isValid ? Colors.black : Colors.red)),
+                color: !multiplicity.isValid
+                    ? Colors.red
+                    : enabled
+                        ? Colors.black
+                        : Colors.grey)),
         const SizedBox(width: 2),
         SizedBox(
           width: 20,
@@ -95,6 +109,7 @@ class _MultiplicityControlState extends State<MultiplicityControl> {
             autocorrect: false,
             controller: _upperTextEditingController,
             decoration: multiTextFieldDecoration,
+            enabled: enabled,
             inputFormatters: [UpperMultiplicityTextInputFormatter()],
             style: TextStyle(
                 color: multiplicity.isValid ? Colors.black : Colors.red),
