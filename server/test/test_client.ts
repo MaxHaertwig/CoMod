@@ -58,18 +58,23 @@ export class TestClient {
   }
 
   private handleConnectResponse(response: ConnectResponse): void {
+    const update = response.getUpdate_asU8();
     if (this._yDoc) {
-      yjs.applyUpdate(this._yDoc, response.getUpdate_asU8());
+      if (update.length) {
+        yjs.applyUpdate(this._yDoc, update);
+      }
       this.state = ClientState.Syncing;
 
       const syncRequest = new SyncRequest();
-      syncRequest.setUpdate(yjs.encodeStateAsUpdate(this._yDoc, response.getStateVector_asU8()));
+      const stateVector = response.getStateVector_asU8();
+      const data = yjs.encodeStateAsUpdate(this._yDoc, stateVector.length ? stateVector : undefined);
+      syncRequest.setUpdate(data);
       const request = new CollaborationRequest();
       request.setSyncRequest(syncRequest);
       this.send(request);
-    } else if (response.getUpdate_asU8().length) {
+    } else if (update.length) {
       this._yDoc = new yjs.Doc();
-      yjs.applyUpdate(this._yDoc!, response.getUpdate_asU8());
+      yjs.applyUpdate(this._yDoc!, update);
       this.state = ClientState.Connected;
     }
   }

@@ -140,4 +140,24 @@ describe('Server', () => {
     assert.strictEqual(changedDoc.getText(TEXT_ID).toString(), prefix + suffix);
     assert.strictEqual(server.session(uuid)!.yDoc.getText(TEXT_ID).toString(), prefix + suffix);
   });
+
+  it('broadcasts sync data to other clients', async () => {
+    const sessionUUID = uuidv4();
+    const yDoc1 = new yjs.Doc();
+    const prefix = 'A';
+    yDoc1.getText(TEXT_ID).insert(0, prefix);
+
+    const ws1 = await openTestClient(yDoc1);
+    await ws1.connect(sessionUUID);
+
+    const yDoc2 = new yjs.Doc();
+    yjs.applyUpdate(yDoc2, yjs.encodeStateAsUpdate(yDoc1));
+    const suffix = 'B';
+    yDoc2.getText(TEXT_ID).insert(1, suffix);
+
+    const ws2 = await openTestClient(yDoc2);
+    await ws2.connect(sessionUUID);
+
+    assert.strictEqual(yDoc1.getText(TEXT_ID).toString(), prefix + suffix);
+  });
 });

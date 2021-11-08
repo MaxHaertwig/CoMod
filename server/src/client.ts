@@ -122,12 +122,13 @@ export class Client {
       return;
     }
 
+    const update = request.getUpdate_asU8();
     if (!this.session) {
-      this.session = new Session(this.sessionUUID!, request.getUpdate_asU8());
+      this.session = new Session(this.sessionUUID!, update);
       this.session.addParticipant(this);
       this.sessionManager.addSession(this.session);
-    } else if (request.getUpdate_asU8().length) {
-      yjs.applyUpdate(this.session.yDoc, request.getUpdate_asU8());
+    } else if (update.length) {
+      this.session.processUpdate(update, this.id);
     }
 
     const response = new CollaborationResponse();

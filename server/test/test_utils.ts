@@ -8,8 +8,8 @@ import { WSCloseCode } from '../src/ws_close_code';
 export const PORT = 3000;
 export const TEXT_ID = 'text';
 
-export async function openTestClient(): Promise<TestClient> {
-  const client = new TestClient(`ws://localhost:${PORT}`);
+export async function openTestClient(yDoc: yjs.Doc|undefined = undefined): Promise<TestClient> {
+  const client = new TestClient(`ws://localhost:${PORT}`, yDoc);
   await client.open();
   return client;
 }
