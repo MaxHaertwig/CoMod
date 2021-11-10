@@ -1,3 +1,4 @@
+import 'package:client/model/constants.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,8 @@ class SupertypesButton extends StatelessWidget {
             _umlType.supertypes.isEmpty
                 ? 'None'
                 : _umlType.supertypesLabel, // May overflow
-            style: TextStyle(
-                color: candidates.isEmpty ? Colors.grey : Colors.blue)),
+            style:
+                TextStyle(color: candidates.isEmpty ? Colors.grey : appColor)),
       ),
       itemBuilder: (_) => candidates
           .map((type) =>

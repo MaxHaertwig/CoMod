@@ -1,3 +1,4 @@
+import 'package:client/model/constants.dart';
 import 'package:client/model/uml/uml_visibility.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ class VisibilityButton extends StatelessWidget {
             child: Text(
               visibility.symbol,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, color: Colors.blue),
+              style: const TextStyle(fontSize: 18, color: appColor),
             ),
           ),
         ),

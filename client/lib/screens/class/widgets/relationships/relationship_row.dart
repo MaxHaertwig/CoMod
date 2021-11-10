@@ -1,5 +1,6 @@
 import 'package:client/logic/diff_text_input_formatter.dart';
 import 'package:client/logic/named_element_state.dart';
+import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_model.dart';
 import 'package:client/model/uml/uml_relationship.dart';
@@ -70,8 +71,7 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
                                               .relationship.associationClassID]!
                                           .name,
                                       textAlign: TextAlign.center,
-                                      style:
-                                          const TextStyle(color: Colors.blue)),
+                                      style: const TextStyle(color: appColor)),
                                   itemBuilder: (_) => umlModel.types.values
                                       .map((type) => PopupMenuItem(
                                           value: type.id,
@@ -136,7 +136,7 @@ class _RelationshipRowState extends NamedElementState<RelationshipRow> {
                               : widget.relationship.toID]!
                           .name,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.blue),
+                      style: const TextStyle(color: appColor),
                     ),
                   ),
                 ),

@@ -1,3 +1,4 @@
+import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_data_type.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class DataTypeButton extends StatelessWidget {
           child: Text(
             dataType.stringRepresentation(umlModel),
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.blue),
+            style: const TextStyle(color: appColor),
           ),
         ),
       ),

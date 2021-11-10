@@ -1,3 +1,4 @@
+import 'package:client/model/constants.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/model/uml/uml_type_type.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class TypeTypeButton extends StatelessWidget {
           height: 44,
           alignment: Alignment.centerLeft,
           child: Text(_umlType.type.stringRepresentation,
-              style: TextStyle(color: Colors.blue)),
+              style: TextStyle(color: appColor)),
         ),
         itemBuilder: (_) => UMLTypeType.values
             .map((type) => PopupMenuItem(
