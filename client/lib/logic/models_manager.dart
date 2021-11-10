@@ -12,6 +12,7 @@ class ModelsManager {
   static const _modelsFile = 'models.json';
   static Map<String, String>? _models; // uuid -> name
 
+  /// Returns a sorted list of all models.
   static Future<List<Model>> allModels() async {
     final directory = await _documentsDirectory;
     if (_models == null) {
@@ -27,7 +28,8 @@ class ModelsManager {
     return _models!.entries
         .map(
             (entry) => Model('${directory.path}/${entry.key}.yjs', entry.value))
-        .toList();
+        .toList()
+      ..sort();
   }
 
   static Future<String> path(String uuid) async =>
