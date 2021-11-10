@@ -19,3 +19,5 @@ const appColor = MaterialColor(0xFF1163A8, {
 const _appColorR = 17;
 const _appColorG = 99;
 const _appColorB = 168;
+
+const menuTextColor = Color(0xFF00305D);
