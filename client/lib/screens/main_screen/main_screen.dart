@@ -1,3 +1,4 @@
+import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/screens/class/type_screen.dart';
@@ -100,6 +101,7 @@ class MainScreen extends StatelessWidget {
       content: Text('Connected to collaboration session'),
       action: SnackBarAction(
         label: 'Copy link',
+        textColor: Colors.blue,
         onPressed: () =>
             Clipboard.setData(ClipboardData(text: _model.sessionLink)),
       ),

@@ -54,7 +54,8 @@ class _JoinCollaborationSessionDialogState
             onPressed: () => Navigator.pop(context),
           ),
           TextButton(
-            child: const Text('Join'),
+            child: const Text('Join',
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             onPressed: _isJoinButtonEnabled
                 ? () {
                     final trimmedText = _textEditingController.text.trim();

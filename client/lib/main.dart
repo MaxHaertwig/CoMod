@@ -12,5 +12,6 @@ class MyApp extends StatelessWidget {
         title: 'Client',
         theme: ThemeData(primarySwatch: appColor),
         home: ModelsScreen(),
+        debugShowCheckedModeBanner: false,
       );
 }
