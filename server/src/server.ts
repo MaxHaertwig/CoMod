@@ -4,10 +4,17 @@ import { CollaborationRequest } from './pb/collaboration_pb';
 import { Session } from './session';
 import { WSCloseCode } from './ws_close_code';
 
+/** Instance of a running server. */
 export class Server {
   private sessions = new Map<string, Session>();
   private wss: WebSocket.Server;
 
+  /**
+   * Initializes a new `Server` instance.
+   * 
+   * @param port Port the session should be running on.
+   * @param callback Callback that will be called when the server has been started.
+   */
   constructor(port?: number, callback: (() => void) | undefined = undefined) {
     this.wss = new WebSocket.Server({ port: port || 3000 }, callback);
     this.wss.on('connection', ws => {
@@ -40,14 +47,17 @@ export class Server {
     });
   }
 
+  /** Removes all clients and calls the given `callback`. */
   close(callback?: (err?: Error) => void): void {
     this.wss.close(callback);
   }
 
+  /** Provides the session with the given `uuid` (if it exists). */
   session(uuid: string): Session | undefined {
     return this.sessions.get(uuid);
   }
 
+  /** Adds a new session. */
   addSession(session: Session): void {
     this.sessions.set(session.uuid, session);
   }

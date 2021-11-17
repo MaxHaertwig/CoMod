@@ -16,6 +16,7 @@ interface SessionManager {
   addSession(session: Session): void;
 }
 
+/** A client connected to the server. */
 export class Client {
   readonly id = uuidv4();
 
@@ -34,6 +35,7 @@ export class Client {
     return this.id.split('-')[0];
   }
 
+  /** Sends a response to the client. */
   send(response: CollaborationResponse): void {
     this.ws.send(response.serializeBinary(), error => {
       if (error) {
@@ -42,16 +44,19 @@ export class Client {
     });
   }
 
+  /** Closes the connection to the client. */
   close(code: WSCloseCode, reason: string): void {
     console.log(`Client ${this.shortID} closing channel (${code}: ${reason})`);
     this.remove();
     this.ws.close(code, reason);
   }
 
+  /** Removes the client from its session. */
   remove(): void {
     this.session?.removeParticipant(this.id);
   }
 
+  /** Handles an incoming request. */
   handleRequest(request: CollaborationRequest): void {
     console.log(`Client ${this.shortID}(${this.state}) received ${request.getMessageCase()}`);
     switch (this.state) {
@@ -80,7 +85,7 @@ export class Client {
     }
   }
 
-  handleConnectRequest(request: ConnectRequest): void {
+  private handleConnectRequest(request: ConnectRequest): void {
     console.log(`Client ${this.shortID} handling ConnectRequest`);
 
     if (!request.getUuid()) {
@@ -114,7 +119,7 @@ export class Client {
     this.send(response);
   }
 
-  handleSyncRequest(request: SyncRequest): void {
+  private handleSyncRequest(request: SyncRequest): void {
     console.log(`Client ${this.shortID} handling SyncRequest`);
 
     if (!this.session && !request.getUpdate_asU8().length) {
