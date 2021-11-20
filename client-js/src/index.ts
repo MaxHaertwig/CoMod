@@ -8,6 +8,7 @@ let inTransaction = false;
 let activeModel: yjs.XmlElement;
 let mapping: Map<string, yjs.XmlElement>;
 
+/** Creates a new model. */
 export function newModel(uuid: string): void {
   const yDoc = new yjs.Doc({ guid: uuid });
   const model = new yjs.XmlElement('model');
@@ -16,6 +17,14 @@ export function newModel(uuid: string): void {
   serializeModel(yDoc);
 }
 
+/**
+ * Loads a model.
+ * 
+ * @param uuid The model's UUID.
+ * @param base64Data The model's serialized data.
+ * @param shouldSerialize Whether the model should be serialized after loading.
+ * @returns The loaded model as an XML string.
+ */
 export function loadModel(uuid: string, base64Data: string, shouldSerialize: boolean): string {
   activeDoc?.destroy();
 
@@ -50,10 +59,18 @@ function addToMapping(element: yjs.XmlElement) {
     .forEach(element => addToMapping(element as yjs.XmlElement));
 }
 
+/** Returns the current model's state vector. */
 export function stateVector(): string {
   return Base64.fromUint8Array(yjs.encodeStateVector(activeDoc));
 }
 
+/**
+ * Performs the sync procedure.
+ * 
+ * @param serverStateVector The state vector received from the server.
+ * @param serverUpdate The update received from the server.
+ * @returns An optional update to be sent to the server.
+ */
 export function sync(serverStateVector?: string, serverUpdate?: string): string | undefined {
   if (serverUpdate) {
     yjs.applyUpdate(activeDoc, Base64.toUint8Array(serverUpdate), activeDoc);
@@ -63,21 +80,35 @@ export function sync(serverStateVector?: string, serverUpdate?: string): string 
   return update ? Base64.fromUint8Array(update) : undefined;
 }
 
+/** Processes a remote update. */
 export function processUpdate(data: string): void {
   // TODO: report diff to Flutter; yjs observe
   yjs.applyUpdate(activeDoc, Base64.toUint8Array(data), activeDoc);
   serializeModel();
 }
 
+/** Begins a transaction. */
 export function beginTransaction(): void {
   inTransaction = true;
 }
 
+/** Ends a transaction. */
 export function endTransaction(): void {
   inTransaction = false;
   serializeModel();
 }
 
+/**
+ * Inserts an element into the model.
+ * 
+ * @param parentID ID of the parent to insert the element into.
+ * @param parentTagIndex If positive, the new element is inserted into the element at that parent's index.
+ * @param id ID of the new element.
+ * @param nodeName Node name (XML tag name) of the new element.
+ * @param name Name (contained text) of the new element.
+ * @param attributes Attributes of the new element (optional).
+ * @param tags (Empty) XML tags to add to the new element (optional).
+ */
 export function insertElement(parentID: string, parentTagIndex: number, id: string, nodeName: string, name: string, attributes?: [string, string][], tags?: string[]): void {
   const element = new yjs.XmlElement(nodeName);
   element.setAttribute('id', id);
@@ -103,6 +134,7 @@ export function insertElement(parentID: string, parentTagIndex: number, id: stri
   }
 }
 
+/** Deletes the elements with the given IDs from the model. */
 export function deleteElements(ids: string[]): void {
   if (ids.length === 1) {
     deleteElement(ids[0]);
@@ -123,6 +155,14 @@ function deleteElement(id: string) {
   mapping.delete(id);
 }
 
+/**
+ * Updates some text in the model.
+ * 
+ * @param id ID of the text's parent element.
+ * @param position The index within the text.
+ * @param deleteLength The number of characters to delete at `position` (to the right).
+ * @param insertString The string to insert at `position`.
+ */
 export function updateText(id: string, position: number, deleteLength: number, insertString: string): void {
   const element = mapping.get(id)!;
   let text = element.get(0);
@@ -147,6 +187,7 @@ export function updateText(id: string, position: number, deleteLength: number, i
   }
 }
 
+/** Updates an attribute in the model. */
 export function updateAttribute(id: string, attribute: string, value: string): void {
   mapping.get(id)!.setAttribute(attribute, value);
   if (!inTransaction) {
@@ -154,10 +195,12 @@ export function updateAttribute(id: string, attribute: string, value: string): v
   }
 }
 
+/** The type of a move of an element within its parent. */
 export enum MoveType {
   ToTop = 0, Up, Down, ToBottom
 }
 
+/** Moves an element within its parent. */
 export function moveElement(id: string, moveType: MoveType): void {
   const element = mapping.get(id)!;
   const clone = element.clone() as yjs.XmlElement;
@@ -186,6 +229,7 @@ export function moveElement(id: string, moveType: MoveType): void {
 
 let observationFunction: (arg0: yjs.YEvent[], arg1: yjs.Transaction) => void;
 
+/** Starts observing remote changes. */
 export function startObservingRemoteChanges(): void {
   observationFunction = (events, transaction) => {
     if (transaction.local) {
@@ -262,6 +306,7 @@ export function startObservingRemoteChanges(): void {
   activeModel.observeDeep(observationFunction);
 }
 
+/** Stops observing remote changes. */
 export function stopObservingRemoteChanges(): void {
   activeModel.unobserveDeep(observationFunction);
 }
