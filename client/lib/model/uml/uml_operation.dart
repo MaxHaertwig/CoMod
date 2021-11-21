@@ -75,8 +75,8 @@ class UMLOperation extends NamedUMLElement {
   UMLDataType get returnType => _returnType;
 
   set returnType(UMLDataType dataType) {
-    if (dataType != returnType) {
-      returnType = dataType;
+    if (dataType != _returnType) {
+      _returnType = dataType;
       model?.updateAttribute(
           id, _returnTypeAttribute, dataType.xmlRepresentation);
     }
