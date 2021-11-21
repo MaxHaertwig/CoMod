@@ -35,6 +35,7 @@ class _EditModelScreenState extends State<EditModelScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
+              tooltip: 'Done',
               onPressed: _isValid ? _done : null,
             )
           ],
@@ -46,10 +47,8 @@ class _EditModelScreenState extends State<EditModelScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Name',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                const Text('Name',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 TextFormField(
                   autofocus: true,
                   decoration: const InputDecoration(hintText: 'Enter name'),
