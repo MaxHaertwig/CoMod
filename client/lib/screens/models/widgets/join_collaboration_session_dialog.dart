@@ -18,7 +18,7 @@ class _JoinCollaborationSessionDialogState
       '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
   static final _uuidRegExp = RegExp('\\b$_uuidRegex\\b', caseSensitive: false);
   static final _linkRegExp = RegExp(
-    '\\bconnect://maxhaertwig.com/thesis/$_uuidRegex\\b',
+    '\\bcollaborate://maxhaertwig.com/thesis/$_uuidRegex\\b',
     caseSensitive: false,
   );
 
@@ -59,7 +59,7 @@ class _JoinCollaborationSessionDialogState
             onPressed: _isJoinButtonEnabled
                 ? () {
                     final trimmedText = _textEditingController.text.trim();
-                    final uuid = trimmedText.startsWith('collaboration://')
+                    final uuid = trimmedText.startsWith('collaborate://')
                         ? trimmedText.split('/').last
                         : trimmedText;
                     widget.onJoinSession(uuid);

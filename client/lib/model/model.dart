@@ -36,9 +36,8 @@ class Model extends ChangeNotifier implements Comparable<Model> {
 
   bool get isSessionInProgress => _session != null;
 
-  String? get sessionLink => isSessionInProgress
-      ? 'collaboration://maxhaertwig.com/thesis/$uuid'
-      : null;
+  String? get sessionLink =>
+      isSessionInProgress ? 'collaborate://maxhaertwig.com/thesis/$uuid' : null;
 
   UMLModel get umlModel => _umlModel;
 
