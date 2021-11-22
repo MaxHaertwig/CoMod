@@ -12,6 +12,7 @@ enum ClientState {
 type OnStateChangedListener = (newState: ClientState) => void;
 type OnYDocChangedListener = (yDoc: yjs.Doc) => void;
 
+/** Testing client that understands the communication protocol. */
 export class TestClient {
   private ws: WebSocket;
 
@@ -79,22 +80,26 @@ export class TestClient {
     }
   }
 
+  /** Opens a WebSocket connection. Returns a promise that resolves when the channel has been opened. */
   async open(): Promise<void> {
     return new Promise(resolve => {
       this.ws.on('open', () => resolve());
     });
   }
 
+  /** Closes the WebSocket connection. */
   close(): void {
     this.ws.close();
   }
 
+  /** Calls `callback` when receiving a message. */
   onResponse(callback: (response: CollaborationResponse) => void): void {
     this.ws.on('message', data => {
       callback(CollaborationResponse.deserializeBinary(data as Uint8Array));
     });
   }
 
+  /** Sends the given request. */
   async send(request: CollaborationRequest): Promise<void> {
     return new Promise((resolve, reject) => {
       this.ws.send(request.serializeBinary(), error => {
@@ -107,6 +112,7 @@ export class TestClient {
     });
   }
 
+  /** Connects to the session with the given UUID. */
   async connect(uuid: string): Promise<void> {
     const connectRequest = new ConnectRequest();
     connectRequest.setUuid(uuid);
@@ -125,10 +131,12 @@ export class TestClient {
     });
   }
 
+  /** Calls `listener` whenever the client's state changes. */
   onStateChanged(listener: OnStateChangedListener): void {
     this.onStateChangedListeners.push(listener);
   }
 
+  /** Calls `listener` whenever the client's yjs document changes. */
   onYDocChanged(listener: OnYDocChangedListener): void {
     this.onYDocChangedListeners.push(listener);
   }
