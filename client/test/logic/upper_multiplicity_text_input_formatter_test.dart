@@ -1,4 +1,4 @@
-import 'package:client/logic/upper_multiplicity_text_input_formatter.dart';
+import 'package:client/logic/formatters/upper_multiplicity_text_input_formatter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-import 'package:client/logic/diff_text_input_formatter.dart';
+import 'package:client/logic/formatters/diff_text_input_formatter.dart';
 import 'package:client/logic/named_element_state.dart';
 import 'package:client/model/constants.dart';
 import 'package:client/model/model.dart';

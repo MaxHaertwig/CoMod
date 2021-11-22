@@ -1,4 +1,4 @@
-import 'package:client/logic/upper_multiplicity_text_input_formatter.dart';
+import 'package:client/logic/formatters/upper_multiplicity_text_input_formatter.dart';
 import 'package:client/model/uml/uml_relationship.dart';
 import 'package:client/model/uml/uml_relationship_multiplicity.dart';
 import 'package:client/model/uml/uml_relationship_type.dart';
