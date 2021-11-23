@@ -121,8 +121,7 @@ Future<void> _createModel(WidgetTester tester, String name) async {
   await tester.tap(find.text('Create Model'));
   await tester.pumpAndSettle();
 
-  const modelName = 'University';
-  await tester.enterText(find.byType(TextField), modelName);
+  await tester.enterText(find.byType(TextField), name);
   await tester.pumpAndSettle();
 
   await tester.tap(find.byTooltip('Done'));
