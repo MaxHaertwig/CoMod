@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:client/extensions.dart';
+import 'package:client/logic/collaboration/collaboration_session.dart';
+import 'package:client/logic/collaboration/mock_collaboration_channel.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:client/logic/collaboration_session.dart';
 import 'package:client/logic/js_bridge.dart';
 import 'package:client/logic/models_manager.dart';
 import 'package:client/model/uml/uml_element.dart';
@@ -93,7 +94,8 @@ class Model extends ChangeNotifier implements Comparable<Model> {
     await ModelsManager.deleteModel(uuid);
   }
 
-  Future<void> collaborate(OnErrorFunction onError) async {
+  Future<void> collaborate(OnErrorFunction onError,
+      {MockCollaborationChannel? mockChannel}) async {
     final completer = Completer();
     _session = CollaborationSession.joinWithModel(
       uuid,
@@ -122,6 +124,7 @@ class Model extends ChangeNotifier implements Comparable<Model> {
         }
       },
       onError: onError,
+      mockChannel: mockChannel,
     );
     _jsBridge.onLocalUpdate = _session!.sendUpdate;
     notifyListeners();

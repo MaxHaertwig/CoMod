@@ -1,4 +1,4 @@
-import 'package:client/model/constants.dart';
+import 'package:client/logic/collaboration/mock_collaboration_channel.dart';
 import 'package:client/model/model.dart';
 import 'package:client/model/uml/uml_type.dart';
 import 'package:client/screens/class/type_screen.dart';
@@ -12,8 +12,9 @@ import 'package:provider/provider.dart';
 
 class MainScreen extends StatelessWidget {
   final Model _model;
+  final MockCollaborationChannel? mockChannel;
 
-  MainScreen(this._model);
+  MainScreen(this._model, {this.mockChannel});
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider.value(
@@ -95,8 +96,10 @@ class MainScreen extends StatelessWidget {
       ),
       barrierDismissible: false,
     );
-    await _model.collaborate((error) => ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(error))));
+    await _model.collaborate(
+        (error) => ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error))),
+        mockChannel: mockChannel);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Connected to collaboration session'),
       action: SnackBarAction(

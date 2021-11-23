@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:client/extensions.dart';
-import 'package:client/logic/collaboration_session.dart';
+import 'package:client/logic/collaboration/collaboration_session.dart';
+import 'package:client/logic/collaboration/mock_collaboration_channel.dart';
 import 'package:client/logic/js_bridge.dart';
 import 'package:client/logic/models_manager.dart';
 import 'package:client/model/model.dart';
@@ -15,6 +16,10 @@ import 'package:client/widgets/no_data_view.dart';
 import 'package:flutter/material.dart';
 
 class ModelsScreen extends StatefulWidget {
+  final MockCollaborationChannel? mockChannel;
+
+  ModelsScreen({this.mockChannel});
+
   @override
   State<StatefulWidget> createState() => _ModelsScreenState();
 }
@@ -102,7 +107,10 @@ class _ModelsScreenState extends State<ModelsScreen> {
 
   void _openModel(BuildContext context, Model model) async {
     await Navigator.push(
-        context, MaterialPageRoute(builder: (_) => MainScreen(model)));
+        context,
+        MaterialPageRoute(
+            builder: (_) =>
+                MainScreen(model, mockChannel: widget.mockChannel)));
     model.stopCollaboratingIfNecessary();
   }
 
@@ -150,7 +158,7 @@ class _ModelsScreenState extends State<ModelsScreen> {
         .showSnackBar(SnackBar(content: Text(error)));
     if (localModel != null) {
       Navigator.pop(context);
-      await localModel.collaborate(onError);
+      await localModel.collaborate(onError, mockChannel: widget.mockChannel);
       _openModel(context, localModel);
     } else {
       final completer = Completer();
@@ -175,6 +183,7 @@ class _ModelsScreenState extends State<ModelsScreen> {
           }
         },
         onError: onError,
+        mockChannel: widget.mockChannel,
       );
       final model = await completer.future;
       Navigator.pop(context);

@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:client/logic/collaboration/collaboration_channel.dart';
+import 'package:client/logic/collaboration/mock_collaboration_channel.dart';
+import 'package:client/logic/collaboration/ws_collaboration_channel.dart';
 import 'package:client/pb/collaboration.pb.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -21,7 +24,7 @@ class CollaborationSession {
   ProcessDataFunction? onUpdateReceived;
   StateChangedFunction? onStateChanged;
 
-  final _channel = WebSocketChannel.connect(Uri.parse('ws://$_host:$_port'));
+  final CollaborationChannel _channel;
   final bool _hasModel;
 
   SessionState _state = SessionState.connecting;
@@ -31,41 +34,40 @@ class CollaborationSession {
       this.onModelReceived,
       this.onUpdateReceived,
       this.onStateChanged,
-      this.onError})
-      : _hasModel = stateVector != null {
-    _channel.stream.listen(
-      _onMessage,
-      onError: _onError,
-      onDone: _onDone,
-      cancelOnError: true,
-    );
-    _send(CollaborationRequest(
-      connectRequest: ConnectRequest(
-        uuid: uuid,
-        stateVector: stateVector,
-      ),
-    ));
+      this.onError,
+      MockCollaborationChannel? mockChannel})
+      : _channel = mockChannel ??
+            WsCollaborationChannel(
+                WebSocketChannel.connect(Uri.parse('ws://$_host:$_port'))),
+        _hasModel = stateVector != null {
+    _channel.listen(_onResponse, onError: _onError, onDone: _onDone);
+    _channel.send(CollaborationRequest(
+        connectRequest: ConnectRequest(uuid: uuid, stateVector: stateVector)));
   }
 
   CollaborationSession.joinWithModel(String uuid, List<int>? stateVector,
       {required SyncModelFunction onSyncModel,
       required ProcessDataFunction onUpdateReceived,
       StateChangedFunction? onStateChanged,
-      OnErrorFunction? onError})
+      OnErrorFunction? onError,
+      MockCollaborationChannel? mockChannel})
       : this._(uuid, stateVector,
             onSyncModel: onSyncModel,
             onUpdateReceived: onUpdateReceived,
             onStateChanged: onStateChanged,
-            onError: onError);
+            onError: onError,
+            mockChannel: mockChannel);
 
   CollaborationSession.joinWithoutModel(String uuid,
       {required ProcessDataFunction onModelReceived,
       StateChangedFunction? onStateChanged,
-      OnErrorFunction? onError})
+      OnErrorFunction? onError,
+      MockCollaborationChannel? mockChannel})
       : this._(uuid, null,
             onModelReceived: onModelReceived,
             onStateChanged: onStateChanged,
-            onError: onError);
+            onError: onError,
+            mockChannel: mockChannel);
 
   SessionState get state => _state;
 
@@ -80,8 +82,7 @@ class CollaborationSession {
     }
   }
 
-  void _onMessage(message) {
-    final response = CollaborationResponse.fromBuffer(message);
+  void _onResponse(CollaborationResponse response) {
     print('[ws] Received response: ${response.whichMessage()}');
     switch (_state) {
       case SessionState.connecting:
@@ -117,7 +118,7 @@ class CollaborationSession {
   void _processConnectResponse(ConnectResponse response) {
     if (_hasModel) {
       onSyncModel!(response.stateVector, response.update).then((update) =>
-          _send(
+          _channel.send(
               CollaborationRequest(syncRequest: SyncRequest(update: update))));
       _setState(SessionState.syncing);
     } else if (response.hasUpdate()) {
@@ -142,11 +143,8 @@ class CollaborationSession {
     }
   }
 
-  void _send(CollaborationRequest request) =>
-      _channel.sink.add(request.writeToBuffer());
-
   void _disconnect() {
-    _channel.sink.close();
+    _channel.close();
     _setState(SessionState.disconnected);
   }
 
@@ -155,7 +153,7 @@ class CollaborationSession {
   void sendUpdate(List<int> update) {
     assert(_state != SessionState.disconnected);
     if (_state == SessionState.connected) {
-      _send(CollaborationRequest(update: update));
+      _channel.send(CollaborationRequest(update: update));
     } else if (cachedUpdates != null) {
       cachedUpdates!.add(update);
     } else {
@@ -163,5 +161,5 @@ class CollaborationSession {
     }
   }
 
-  Future<void> close() async => await _channel.sink.close();
+  Future<void> close() async => await _channel.close();
 }
