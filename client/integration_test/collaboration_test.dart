@@ -9,6 +9,8 @@ import 'package:integration_test/integration_test.dart';
 
 import 'package:client/main.dart' as app;
 
+import 'integration_test_utils.dart';
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -16,9 +18,7 @@ void main() {
     testWidgets('join with model', (tester) async {
       final mockChannel = MockCollaborationChannel();
 
-      app.main(mockChannel: mockChannel);
-      await tester.pumpAndSettle();
-      await _deleteExistingModels(tester);
+      await launchApp(() => app.main(mockChannel: mockChannel), tester);
       await _loadExampleAndCollaborate(tester);
 
       await tester.tap(find.text('Copy link'));
@@ -31,10 +31,7 @@ void main() {
     testWidgets('join without model', (tester) async {
       final mockChannel = MockCollaborationChannel();
 
-      app.main(mockChannel: mockChannel);
-      await tester.pumpAndSettle();
-      await _deleteExistingModels(tester);
-
+      await launchApp(() => app.main(mockChannel: mockChannel), tester);
       await _joinCollaborationSession(tester);
 
       expect(mockChannel.requests.length, 1); // Connect
@@ -44,9 +41,7 @@ void main() {
     testWidgets('emit changes', (tester) async {
       final mockChannel = MockCollaborationChannel();
 
-      app.main(mockChannel: mockChannel);
-      await tester.pumpAndSettle();
-      await _deleteExistingModels(tester);
+      await launchApp(() => app.main(mockChannel: mockChannel), tester);
       await _loadExampleAndCollaborate(tester);
 
       await tester.tap(find.text('Student').first);
@@ -67,9 +62,7 @@ void main() {
       final mockChannel =
           MockCollaborationChannel(serverModel: base64Decode(model));
 
-      app.main(mockChannel: mockChannel);
-      await tester.pumpAndSettle();
-      await _deleteExistingModels(tester);
+      await launchApp(() => app.main(mockChannel: mockChannel), tester);
       await _joinCollaborationSession(tester);
 
       mockChannel.receive(CollaborationResponse(update: base64Decode(update)));
@@ -78,15 +71,6 @@ void main() {
       expect(find.text('TypeAB'), findsOneWidget);
     });
   });
-}
-
-Future<void> _deleteExistingModels(WidgetTester tester) async {
-  while (find.text('No Models').evaluate().isEmpty) {
-    await tester.tap(find.byTooltip('Model actions'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete'));
-    await tester.pumpAndSettle();
-  }
 }
 
 Future<void> _loadExampleAndCollaborate(WidgetTester tester) async {

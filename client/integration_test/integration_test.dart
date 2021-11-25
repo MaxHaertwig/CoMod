@@ -4,12 +4,14 @@ import 'package:integration_test/integration_test.dart';
 
 import 'package:client/main.dart' as app;
 
+import 'integration_test_utils.dart';
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('local', () {
     testWidgets('create model', (tester) async {
-      await _launch(tester);
+      await launchApp(() => app.main(), tester);
 
       const modelName = 'University';
       await _createModel(tester, modelName);
@@ -18,19 +20,14 @@ void main() {
     });
 
     testWidgets('load example', (tester) async {
-      await _launch(tester);
-
-      await tester.tap(find.text('Load Example'));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Example'));
-      await tester.pumpAndSettle();
+      await launchApp(() => app.main(), tester);
+      await loadExample(tester, true);
 
       expect(find.text('Example'), findsOneWidget);
     });
 
     testWidgets('create type', (tester) async {
-      await _launch(tester);
+      await launchApp(() => app.main(), tester);
 
       const modelName = 'University';
       await _createModel(tester, modelName);
@@ -83,7 +80,7 @@ void main() {
     });
 
     testWidgets('delete type', (tester) async {
-      await _launch(tester);
+      await launchApp(() => app.main(), tester);
 
       const modelName = 'University';
       await _createModel(tester, modelName);
@@ -102,19 +99,6 @@ void main() {
       expect(find.text('No types'), findsOneWidget);
     });
   });
-}
-
-Future<void> _launch(WidgetTester tester) async {
-  app.main();
-  await tester.pumpAndSettle();
-
-  // Delete existing models
-  while (find.text('No Models').evaluate().isEmpty) {
-    await tester.tap(find.byTooltip('Model actions'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete'));
-    await tester.pumpAndSettle();
-  }
 }
 
 Future<void> _createModel(WidgetTester tester, String name) async {
