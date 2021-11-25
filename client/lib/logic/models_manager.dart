@@ -36,7 +36,8 @@ class ModelsManager {
       '${(await _documentsDirectory).path}/$uuid.yjs';
 
   static Future<Model> newModel(String name) async {
-    final uuid = Uuid().v4();
+    const collaborationUUID = String.fromEnvironment('collaboration_uuid');
+    final uuid = collaborationUUID.isEmpty ? Uuid().v4() : collaborationUUID;
     await JSBridge().newModel(uuid);
 
     final model = Model(await path(uuid), name);

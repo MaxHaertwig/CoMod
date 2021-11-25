@@ -6,10 +6,11 @@ It is organized into different sections:
 
 - [Client](./client): the client application
 - [Client-JS](./client-js): JavaScript code that runs within the client application
+- [E2E-Tests](./e2e-tests): the system's end-to-end tests
 - [Server](./server): the server backend
-- [Thesis](./thesis): the written part
-- [Schema](./schema): the schema of the client's data model
 - [Protocol](./protocol): the communication protocol between client and server
+- [Schema](./schema): the schema of the client's data model
+- [Thesis](./thesis): the written part
 
 ## Setup
 
