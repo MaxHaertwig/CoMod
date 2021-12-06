@@ -39,14 +39,14 @@ export class Client {
   send(response: CollaborationResponse): void {
     this.ws.send(response.serializeBinary(), error => {
       if (error) {
-        console.log(`Sending response ${response} failed with error: ${error}`);
+        console.error(`Sending response ${response} failed with error: ${error}`);
       }
     });
   }
 
   /** Closes the connection to the client. */
   close(code: WSCloseCode, reason: string): void {
-    console.log(`Client ${this.shortID} closing channel (${code}: ${reason})`);
+    console.warn(`Client ${this.shortID} closing channel (${code}: ${reason})`);
     this.remove();
     this.ws.close(code, reason);
   }
@@ -58,7 +58,6 @@ export class Client {
 
   /** Handles an incoming request. */
   handleRequest(request: CollaborationRequest): void {
-    console.log(`Client ${this.shortID}(${this.state}) received ${request.getMessageCase()}`);
     switch (this.state) {
     case ClientState.Connecting:
       if (!request.hasConnectRequest()) {
@@ -79,14 +78,14 @@ export class Client {
         this.close(WSCloseCode.ProtocolError, 'Connected client did not receive model update.');
         return;
       }
-      console.log(`Client ${this.shortID} handling update`);
+      console.info(`Client ${this.shortID} handling update`);
       this.session!.processUpdate(request.getUpdate_asU8(), this.id);
       break;
     }
   }
 
   private handleConnectRequest(request: ConnectRequest): void {
-    console.log(`Client ${this.shortID} handling ConnectRequest`);
+    console.info(`Client ${this.shortID} handling ConnectRequest`);
 
     if (!request.getUuid()) {
       this.close(WSCloseCode.UnsuportedData, 'Invalid ConnectRequest: missing uuid.');
@@ -120,7 +119,7 @@ export class Client {
   }
 
   private handleSyncRequest(request: SyncRequest): void {
-    console.log(`Client ${this.shortID} handling SyncRequest`);
+    console.info(`Client ${this.shortID} handling SyncRequest`);
 
     if (!this.session && !request.getUpdate_asU8().length) {
       this.close(WSCloseCode.UnsuportedData, 'Received invalid SyncRequest: missing update.');

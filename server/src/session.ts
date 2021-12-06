@@ -19,7 +19,7 @@ export class Session {
    */
   constructor(uuid: string, document: yjs.Doc|Uint8Array) {
     this.uuid = uuid;
-    console.log(`New session ${this.shortUUID}`);
+    console.info(`New session ${this.shortUUID}`);
 
     if (document instanceof yjs.Doc) {
       this.yDoc = document;
@@ -35,19 +35,19 @@ export class Session {
 
   /** Adds a participant to the session. */
   addParticipant(client: Client): void {
-    console.log(`Adding client ${client.shortID} to session ${this.shortUUID}`);
+    console.info(`Adding client ${client.shortID} to session ${this.shortUUID}`);
     this.participants.set(client.id, client);
   }
 
   /** Removes a participant from the session. */
   removeParticipant(id: string): void {
-    console.log(`Removing client ${id.split('-')[0]} from session ${this.shortUUID}`);
+    console.info(`Removing client ${id.split('-')[0]} from session ${this.shortUUID}`);
     this.participants.delete(id);
   }
 
   /** Processes an update and forwards it to all other participants of the session. */
   processUpdate(update: Uint8Array, fromParticipantID: string): void {
-    console.log(`Processing update for session ${this.shortUUID}`);
+    console.info(`Processing update for session ${this.shortUUID}`);
     yjs.applyUpdate(this.yDoc, update);
     const response = new CollaborationResponse();
     response.setUpdate(update);

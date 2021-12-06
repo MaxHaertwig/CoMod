@@ -19,7 +19,7 @@ export class Server {
     this.wss = new WebSocket.Server({ port: port || 3000 }, callback);
     this.wss.on('connection', ws => {
       const client = new Client(ws, this);
-      console.log(`New client connected: ${client.shortID}`);
+      console.info(`New client connected: ${client.shortID}`);
 
       ws.on('message', data => {
         if (!(data instanceof Uint8Array)) {
@@ -30,19 +30,18 @@ export class Server {
         try {
           client.handleRequest(CollaborationRequest.deserializeBinary(data));
         } catch (error) {
-          console.log(`Error handling message: ${error}`);
+          console.error(`Error handling message: ${error}`);
           ws.close();
         }
       });
 
       ws.on('close', () => {
         client.remove();
-        console.log(`Client disconnected: ${client.shortID}`);
+        console.info(`Client disconnected: ${client.shortID}`);
       });
       ws.on('error', error => {
-        console.log(`WebSocket error: ${error}`);
+        console.error(`WebSocket error: ${error}`);
         client.remove();
-        console.log(`Client disconnected: ${client.shortID}`);
       });
     });
   }
