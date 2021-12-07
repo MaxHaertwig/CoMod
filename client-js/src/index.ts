@@ -82,7 +82,6 @@ export function sync(serverStateVector?: string, serverUpdate?: string): string 
 
 /** Processes a remote update. */
 export function processUpdate(data: string): void {
-  // TODO: report diff to Flutter; yjs observe
   yjs.applyUpdate(activeDoc, Base64.toUint8Array(data), activeDoc);
   serializeModel();
 }
