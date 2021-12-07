@@ -74,12 +74,7 @@ void main() {
 }
 
 Future<void> _loadExampleAndCollaborate(WidgetTester tester) async {
-  await tester.tap(find.text('Load Example'));
-  await tester.pumpAndSettle();
-  await tester.pumpAndSettle();
-
-  await tester.tap(find.text('Example'));
-  await tester.pumpAndSettle();
+  await loadExample(tester, true);
 
   await tester.tap(find.byTooltip('Collaboration'));
   await tester.pumpAndSettle();
