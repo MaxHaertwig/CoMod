@@ -62,7 +62,6 @@ const changeTypes = [
 
 function performRandomChange(model: yjs.XmlElement): void {
   const elements = elementList(model);
-  // const nodeTypes = new Set(elements.map(el => el.nodeName));
   let changeType = changeTypes[Math.floor(Math.random() * changeTypes.length)];
   while ((changeType === ChangeType.Delete && elements.every(el => !deletableNodes.has(el.nodeName))) ||
     (changeType === ChangeType.Attribute && elements.every(el => !attributeNodes.has(el.nodeName))) ||
