@@ -48,10 +48,10 @@ export class Session {
   /** Processes an update and forwards it to all other participants of the session. */
   processUpdate(update: Uint8Array, fromParticipantID: string): void {
     console.info(`Processing update for session ${this.shortUUID}`);
-    yjs.applyUpdate(this.yDoc, update);
     const response = new CollaborationResponse();
     response.setUpdate(update);
     this.broadcast(response, fromParticipantID);
+    yjs.applyUpdate(this.yDoc, update);
   }
 
   private broadcast(response: CollaborationResponse, excludeID: string): void {
