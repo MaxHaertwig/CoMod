@@ -82,7 +82,11 @@ class JSBridge {
                       .toList() as List<Tuple2<String, String>>,
                 ))
             .toList() as List<ElementChange>;
-        onRemoteUpdate!(textChanges, elementChanges);
+        try {
+          onRemoteUpdate!(textChanges, elementChanges);
+        } catch (error) {
+          print(error);
+        }
       }
     });
   }
