@@ -24,6 +24,10 @@ class JSBridge {
   static final JSBridge _shared = JSBridge._internal();
   static final _jsRuntime = getJavascriptRuntime();
 
+  // Instrumentation for client test:
+  // var measurements = <int>[];
+  // var count = 0;
+
   LocalUpdateFunction? onLocalUpdate;
   RemoteUpdateFunction? onRemoteUpdate;
 
@@ -123,8 +127,18 @@ class JSBridge {
     return result.isEmpty ? null : base64Decode(result);
   }
 
-  void processUpdate(List<int> data) =>
-      _evaluate('client.processUpdate("${base64Encode(data)}");');
+  void processUpdate(List<int> data) {
+    // Instrumentation for client test:
+    // var s = Stopwatch()..start();
+    _evaluate('client.processUpdate("${base64Encode(data)}");');
+    // s.stop();
+    // count += 1;
+    // measurements.add(s.elapsedMilliseconds);
+    // if (measurements.length % 10 == 0) {
+    //   print('$count: ${measurements.reduce((a, b) => a + b) / 10}');
+    //   measurements.removeAt(0);
+    // }
+  }
 
   void beginTransaction() {
     assert(transactionStatements == null);
