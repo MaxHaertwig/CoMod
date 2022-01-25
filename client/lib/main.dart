@@ -8,7 +8,7 @@ void main({MockCollaborationChannel? mockChannel}) {
 }
 
 class MyApp extends StatelessWidget {
-  MockCollaborationChannel? mockChannel;
+  final MockCollaborationChannel? mockChannel;
 
   MyApp({this.mockChannel});
 
