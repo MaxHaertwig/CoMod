@@ -1,6 +1,6 @@
 # Client JS
 
-This directory contains the code that runs in a separate JavaScript environment within the client application. It is written in [TypeScript](https://www.typescriptlang.org) and uses [Webpack](https://webpack.js.org) is to bundle itself and its dependencies into a single file.
+This directory contains the code running in a separate JavaScript environment within _CoMod_'s client application. It's written in [TypeScript](https://www.typescriptlang.org) and uses [Webpack](https://webpack.js.org) is to bundle itself and its dependencies into a single file.
 
 ## Setup
 

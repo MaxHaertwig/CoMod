@@ -1,6 +1,6 @@
 # Server
 
-This is the app's server backend. It is based on the [ws](https://github.com/websockets/ws) package, written in [TypeScript](https://www.typescriptlang.org), and uses the _WebSocket_ protocol to communicate.
+This is _CoMod_'s server backend. It is based on the [ws](https://github.com/websockets/ws) package, written in [TypeScript](https://www.typescriptlang.org), and uses the _WebSocket_ protocol to communicate.
 
 ## Setup
 
