@@ -1,6 +1,6 @@
 # CoMod
 
-_CoMod_ is an Android/iOS application allowing teams to collaboratively model UML class diagrams in real time. A paper about it is currently being submitted to the [ECMFA 2022](https://davidediruscio.github.io/ECMFA2022/) conference. This repository contains all the resources required for running _CoMod_ and reproducing the paper's results.
+_CoMod_ is an Android/iOS application allowing teams to collaboratively model UML class diagrams in real time. A paper about it is currently being submitted to the [ECMFA 2022](https://davidediruscio.github.io/ECMFA2022/) conference. This repository contains all the resources required for running _CoMod_ and reproducing the paper's results. Watch the [demo video](https://youtu.be/wA_37xM9SiE) to see it in action.
 
 ![CoMod screenshots](./screenshots.png)
 
